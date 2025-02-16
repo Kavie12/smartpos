@@ -1,6 +1,25 @@
 import { AppBar, Box, Button, CssBaseline, Toolbar, Typography } from "@mui/material";
+import axios from "axios";
+import { useNavigate } from "react-router";
 
-export default function Navbar() {
+type NavbarProps = {
+    full?: boolean;
+}
+
+export default function Navbar({ full = false }: NavbarProps) {
+    let navigate = useNavigate();
+
+    const logout = () => {
+        axios.get('http://localhost:8080/users/logout', {
+            withCredentials: true
+        })
+            .then(() => {
+                navigate("/login");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
     return (
         <>
             <CssBaseline />
@@ -10,7 +29,7 @@ export default function Navbar() {
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                             SmartPOS
                         </Typography>
-                        <Button color="inherit">Login</Button>
+                        {full && <Button color="inherit" onClick={logout}>Logout</Button>}
                     </Toolbar>
                 </AppBar>
             </Box>

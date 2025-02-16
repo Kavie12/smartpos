@@ -32,8 +32,17 @@ public class UserController {
 
     @PostMapping(path = "/login")
     public String login(@RequestBody User user, HttpServletResponse response) {
-        return service.verify(user, response);
+        return service.login(user, response);
     }
 
+    @GetMapping(path = "/verify")
+    public String verify() {
+        return "Verified";
+    }
+
+    @GetMapping(path = "/logout")
+    public String logout(HttpServletResponse response) {
+        return service.logout(response);
+    }
 
 }

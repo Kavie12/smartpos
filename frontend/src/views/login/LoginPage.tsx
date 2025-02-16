@@ -1,9 +1,11 @@
 import { Button, Container, Paper, Stack, TextField, Typography } from "@mui/material";
-import Navbar from "../../components/Navbar";
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router";
 
 export default function LoginPage() {
+    let navigate = useNavigate();
+
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -19,36 +21,34 @@ export default function LoginPage() {
                 withCredentials: true
             })
                 .then(res => {
-                    console.log(res);
-                    setProcessing(false);
+                    console.log(res.data);
                     setError("");
+                    setProcessing(false);
+                    navigate("/");
                 })
                 .catch(err => {
                     console.log(err);
+                    setError("Credentials does not match.");
                     setProcessing(false);
-                    setError("Error. Please try again.");
                 });
         } else {
-            setError("Please fill all the details!");
+            setError("Please fill all the details.");
         }
     }
 
     return (
-        <>
-            <Navbar />
-            <Container maxWidth="xs" sx={{ mt: 10 }}>
-                <Paper sx={{ p: 4 }} elevation={2}>
-                    <Typography textAlign="center" variant="h4" color="primary" sx={{ fontWeight: "bold" }}>SmartPOS</Typography>
-                    <Stack spacing={2} useFlexGap sx={{ mt: 4 }}>
-                        <TextField id="username" label="Username" variant="standard" onChange={e => setUsername(e.target.value)} />
-                        <TextField id="password" label="Password" variant="standard" type="password" onChange={e => setPassword(e.target.value)} />
-                        <Button variant="text" sx={{ alignSelf: "end", mt: 4 }} onClick={login} loading={processing}>
-                            Login
-                        </Button>
-                        <Typography textAlign="center" variant="subtitle1" color="error">{error}</Typography>
-                    </Stack>
-                </Paper>
-            </Container>
-        </>
+        <Container maxWidth="xs" sx={{ mt: 10 }}>
+            <Paper sx={{ p: 4 }} elevation={2}>
+                <Typography textAlign="center" variant="h4" color="primary" sx={{ fontWeight: "bold" }}>SmartPOS</Typography>
+                <Stack spacing={2} useFlexGap sx={{ mt: 4 }}>
+                    <TextField id="username" label="Username" variant="standard" onChange={e => setUsername(e.target.value)} />
+                    <TextField id="password" label="Password" variant="standard" type="password" onChange={e => setPassword(e.target.value)} />
+                    <Button variant="text" sx={{ alignSelf: "end", mt: 4 }} onClick={login} loading={processing}>
+                        Login
+                    </Button>
+                    <Typography textAlign="center" variant="subtitle1" color="error">{error}</Typography>
+                </Stack>
+            </Paper>
+        </Container>
     );
 }

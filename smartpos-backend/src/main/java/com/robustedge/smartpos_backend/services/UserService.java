@@ -3,6 +3,7 @@ package com.robustedge.smartpos_backend.services;
 import com.robustedge.smartpos_backend.models.User;
 import com.robustedge.smartpos_backend.repositories.UserRepository;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,7 +37,7 @@ public class UserService {
         return repository.findAll();
     }
 
-    public String verify(User user, HttpServletResponse response) {
+    public String login(User user, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         user.getUsername(),
@@ -54,5 +55,14 @@ public class UserService {
         }
 
         return "Failed";
+    }
+
+    public String logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("jwtToken", null);
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return "Success";
     }
 }
