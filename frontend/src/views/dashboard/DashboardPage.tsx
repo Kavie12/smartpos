@@ -1,7 +1,11 @@
 import { Typography } from "@mui/material";
+import Navbar from "../../components/Navbar";
 
-export default function Dashboard() {
+export default function DashboardPage() {
     return (
-        <Typography variant="h4">Dashboard</Typography>
+        <>
+            <Navbar />
+            <Typography variant="h4">Dashboard</Typography>
+        </>
     );
 }

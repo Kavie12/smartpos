@@ -7,7 +7,8 @@ import jakarta.persistence.Id;
 @Entity
 public class LoyaltyCustomer {
 
-    private @Id @GeneratedValue Integer id;
+    @Id @GeneratedValue
+    private Integer id;
     private String name;
     private String contactNumber;
     private Integer points;

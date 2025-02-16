@@ -1,16 +1,12 @@
 package com.robustedge.smartpos_backend.controllers;
 
+import com.robustedge.smartpos_backend.libraries.PDFGenerator;
 import com.robustedge.smartpos_backend.services.LoyaltyCustomerService;
 import com.robustedge.smartpos_backend.models.LoyaltyCustomer;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+import java.lang.reflect.Field;
 import java.util.List;
 
 
@@ -19,20 +15,24 @@ import java.util.List;
 @RequestMapping(path = "/loyalty_customers")
 public class LoyaltyCustomerController {
 
-    private final LoyaltyCustomerService service;
-
     @Autowired
-    public LoyaltyCustomerController(LoyaltyCustomerService service) {
-        this.service = service;
-    }
+    private LoyaltyCustomerService service;
 
-    @GetMapping
+    @GetMapping(path = "/get")
     public List<LoyaltyCustomer> getLoyaltyCustomers() {
         return service.getLoyaltyCustomers();
     }
 
-    @PostMapping
+    @PostMapping(path = "/add")
     public void addLoyaltyCustomer(@RequestBody LoyaltyCustomer loyaltyCustomer) {
         service.addLoyaltyCustomer(loyaltyCustomer);
     }
+
+    @GetMapping(path = "generate_report")
+    public void generateReport() {
+        List<LoyaltyCustomer> loyaltyCustomers = service.getLoyaltyCustomers();
+        String[] fields = {"ID", "Name", "Phone Number", "Points"};
+        new PDFGenerator(loyaltyCustomers, fields);
+    }
+
 }
