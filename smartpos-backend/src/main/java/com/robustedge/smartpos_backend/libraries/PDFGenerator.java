@@ -16,17 +16,18 @@ import com.itextpdf.layout.properties.UnitValue;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PDFGenerator<T> {
 
-    private PdfFont fontBold;
-    private PdfFont fontRegular;
+    private PdfFont TIMES_ROMAN;
+    private PdfFont TIMES_BOLD;
+    private PdfFont HELVETICA_BOLD;
+    private PdfFont COURIER;
     private Document doc;
-
-    public PDFGenerator() {
-    }
 
     public PDFGenerator<T> initialize(String dest) {
         // Create file
@@ -35,8 +36,10 @@ public class PDFGenerator<T> {
 
         // Init fonts
         try {
-            fontBold = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
-            fontRegular = PdfFontFactory.createFont(StandardFonts.HELVETICA);
+            TIMES_ROMAN = PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN);
+            TIMES_BOLD = PdfFontFactory.createFont(StandardFonts.TIMES_BOLD);
+            HELVETICA_BOLD = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+            COURIER = PdfFontFactory.createFont(StandardFonts.COURIER);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load fonts", e);
         }
@@ -51,10 +54,25 @@ public class PDFGenerator<T> {
         return this;
     }
 
+    public PDFGenerator<T> addMetaData() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = dateFormat.format(new Date());
+
+        Style style = new Style()
+                .setFont(COURIER)
+                .setFontSize(11)
+                .setTextAlignment(TextAlignment.RIGHT);
+
+        doc.add(new Paragraph("SmartPOS").addStyle(style));
+        doc.add(new Paragraph(date).addStyle(style.setPaddingBottom(20)));
+
+        return this;
+    }
+
     public PDFGenerator<T> addHeading(String title) {
         Style style = new Style()
-                .setFont(fontBold)
-                .setFontSize(20)
+                .setFont(HELVETICA_BOLD)
+                .setFontSize(16)
                 .setTextAlignment(TextAlignment.CENTER)
                 .setPaddingBottom(12);
 
@@ -69,14 +87,14 @@ public class PDFGenerator<T> {
 
         // Add table headings
         for (String field : tableHeaders) {
-            table.addCell(new Cell().add(new Paragraph(field).setFont(fontBold)));
+            table.addCell(new Cell().add(new Paragraph(field).setFont(TIMES_BOLD)));
         }
 
         // Add table data
         List<List<String>> dataset = extractData(list);
         for (List<String> record : dataset) {
             for (String field : record) {
-                table.addCell(new Cell().add(new Paragraph(field).setFont(fontRegular)));
+                table.addCell(new Cell().add(new Paragraph(field).setFont(TIMES_ROMAN)));
             }
         }
 

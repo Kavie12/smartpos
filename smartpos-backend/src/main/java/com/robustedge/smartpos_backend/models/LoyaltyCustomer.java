@@ -7,25 +7,25 @@ import jakarta.persistence.Id;
 @Entity
 public class LoyaltyCustomer {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue()
     private Integer id;
     private String name;
-    private String contactNumber;
+    private String phoneNumber;
     private Integer points;
 
     public LoyaltyCustomer() {
     }
 
-    public LoyaltyCustomer(Integer id, String name, String contactNumber, Integer points) {
+    public LoyaltyCustomer(Integer id, String name, String phoneNumber, Integer points) {
         this.id = id;
         this.name = name;
-        this.contactNumber = contactNumber;
+        this.phoneNumber = phoneNumber;
         this.points = points;
     }
 
-    public LoyaltyCustomer(String name, String contactNumber) {
+    public LoyaltyCustomer(String name, String phoneNumber) {
         this.name = name;
-        this.contactNumber = contactNumber;
+        this.phoneNumber = phoneNumber;
     }
 
     public Integer getId() {
@@ -44,12 +44,12 @@ public class LoyaltyCustomer {
         this.name = name;
     }
 
-    public String getContactNumber() {
-        return contactNumber;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setContactNumber(String contactNumber) {
-        this.contactNumber = contactNumber;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public Integer getPoints() {
@@ -65,7 +65,7 @@ public class LoyaltyCustomer {
         return "LoyaltyCustomer{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", contactNumber='" + contactNumber + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
                 ", points=" + points +
                 '}';
     }
