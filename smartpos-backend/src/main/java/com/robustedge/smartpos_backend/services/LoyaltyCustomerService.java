@@ -10,12 +10,8 @@ import java.util.List;
 @Service
 public class LoyaltyCustomerService {
 
-    private final LoyaltyCustomerRepository repository;
-
     @Autowired
-    public LoyaltyCustomerService(LoyaltyCustomerRepository repository) {
-        this.repository = repository;
-    }
+    private LoyaltyCustomerRepository repository;
 
     public void addLoyaltyCustomer(LoyaltyCustomer loyaltyCustomer) {
         repository.save(loyaltyCustomer);

@@ -6,7 +6,6 @@ import com.robustedge.smartpos_backend.models.LoyaltyCustomer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 
@@ -32,7 +31,18 @@ public class LoyaltyCustomerController {
     public void generateReport() {
         List<LoyaltyCustomer> loyaltyCustomers = service.getLoyaltyCustomers();
         String[] fields = {"ID", "Name", "Phone Number", "Points"};
-        new PDFGenerator(loyaltyCustomers, fields);
+
+        try {
+            PDFGenerator<LoyaltyCustomer> pdfGenerator = new PDFGenerator<LoyaltyCustomer>();
+            pdfGenerator
+                    .initialize("D:\\reports\\a.pdf")
+                    .addHeading("Loyalty Customers - Srimal Stores")
+                    .addTable(loyaltyCustomers, fields)
+                    .build();
+        } catch (Exception e) {
+            System.out.println("Error generating PDF.");
+        }
+
     }
 
 }

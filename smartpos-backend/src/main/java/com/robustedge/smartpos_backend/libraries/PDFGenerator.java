@@ -1,66 +1,95 @@
 package com.robustedge.smartpos_backend.libraries;
 
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.Style;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 
-import javax.swing.text.StyleConstants;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PDFGenerator<T> {
 
-    public static final String DEST = "D:\\reports\\a.pdf";
-    private List<T> list;
-    private String[] fields;
+    private PdfFont fontBold;
+    private PdfFont fontRegular;
+    private Document doc;
 
-    public PDFGenerator(List<T> list, String[] fields) {
-        this.list = list;
-        this.fields = fields;
-
-        File file = new File(DEST);
-        file.getParentFile().mkdirs();
-
-        manipulatePdf(DEST);
+    public PDFGenerator() {
     }
 
-    private void manipulatePdf(String dest) {
-        PdfDocument pdfDoc = null;
+    public PDFGenerator<T> initialize(String dest) {
+        // Create file
+        File file = new File(dest);
+        file.getParentFile().mkdirs();
+
+        // Init fonts
         try {
-            pdfDoc = new PdfDocument(new PdfWriter(dest));
+            fontBold = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+            fontRegular = PdfFontFactory.createFont(StandardFonts.HELVETICA);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load fonts", e);
+        }
+
+        // Create document
+        try {
+            doc = new Document(new PdfDocument(new PdfWriter(dest)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Document doc = new Document(pdfDoc);
 
-        Table table = new Table(UnitValue.createPercentArray(fields.length)).useAllAvailableWidth();
+        return this;
+    }
 
-        for (String field : fields) {
-            table.addCell(new Cell().add(new Paragraph(field)));
+    public PDFGenerator<T> addHeading(String title) {
+        Style style = new Style()
+                .setFont(fontBold)
+                .setFontSize(20)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setPaddingBottom(12);
+
+        doc.add(new Paragraph(title).addStyle(style));
+
+        return this;
+    }
+
+    public PDFGenerator<T> addTable(List<T> list, String[] tableHeaders) {
+        // Create table
+        Table table = new Table(UnitValue.createPercentArray(tableHeaders.length)).useAllAvailableWidth();
+
+        // Add table headings
+        for (String field : tableHeaders) {
+            table.addCell(new Cell().add(new Paragraph(field).setFont(fontBold)));
         }
 
-        List<List<String>> dataset = convertToString(list);
+        // Add table data
+        List<List<String>> dataset = extractData(list);
         for (List<String> record : dataset) {
             for (String field : record) {
-                table.addCell(new Cell().add(new Paragraph(field)));
+                table.addCell(new Cell().add(new Paragraph(field).setFont(fontRegular)));
             }
         }
 
         doc.add(table);
 
+        return this;
+    }
+
+    public void build() {
         doc.close();
     }
 
-    private List<List<String>> convertToString(List<T> list) {
+    private List<List<String>> extractData(List<T> list) {
         List<List<String>> resultList = new ArrayList<>();
 
         for (T item : list) {
