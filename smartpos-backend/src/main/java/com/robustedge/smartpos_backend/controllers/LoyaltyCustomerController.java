@@ -16,17 +16,17 @@ public class LoyaltyCustomerController {
     @Autowired
     private LoyaltyCustomerService service;
 
-    @GetMapping(path = "/get")
+    @GetMapping("/get")
     public List<LoyaltyCustomer> getLoyaltyCustomers() {
         return service.getLoyaltyCustomers();
     }
 
-    @PostMapping(path = "/add")
+    @PostMapping("/add")
     public void addLoyaltyCustomer(@RequestBody LoyaltyCustomer loyaltyCustomer) {
         service.addLoyaltyCustomer(loyaltyCustomer);
     }
 
-    @GetMapping(path = "generate_report")
+    @GetMapping("generate_report")
     public void generateReport() {
         service.generateReport();
     }

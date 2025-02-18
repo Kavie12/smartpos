@@ -1,6 +1,6 @@
 package com.robustedge.smartpos_backend.services;
 
-import com.robustedge.smartpos_backend.libraries.PDFGenerator;
+import com.robustedge.smartpos_backend.libraries.PDFTableGenerator;
 import com.robustedge.smartpos_backend.models.LoyaltyCustomer;
 import com.robustedge.smartpos_backend.repositories.LoyaltyCustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +26,8 @@ public class LoyaltyCustomerService {
         List<LoyaltyCustomer> loyaltyCustomers = getLoyaltyCustomers();
         String[] fields = {"ID", "Name", "Phone Number", "Points"};
 
-        PDFGenerator<LoyaltyCustomer> pdfGenerator = new PDFGenerator<LoyaltyCustomer>();
-        pdfGenerator
+        PDFTableGenerator<LoyaltyCustomer> pdfTableGenerator = new PDFTableGenerator<LoyaltyCustomer>();
+        pdfTableGenerator
                 .initialize("D:\\reports\\a.pdf")
                 .addMetaData()
                 .addHeading("Loyalty Customers")

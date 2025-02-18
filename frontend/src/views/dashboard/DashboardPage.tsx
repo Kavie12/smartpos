@@ -1,11 +1,7 @@
-import { Typography } from "@mui/material";
-import Navbar from "../../components/Navbar";
+import { Link } from "react-router";
 
 export default function DashboardPage() {
     return (
-        <>
-            <Navbar />
-            <Typography variant="h4">Dashboard</Typography>
-        </>
+        <Link to="/loyalty_customers">Loyalty Customers</Link>
     );
 }

@@ -7,10 +7,13 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import { RouterProvider } from 'react-router';
-import AppRouter from './config/AppRouter.tsx';
+import AuthProvider from './context/AuthContext.tsx';
+import AppRouter from './routes/AppRouter.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={AppRouter} />
+    <AuthProvider>
+      <RouterProvider router={AppRouter} />
+    </AuthProvider>
   </StrictMode>
 );
