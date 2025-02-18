@@ -1,21 +1,13 @@
 import { Button, Container, Paper, Stack, TextField, Typography } from "@mui/material";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router";
 
 export default function LoginPage() {
-    const navigate = useNavigate();
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const { login, isAuthenticated, isProcessing } = useAuth();
-
-    useEffect(() => {
-        if (isAuthenticated) {
-            navigate("/");
-        }
-    }, [isAuthenticated, navigate]);
+    const { login, isProcessing } = useAuth();
 
     const loginHandler = (e: FormEvent) => {
         e.preventDefault();

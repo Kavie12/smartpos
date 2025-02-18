@@ -4,7 +4,6 @@ import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import LoginPage from "../views/login/LoginPage";
 import LoyaltyCustomersPage from "../views/loyalty_customers/LoyaltyCustomersPage";
-import ProtectedRoute from "./ProtectedRoute";
 
 export default createHashRouter([
     {
@@ -17,11 +16,7 @@ export default createHashRouter([
         ]
     },
     {
-        element: (
-            <ProtectedRoute>
-                <MainLayout />
-            </ProtectedRoute>
-        ),
+        element: <MainLayout />,
         children: [
             {
                 path: "/",
