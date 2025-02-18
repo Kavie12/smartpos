@@ -1,30 +1,40 @@
 import { createHashRouter } from "react-router";
-import DashboardPage from "../views/dashboard/DashboardPage";
+import DashboardScreen from "../pages/DashboardScreen";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
-import LoginPage from "../views/login/LoginPage";
-import LoyaltyCustomersPage from "../views/loyalty_customers/LoyaltyCustomersPage";
+import LoginScreen from "../pages/LoginScreen";
+import LoyaltyCustomersScreen from "../pages/LoyaltyCustomersScreen";
+import ProtectedRoute from "./ProtectedRoute";
 
 export default createHashRouter([
     {
         element: <AuthLayout />,
         children: [
             {
-                path: "/login",
-                element: <LoginPage />
+                index: true,
+                element: <LoginScreen />
             }
         ]
     },
     {
-        element: <MainLayout />,
+        element: (
+            <ProtectedRoute>
+                <MainLayout />
+            </ProtectedRoute>
+        ),
         children: [
             {
-                path: "/",
-                element: <DashboardPage />
-            },
-            {
-                path: "/loyalty_customers",
-                element: <LoyaltyCustomersPage />
+                path: "/dashboard",
+                children: [
+                    {
+                        index: true,
+                        element: <DashboardScreen />
+                    },
+                    {
+                        path: "loyalty_customers",
+                        element: <LoyaltyCustomersScreen />
+                    }
+                ]
             }
         ]
     }

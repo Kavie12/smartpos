@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useState } from "react";
-import Api from "../utils/Api";
+import Api from "../services/Api";
 
 type AuthContextType = {
     login: (username: string, password: string) => void;

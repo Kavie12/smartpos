@@ -1,8 +1,8 @@
 import { Button, Container, Paper, Stack, TextField, Typography } from "@mui/material";
 import { FormEvent, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
-export default function LoginPage() {
+export default function LoginScreen() {
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");

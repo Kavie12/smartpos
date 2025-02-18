@@ -9,7 +9,7 @@ export default function AuthLayout() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate("/");
+            navigate("/dashboard");
         }
     }, [isAuthenticated, navigate]);
 
