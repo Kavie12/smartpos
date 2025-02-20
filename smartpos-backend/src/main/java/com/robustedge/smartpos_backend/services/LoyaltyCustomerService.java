@@ -4,8 +4,8 @@ import com.robustedge.smartpos_backend.libraries.PDFTableGenerator;
 import com.robustedge.smartpos_backend.models.LoyaltyCustomer;
 import com.robustedge.smartpos_backend.repositories.LoyaltyCustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +24,8 @@ public class LoyaltyCustomerService {
         return repository.findAll();
     }
 
-    public Page<LoyaltyCustomer> getLoyaltyCustomers(Pageable pageable) {
-        return repository.findAll(pageable);
+    public PagedModel<LoyaltyCustomer> getLoyaltyCustomers(Pageable pageable) {
+        return new PagedModel<>(repository.findAll(pageable));
     }
 
     public void generateReport() {

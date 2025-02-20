@@ -28,7 +28,7 @@ export default function LoyaltyCustomersScreen() {
         setIsLoading(true);
         Api.get("/loyalty_customers/get", {
             headers: {
-                "Authorization": `Bearer ${token}`
+                Authorization: `Bearer ${token}`
             },
             params: {
                 page: paginationModel.page,
@@ -38,7 +38,7 @@ export default function LoyaltyCustomersScreen() {
             .then(res => {
                 setPageData({
                     rows: res.data.content,
-                    rowCount: res.data.totalElements
+                    rowCount: res.data.page.totalElements
                 });
             })
             .catch(err => console.error("Error fetching data:", err))
