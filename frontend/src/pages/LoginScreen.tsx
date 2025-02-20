@@ -6,14 +6,14 @@ export default function LoginScreen() {
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const { login, isProcessing } = useAuth();
+    const { login, isProcessing, error, setError } = useAuth();
 
     const loginHandler = (e: FormEvent) => {
         e.preventDefault();
 
         if (!username || !password) {
             setError("Fill all the details.");
+            return;
         }
 
         login(username, password);
@@ -30,7 +30,7 @@ export default function LoginScreen() {
                         <Button variant="text" sx={{ alignSelf: "end", mt: 4 }} type="submit" loading={isProcessing}>
                             Login
                         </Button>
-                        <Typography textAlign="center" variant="subtitle1" color="error">{error}</Typography>
+                        {error && <Typography textAlign="center" variant="subtitle1" color="error">{error}</Typography>}
                     </Stack>
                 </form>
             </Paper>
