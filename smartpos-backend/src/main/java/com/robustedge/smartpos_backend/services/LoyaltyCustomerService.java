@@ -4,6 +4,8 @@ import com.robustedge.smartpos_backend.libraries.PDFTableGenerator;
 import com.robustedge.smartpos_backend.models.LoyaltyCustomer;
 import com.robustedge.smartpos_backend.repositories.LoyaltyCustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,12 +20,16 @@ public class LoyaltyCustomerService {
         repository.save(loyaltyCustomer);
     }
 
-    public List<LoyaltyCustomer> getLoyaltyCustomers() {
+    public List<LoyaltyCustomer> getAllLoyaltyCustomers() {
         return repository.findAll();
     }
 
+    public Page<LoyaltyCustomer> getLoyaltyCustomers(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
     public void generateReport() {
-        List<LoyaltyCustomer> loyaltyCustomers = getLoyaltyCustomers();
+        List<LoyaltyCustomer> loyaltyCustomers = getAllLoyaltyCustomers();
         String[] fields = {"ID", "Name", "Phone Number", "Points"};
 
         PDFTableGenerator<LoyaltyCustomer> pdfTableGenerator = new PDFTableGenerator<LoyaltyCustomer>();

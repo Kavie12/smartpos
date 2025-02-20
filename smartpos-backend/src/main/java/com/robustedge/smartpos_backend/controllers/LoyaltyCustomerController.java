@@ -3,22 +3,28 @@ package com.robustedge.smartpos_backend.controllers;
 import com.robustedge.smartpos_backend.services.LoyaltyCustomerService;
 import com.robustedge.smartpos_backend.models.LoyaltyCustomer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
-@CrossOrigin(origins = "http://localhost:5173/", allowCredentials = "true")
-@RequestMapping(path = "/loyalty_customers")
+@RequestMapping(path = "/api/v1/loyalty_customers")
 public class LoyaltyCustomerController {
 
     @Autowired
     private LoyaltyCustomerService service;
 
+    @GetMapping("/get_all")
+    public List<LoyaltyCustomer> getAllLoyaltyCustomers() {
+        return service.getAllLoyaltyCustomers();
+    }
+
     @GetMapping("/get")
-    public List<LoyaltyCustomer> getLoyaltyCustomers() {
-        return service.getLoyaltyCustomers();
+    public Page<LoyaltyCustomer> getLoyaltyCustomers(@PageableDefault(value = 50, page = 0) Pageable pageable) {
+        return service.getLoyaltyCustomers(pageable);
     }
 
     @PostMapping("/add")
