@@ -28,6 +28,10 @@ public class LoyaltyCustomerService {
         return new PagedModel<>(repository.findAll(pageable));
     }
 
+    public void deleteLoyaltyCustomer(Integer id) {
+        repository.deleteById(id.longValue());
+    }
+
     public void generateReport() {
         List<LoyaltyCustomer> loyaltyCustomers = getAllLoyaltyCustomers();
         String[] fields = {"ID", "Name", "Phone Number", "Points"};
@@ -40,4 +44,5 @@ public class LoyaltyCustomerService {
                 .addTable(loyaltyCustomers, fields)
                 .build();
     }
+
 }

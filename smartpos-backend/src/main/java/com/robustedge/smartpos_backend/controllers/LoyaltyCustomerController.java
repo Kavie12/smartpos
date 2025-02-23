@@ -3,7 +3,6 @@ package com.robustedge.smartpos_backend.controllers;
 import com.robustedge.smartpos_backend.services.LoyaltyCustomerService;
 import com.robustedge.smartpos_backend.models.LoyaltyCustomer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
@@ -30,8 +29,15 @@ public class LoyaltyCustomerController {
 
     @PostMapping("/add")
     public void addLoyaltyCustomer(@RequestBody LoyaltyCustomer loyaltyCustomer) {
+        System.out.println(loyaltyCustomer);
         service.addLoyaltyCustomer(loyaltyCustomer);
     }
+
+    @DeleteMapping("/delete")
+    public void deleteLoyaltyCustomer(Integer id) {
+        service.deleteLoyaltyCustomer(id);
+    }
+
 
     @GetMapping("generate_report")
     public void generateReport() {
