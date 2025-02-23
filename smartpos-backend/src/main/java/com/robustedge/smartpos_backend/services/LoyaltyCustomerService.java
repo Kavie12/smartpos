@@ -32,6 +32,12 @@ public class LoyaltyCustomerService {
         repository.deleteById(id.longValue());
     }
 
+    public void updateLoyaltyCustomer(LoyaltyCustomer loyaltyCustomer) {
+        if (loyaltyCustomer.getId() != null) {
+            repository.save(loyaltyCustomer);
+        }
+    }
+
     public void generateReport() {
         List<LoyaltyCustomer> loyaltyCustomers = getAllLoyaltyCustomers();
         String[] fields = {"ID", "Name", "Phone Number", "Points"};

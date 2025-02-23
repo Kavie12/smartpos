@@ -4,8 +4,8 @@ import { useAuth } from "../context/AuthContext";
 
 export default function LoginScreen() {
 
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+    const [username, setUsername] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
     const { login, isProcessing, error, setError } = useAuth();
 
     const loginHandler = (e: FormEvent) => {

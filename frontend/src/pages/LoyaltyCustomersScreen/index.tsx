@@ -1,22 +1,34 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import Api from '../../services/Api';
 import { useAuth } from '../../context/AuthContext';
-import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material';
+import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Typography } from '@mui/material';
 import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
+
+type customerDataType = {
+    id?: number,
+    name?: string,
+    phoneNumber?: string,
+    points?: number
+}
 
 export default function LoyaltyCustomersScreen() {
     const { token } = useAuth();
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [paginationModel, setPaginationModel] = useState({
+    const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
+    const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState<{ open: boolean, id: GridRowId | null }>({
+        open: false,
+        id: null
+    });
+    const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
         page: 0,
         pageSize: 10,
     });
-    const [pageData, setPageData] = useState({
+    const [pageData, setPageData] = useState<{ rows: customerDataType[], rowCount: number }>({
         rows: [],
         rowCount: 0
     });
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [updateRow, setUpdateRow] = useState<customerDataType | null>(null);
 
     const columns: GridColDef[] = [
         {
@@ -53,33 +65,63 @@ export default function LoyaltyCustomersScreen() {
             headerName: "Actions",
             type: "actions",
             flex: 1,
-            getActions: ({ id }) => {
+            getActions: ({ id, row }) => {
                 return [
                     <GridActionsCellItem
                         icon={<Edit />}
                         label="Edit"
                         className="textPrimary"
                         color="inherit"
-                        onClick={() => editCustomer(id)}
+                        onClick={() => handleEditCustomer(row)}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
-                        onClick={() => deleteCustomer(id)}
+                        onClick={() => handleDeleteCustomer(id)}
                     />
                 ];
             }
         }
     ];
 
-    const handleDialogClose = () => {
-        setDialogOpen(false);
+    const handleFormDialogClose = () => {
+        setUpdateRow(null);
+        setIsFormDialogOpen(false);
     }
 
-    const handleDialogOpen = () => {
-        setDialogOpen(true);
+    const handleFormDialogOpen = () => {
+        setIsFormDialogOpen(true);
     }
+
+    const handleDeleteCustomer = (id: GridRowId) => {
+        handleConfirmationDialogOpen(id);
+    }
+
+    const handleConfirmationDialogClose = () => {
+        setIsConfirmationDialogOpen({
+            open: false,
+            id: null
+        });
+    }
+
+    const handleConfirmationDialogOpen = (id: GridRowId) => {
+        setIsConfirmationDialogOpen({
+            open: true,
+            id: id
+        });
+    }
+
+    const handleEditCustomer = (row: customerDataType) => {
+        setUpdateRow(row);
+        handleFormDialogOpen();
+    }
+
+    const handleUpdateRowChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (updateRow) {
+            setUpdateRow({ ...updateRow, [e.target.name]: e.target.value });
+        }
+    };
 
     const fetchCustomers = () => {
         setIsLoading(true);
@@ -102,22 +144,54 @@ export default function LoyaltyCustomersScreen() {
             .finally(() => setIsLoading(false));
     };
 
-    const deleteCustomer = (id: GridRowId) => {
+    const addCustomer = (data: { [k: string]: any }) => {
+        setIsLoading(true);
+        Api.post("/loyalty_customers/add", data, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(() => fetchCustomers())
+            .catch(err => console.error("Error fetching data:", err))
+            .finally(() => {
+                setIsLoading(false);
+                handleFormDialogClose();
+            });
+    };
+
+    const updateCustomer = () => {
+        setIsLoading(true);
+        Api.put("/loyalty_customers/update", updateRow, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(() => fetchCustomers())
+            .catch(err => console.error("Error fetching data:", err))
+            .finally(() => {
+                setIsLoading(false);
+                handleFormDialogClose();
+            });
+    };
+
+    const deleteCustomer = () => {
+        if (!isConfirmationDialogOpen.open) {
+            return;
+        }
         setIsLoading(true);
         Api.delete("/loyalty_customers/delete", {
             headers: {
                 Authorization: `Bearer ${token}`
             },
-            params: { id }
+            params: { id: isConfirmationDialogOpen.id }
         })
             .then(() => fetchCustomers())
             .catch(err => console.error("Error deleting customer:", err))
-            .finally(() => setIsLoading(false));
+            .finally(() => {
+                setIsLoading(false);
+                handleConfirmationDialogClose();
+            });
     };
-
-    const editCustomer = (id: GridRowId) => {
-        console.log("Edit " + id);
-    }
 
     useEffect(() => {
         fetchCustomers();
@@ -127,7 +201,7 @@ export default function LoyaltyCustomersScreen() {
         <Container maxWidth="xl">
 
             {/* Add record button */}
-            <Button sx={{ marginY: 2 }} onClick={handleDialogOpen}>
+            <Button sx={{ marginY: 2 }} onClick={handleFormDialogOpen}>
                 <Add />
                 <Typography variant="button">Add Record</Typography>
             </Button>
@@ -149,24 +223,26 @@ export default function LoyaltyCustomersScreen() {
 
             {/* Dialog */}
             <Dialog
-                open={dialogOpen}
-                onClose={handleDialogClose}
+                open={isFormDialogOpen}
+                onClose={handleFormDialogClose}
                 slotProps={{
                     paper: {
                         component: 'form',
-                        onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                        onSubmit: (event: FormEvent<HTMLFormElement>) => {
                             event.preventDefault();
                             const formData = new FormData(event.currentTarget);
                             const formJson = Object.fromEntries((formData as any).entries());
 
-                            console.log(formJson);
-
-                            handleDialogClose();
-                        },
-                    },
+                            if (updateRow) {
+                                updateCustomer();
+                            } else {
+                                addCustomer(formJson);
+                            }
+                        }
+                    }
                 }}
             >
-                <DialogTitle>Add Loyalty Customer</DialogTitle>
+                <DialogTitle>{updateRow ? "Update Loyalty Customer" : "Add Loyalty Customer"}</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
@@ -176,6 +252,8 @@ export default function LoyaltyCustomersScreen() {
                         label="Name"
                         type="text"
                         fullWidth
+                        value={updateRow?.name}
+                        onChange={handleUpdateRowChange}
                     />
                     <TextField
                         autoFocus
@@ -185,10 +263,35 @@ export default function LoyaltyCustomersScreen() {
                         label="Phone Number"
                         type="text"
                         fullWidth
+                        value={updateRow?.phoneNumber}
+                        onChange={handleUpdateRowChange}
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button type="submit">Add Customer</Button>
+                    <Button onClick={() => handleFormDialogClose()}>Cancel</Button>
+                    <Button type="submit">Save</Button>
+                </DialogActions>
+            </Dialog>
+
+
+            {/* Delete customer confirmation dialog */}
+            <Dialog
+                open={isConfirmationDialogOpen.open}
+                onClose={handleConfirmationDialogClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Warning
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to delete this user?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleConfirmationDialogClose}>Cancel</Button>
+                    <Button onClick={deleteCustomer} color="error">Delete</Button>
                 </DialogActions>
             </Dialog>
 

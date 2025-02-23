@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 import Api from "../services/Api";
 
-type AuthContextType = {
+export type AuthContextType = {
     login: (username: string, password: string) => void;
     isAuthenticated: boolean;
     token: string | null;

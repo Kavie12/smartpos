@@ -38,6 +38,10 @@ public class LoyaltyCustomerController {
         service.deleteLoyaltyCustomer(id);
     }
 
+    @PutMapping("/update")
+    public void updateLoyaltyCustomer(@RequestBody LoyaltyCustomer loyaltyCustomer) {
+        service.updateLoyaltyCustomer(loyaltyCustomer);
+    }
 
     @GetMapping("generate_report")
     public void generateReport() {
