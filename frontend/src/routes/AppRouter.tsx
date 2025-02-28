@@ -1,10 +1,12 @@
 import { createHashRouter } from "react-router";
-import DashboardScreen from "../pages/DashboardScreen";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import LoginScreen from "../pages/LoginScreen";
-import LoyaltyCustomersScreen from "../pages/LoyaltyCustomersScreen";
 import ProtectedRoute from "./ProtectedRoute";
+import LoyaltyMembersScreen from "../pages/LoyaltyMembersScreen";
+import DashboardScreen from "../pages/DashboardScreen";
+import EmployeesScreen from "../pages/EmployeesScreen";
+import SuppliersScreen from "../pages/SupplierScreen";
 
 export default createHashRouter([
     {
@@ -24,15 +26,23 @@ export default createHashRouter([
         ),
         children: [
             {
-                path: "/dashboard",
+                path: "/",
                 children: [
                     {
-                        index: true,
+                        path: "dashboard",
                         element: <DashboardScreen />
                     },
                     {
-                        path: "loyalty_customers",
-                        element: <LoyaltyCustomersScreen />
+                        path: "loyalty_members",
+                        element: <LoyaltyMembersScreen />
+                    },
+                    {
+                        path: "employees",
+                        element: <EmployeesScreen />
+                    },
+                    {
+                        path: "suppliers",
+                        element: <SuppliersScreen />
                     }
                 ]
             }

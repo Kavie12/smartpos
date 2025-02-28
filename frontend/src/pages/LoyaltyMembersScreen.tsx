@@ -1,34 +1,39 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import Api from '../../services/Api';
-import { useAuth } from '../../context/AuthContext';
-import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { Box, Button, Container, Typography } from '@mui/material';
+import { Add, DeleteOutlined, Download, Edit } from '@mui/icons-material';
+import { AuthApi } from '../services/Api';
+import AlertDialog from '../components/AlertDialog';
+import DeleteAlert from '../components/DeleteAlert';
+import { InsertAndUpdateDialog, InsertAndUpdateDialogTextField } from '../components/InsertAndUpdateDialog';
 
-type customerDataType = {
-    id?: number,
-    name?: string,
-    phoneNumber?: string,
-    points?: number
-}
+type CustomerDataType = {
+    id?: number;
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    points?: number;
+};
 
-export default function LoyaltyCustomersScreen() {
-    const { token } = useAuth();
+export default function LoyaltyMembersScreen() {
     const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
     const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState<{ open: boolean, id: GridRowId | null }>({
         open: false,
         id: null
     });
+    const [generateReportDialog, setGenerateReportDialog] = useState<{ open: boolean, success: boolean }>({ open: false, success: false });
     const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
         page: 0,
         pageSize: 10,
     });
-    const [pageData, setPageData] = useState<{ rows: customerDataType[], rowCount: number }>({
+    const [pageData, setPageData] = useState<{ rows: CustomerDataType[], rowCount: number }>({
         rows: [],
         rowCount: 0
     });
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [updateRow, setUpdateRow] = useState<customerDataType | null>(null);
+    const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false);
+    const [isFormLoading, setIsFormLoading] = useState<boolean>(false);
+    const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
+    const [updateRow, setUpdateRow] = useState<CustomerDataType | null>(null);
 
     const columns: GridColDef[] = [
         {
@@ -41,8 +46,14 @@ export default function LoyaltyCustomersScreen() {
             flex: 1
         },
         {
-            field: "name",
-            headerName: "Name",
+            field: "firstName",
+            headerName: "First Name",
+            sortable: false,
+            flex: 1
+        },
+        {
+            field: "lastName",
+            headerName: "Last Name",
             sortable: false,
             flex: 1
         },
@@ -112,7 +123,7 @@ export default function LoyaltyCustomersScreen() {
         });
     }
 
-    const handleEditCustomer = (row: customerDataType) => {
+    const handleEditCustomer = (row: CustomerDataType) => {
         setUpdateRow(row);
         handleFormDialogOpen();
     }
@@ -124,11 +135,8 @@ export default function LoyaltyCustomersScreen() {
     };
 
     const fetchCustomers = () => {
-        setIsLoading(true);
-        Api.get("/loyalty_customers/get", {
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
+        setIsTableLoading(true);
+        AuthApi.get("/loyalty_customers/get", {
             params: {
                 page: paginationModel.page,
                 size: paginationModel.pageSize
@@ -141,35 +149,27 @@ export default function LoyaltyCustomersScreen() {
                 });
             })
             .catch(err => console.error("Error fetching data:", err))
-            .finally(() => setIsLoading(false));
+            .finally(() => setIsTableLoading(false));
     };
 
     const addCustomer = (data: { [k: string]: any }) => {
-        setIsLoading(true);
-        Api.post("/loyalty_customers/add", data, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
+        setIsFormLoading(true);
+        AuthApi.post("/loyalty_customers/add", data)
             .then(() => fetchCustomers())
             .catch(err => console.error("Error fetching data:", err))
             .finally(() => {
-                setIsLoading(false);
+                setIsFormLoading(false);
                 handleFormDialogClose();
             });
     };
 
     const updateCustomer = () => {
-        setIsLoading(true);
-        Api.put("/loyalty_customers/update", updateRow, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
+        setIsFormLoading(true);
+        AuthApi.put("/loyalty_customers/update", updateRow)
             .then(() => fetchCustomers())
             .catch(err => console.error("Error fetching data:", err))
             .finally(() => {
-                setIsLoading(false);
+                setIsFormLoading(false);
                 handleFormDialogClose();
             });
     };
@@ -178,18 +178,25 @@ export default function LoyaltyCustomersScreen() {
         if (!isConfirmationDialogOpen.open) {
             return;
         }
-        setIsLoading(true);
-        Api.delete("/loyalty_customers/delete", {
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
+        setIsFormLoading(true);
+        AuthApi.delete("/loyalty_customers/delete", {
             params: { id: isConfirmationDialogOpen.id }
         })
             .then(() => fetchCustomers())
             .catch(err => console.error("Error deleting customer:", err))
             .finally(() => {
-                setIsLoading(false);
+                setIsFormLoading(false);
                 handleConfirmationDialogClose();
+            });
+    };
+
+    const generateReport = () => {
+        setIsButtonLoading(true);
+        AuthApi.get("/loyalty_customers/generate_report")
+            .then(() => setGenerateReportDialog({ open: true, success: true }))
+            .catch(() => setGenerateReportDialog({ open: true, success: false }))
+            .finally(() => {
+                setIsButtonLoading(false);
             });
     };
 
@@ -200,20 +207,24 @@ export default function LoyaltyCustomersScreen() {
     return (
         <Container maxWidth="xl">
 
-            {/* Add record button */}
-            <Button sx={{ marginY: 2 }} onClick={handleFormDialogOpen}>
-                <Add />
-                <Typography variant="button">Add Record</Typography>
-            </Button>
+            <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
+                <Button onClick={handleFormDialogOpen} startIcon={<Add />}>
+                    <Typography variant="button">Add Loyalty Member</Typography>
+                </Button>
+
+                <Button onClick={generateReport} startIcon={<Download />} loading={isButtonLoading}>
+                    <Typography variant="button">Generate Report</Typography>
+                </Button>
+            </Box>
 
             {/* Table */}
-            <Box sx={{ height: "75vh" }}>
+            <Box sx={{ height: 500 }}>
                 <DataGrid
                     columns={columns}
                     rows={pageData.rows}
                     rowHeight={40}
                     rowCount={pageData.rowCount}
-                    loading={isLoading}
+                    loading={isTableLoading}
                     pageSizeOptions={[10, 50, 100]}
                     paginationModel={paginationModel}
                     paginationMode="server"
@@ -221,80 +232,60 @@ export default function LoyaltyCustomersScreen() {
                 />
             </Box>
 
-            {/* Dialog */}
-            <Dialog
+            {/* Add / update customer dialog */}
+            <InsertAndUpdateDialog
                 open={isFormDialogOpen}
                 onClose={handleFormDialogClose}
-                slotProps={{
-                    paper: {
-                        component: 'form',
-                        onSubmit: (event: FormEvent<HTMLFormElement>) => {
-                            event.preventDefault();
-                            const formData = new FormData(event.currentTarget);
-                            const formJson = Object.fromEntries((formData as any).entries());
-
-                            if (updateRow) {
-                                updateCustomer();
-                            } else {
-                                addCustomer(formJson);
-                            }
-                        }
-                    }
-                }}
+                updateRow={updateRow}
+                updateHandler={updateCustomer}
+                insertHandler={addCustomer}
+                insertContent="Add Loyalty Customer"
+                updateContent="Update Loyalty Customer"
+                loading={isFormLoading}
             >
-                <DialogTitle>{updateRow ? "Update Loyalty Customer" : "Add Loyalty Customer"}</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        name="name"
-                        label="Name"
-                        type="text"
-                        fullWidth
-                        value={updateRow?.name}
-                        onChange={handleUpdateRowChange}
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="phoneNumber"
-                        name="phoneNumber"
-                        label="Phone Number"
-                        type="text"
-                        fullWidth
-                        value={updateRow?.phoneNumber}
-                        onChange={handleUpdateRowChange}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => handleFormDialogClose()}>Cancel</Button>
-                    <Button type="submit">Save</Button>
-                </DialogActions>
-            </Dialog>
+                <InsertAndUpdateDialogTextField
+                    name="firstName"
+                    label="First Name"
+                    type="text"
+                    value={updateRow?.firstName}
+                    updateRowChangeHandler={handleUpdateRowChange}
+                />
+                <InsertAndUpdateDialogTextField
+                    name="lastName"
+                    label="Last Name"
+                    type="text"
+                    value={updateRow?.lastName}
+                    updateRowChangeHandler={handleUpdateRowChange}
+                />
+                <InsertAndUpdateDialogTextField
+                    name="phoneNumber"
+                    label="Phone Number"
+                    type="text"
+                    value={updateRow?.phoneNumber}
+                    updateRowChangeHandler={handleUpdateRowChange}
+                />
+            </InsertAndUpdateDialog>
+
 
 
             {/* Delete customer confirmation dialog */}
-            <Dialog
+            <DeleteAlert
                 open={isConfirmationDialogOpen.open}
                 onClose={handleConfirmationDialogClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">
-                    Warning
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Are you sure you want to delete this user?
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleConfirmationDialogClose}>Cancel</Button>
-                    <Button onClick={deleteCustomer} color="error">Delete</Button>
-                </DialogActions>
-            </Dialog>
+                content="Are you sure you want to delete this customer?"
+                loading={isFormLoading}
+                deleteHanlder={deleteCustomer}
+            />
 
-        </Container >
+            {/* Generate report alert */}
+            <AlertDialog
+                open={generateReportDialog.open}
+                onClose={() => setGenerateReportDialog(prevState => ({ ...prevState, open: false }))}
+                success={generateReportDialog.success}
+                successContent="Report Generated Successfully."
+                errorContent="Error Generating Report."
+            />
+
+        </Container>
     );
 }

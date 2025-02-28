@@ -29,7 +29,6 @@ public class LoyaltyCustomerController {
 
     @PostMapping("/add")
     public void addLoyaltyCustomer(@RequestBody LoyaltyCustomer loyaltyCustomer) {
-        System.out.println(loyaltyCustomer);
         service.addLoyaltyCustomer(loyaltyCustomer);
     }
 
@@ -43,7 +42,7 @@ public class LoyaltyCustomerController {
         service.updateLoyaltyCustomer(loyaltyCustomer);
     }
 
-    @GetMapping("generate_report")
+    @GetMapping("/generate_report")
     public void generateReport() {
         service.generateReport();
     }

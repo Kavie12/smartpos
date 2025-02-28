@@ -1,34 +1,35 @@
 package com.robustedge.smartpos_backend.models;
 
-import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Value;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
-public class LoyaltyCustomer {
-
+public class Employee {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    @Value(value = "0")
-    private Integer points;
+    private String email;
 
-    public LoyaltyCustomer() {
+    public Employee() {
     }
 
-    public LoyaltyCustomer(Integer id, String firstName, String lastName, String phoneNumber, Integer points) {
+    public Employee(Integer id, String firstName, String lastName, String phoneNumber, String email) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
-        this.points = points;
+        this.email = email;
     }
 
-    public LoyaltyCustomer(String firstName, String lastName, String phoneNumber) {
+    public Employee(String firstName, String lastName, String phoneNumber, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
+        this.email = email;
     }
 
     public Integer getId() {
@@ -63,22 +64,22 @@ public class LoyaltyCustomer {
         this.phoneNumber = phoneNumber;
     }
 
-    public Integer getPoints() {
-        return points;
+    public String getEmail() {
+        return email;
     }
 
-    public void setPoints(Integer points) {
-        this.points = points;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
     public String toString() {
-        return "LoyaltyCustomer{" +
+        return "Employee{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", points=" + points +
+                ", email='" + email + '\'' +
                 '}';
     }
 }
