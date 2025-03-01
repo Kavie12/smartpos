@@ -7,6 +7,8 @@ import LoyaltyMembersScreen from "../pages/LoyaltyMembersScreen";
 import DashboardScreen from "../pages/DashboardScreen";
 import EmployeesScreen from "../pages/EmployeesScreen";
 import SuppliersScreen from "../pages/SupplierScreen";
+import ProductsScreen from "../pages/ProductsScreen";
+import StockScreen from "../pages/StockScreen";
 
 export default createHashRouter([
     {
@@ -31,6 +33,14 @@ export default createHashRouter([
                     {
                         path: "dashboard",
                         element: <DashboardScreen />
+                    },
+                    {
+                        path: "stock",
+                        element: <StockScreen />
+                    },
+                    {
+                        path: "products",
+                        element: <ProductsScreen />
                     },
                     {
                         path: "loyalty_members",

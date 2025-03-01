@@ -1,7 +1,7 @@
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { useSidebar } from "../context/SidebarContext";
-import { Link } from "react-router";
-import { Dashboard, LocalShipping, People, Settings, Work } from "@mui/icons-material";
+import { Link, useLocation } from "react-router";
+import { AddBox, Dashboard, Inventory, LocalShipping, People, Settings, Work } from "@mui/icons-material";
 
 interface ListItemLinkProps {
     icon?: React.ReactElement<unknown>;
@@ -10,9 +10,10 @@ interface ListItemLinkProps {
 }
 
 function ListItemLink({ icon, text, to }: ListItemLinkProps) {
+    const location = useLocation();
     return (
         <ListItem>
-            <ListItemButton component={Link} to={to}>
+            <ListItemButton component={Link} to={to} selected={location.pathname === to}>
                 {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
                 <ListItemText primary={text} />
             </ListItemButton>
@@ -37,6 +38,16 @@ export default function Sidebar() {
                     icon={<Dashboard />}
                 />
                 <ListItemLink
+                    text="Stock"
+                    to="/stock"
+                    icon={<AddBox />}
+                />
+                <ListItemLink
+                    text="Products"
+                    to="/products"
+                    icon={<Inventory />}
+                />
+                <ListItemLink
                     text="Suppliers"
                     to="/suppliers"
                     icon={<LocalShipping />}
@@ -56,7 +67,7 @@ export default function Sidebar() {
             <List>
                 <ListItemLink
                     text="Settings"
-                    to="/dashboard"
+                    to="/settings"
                     icon={<Settings />}
                 />
             </List>

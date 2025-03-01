@@ -1,6 +1,6 @@
 package com.robustedge.smartpos_backend.services;
 
-import com.robustedge.smartpos_backend.libraries.PDFTableGenerator;
+import com.robustedge.smartpos_backend.PDFGenerators.SimplePdfTableGenerator;
 import com.robustedge.smartpos_backend.models.Employee;
 import com.robustedge.smartpos_backend.repositories.EmployeeRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
@@ -46,8 +46,8 @@ public class EmployeeService {
         String systemUser = System.getProperty("user.name");
         String fileName = Utils.getDateTimeFileName();
 
-        PDFTableGenerator<Employee> pdfTableGenerator = new PDFTableGenerator<Employee>();
-        pdfTableGenerator
+        SimplePdfTableGenerator<Employee> simplePdfTableGenerator = new SimplePdfTableGenerator<Employee>();
+        simplePdfTableGenerator
                 .initialize("C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf")
                 .addMetaData()
                 .addHeading("Employees")

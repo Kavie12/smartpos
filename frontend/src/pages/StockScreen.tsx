@@ -1,54 +1,73 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { Alert, Box, Button, Container, Typography } from '@mui/material';
+import { Alert, Autocomplete, Box, Button, Container, TextField, Typography } from '@mui/material';
 import { Add, DeleteOutlined, Download, Edit } from '@mui/icons-material';
 import { AuthApi } from '../services/Api';
 import AlertDialog from '../components/AlertDialog';
 import DeleteAlert from '../components/DeleteAlert';
 import { InsertAndUpdateDialog, InsertAndUpdateDialogTextField } from '../components/InsertAndUpdateDialog';
 
-type EmployeeDataType = {
+type StockRecordType = {
     id?: number;
-    firstName: string;
-    lastName: string;
+    productName: string;
+    product?: ProductDataType;
+    stockAmount: number;
+    createdAt?: String;
+};
+
+type ProductDataType = {
+    id?: number;
+    barcode: string;
+    name: string;
+    supplier?: SupplierDataType;
+    wholesalePrice: number;
+    retailPrice: number;
+    stockLevel: number;
+};
+
+type SupplierDataType = {
+    id?: number;
+    name: string;
     phoneNumber: string;
     email: string;
 };
 
-export default function EmployeesScreen() {
+export default function StockScreen() {
     const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
     const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState<{ open: boolean, id: GridRowId | null }>({
         open: false,
         id: null
     });
+    const [isProductAutocompleteOpen, setIsProductAutocompleteOpen] = useState<boolean>(false);
     const [generateReportDialog, setGenerateReportDialog] = useState<{ open: boolean, success: boolean }>({ open: false, success: false });
     const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
         page: 0,
         pageSize: 10,
     });
-    const [pageData, setPageData] = useState<{ rows: EmployeeDataType[], rowCount: number }>({
+    const [pageData, setPageData] = useState<{ rows: StockRecordType[], rowCount: number }>({
         rows: [],
         rowCount: 0
     });
-    const [loading, setLoading] = useState<{ form: boolean, table: boolean, button: boolean }>({
+    const [products, setProducts] = useState<ProductDataType[]>([]);
+    const [loading, setLoading] = useState<{ form: boolean, table: boolean, button: boolean, products: boolean }>({
         form: false,
         table: false,
-        button: false
+        button: false,
+        products: false
     });
     const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
         open: false,
         type: null,
         message: null
     });
-    const [formData, setFormData] = useState<{ data: EmployeeDataType, isUpdate: boolean }>({
+    const [formData, setFormData] = useState<{ data: StockRecordType, isUpdate: boolean }>({
         data: {
-            firstName: "",
-            lastName: "",
-            phoneNumber: "",
-            email: ""
+            productName: "",
+            stockAmount: 0
         },
         isUpdate: false
     });
+    const [selectedProduct, setSelectedProduct] = useState<ProductDataType | null | undefined>(null);
 
     const columns: GridColDef[] = [
         {
@@ -58,37 +77,40 @@ export default function EmployeesScreen() {
             headerAlign: "left",
             align: "left",
             sortable: false,
-            flex: 0.5
+            flex: 1
         },
         {
-            field: "firstName",
-            headerName: "First Name",
+            field: "productName",
+            headerName: "Product Name",
+            sortable: false,
+            flex: 2,
+            valueGetter: (_, row) => {
+                return row.product.name;
+            }
+        },
+        {
+            field: "stockAmount",
+            headerName: "Stock Amount",
+            type: "number",
+            align: "left",
+            headerAlign: "left",
             sortable: false,
             flex: 1
         },
         {
-            field: "lastName",
-            headerName: "Last Name",
-            sortable: false,
-            flex: 1
-        },
-        {
-            field: "phoneNumber",
-            headerName: "Phone Number",
-            sortable: false,
-            flex: 1
-        },
-        {
-            field: "email",
-            headerName: "Email",
-            sortable: false,
-            flex: 1
+            field: "createdAt",
+            headerName: "Date",
+            type: "dateTime",
+            flex: 2,
+            valueGetter: (value) => {
+                return new Date(value);
+            }
         },
         {
             field: "actions",
             headerName: "Actions",
             type: "actions",
-            flex: 0.5,
+            flex: 1,
             getActions: ({ id, row }) => {
                 return [
                     <GridActionsCellItem
@@ -96,13 +118,13 @@ export default function EmployeesScreen() {
                         label="Edit"
                         className="textPrimary"
                         color="inherit"
-                        onClick={() => handleEditEmployee(row)}
+                        onClick={() => handleEditStockRecord(row)}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
-                        onClick={() => handleDeleteEmployee(id)}
+                        onClick={() => handleDeleteStockRecord(id)}
                     />
                 ];
             }
@@ -112,13 +134,12 @@ export default function EmployeesScreen() {
     const handleFormDialogClose = () => {
         setFormData({
             data: {
-                firstName: "",
-                lastName: "",
-                phoneNumber: "",
-                email: ""
+                productName: "",
+                stockAmount: 0
             },
             isUpdate: false
         });
+        setSelectedProduct(null);
         setIsFormDialogOpen(false);
     }
 
@@ -126,7 +147,7 @@ export default function EmployeesScreen() {
         setIsFormDialogOpen(true);
     }
 
-    const handleDeleteEmployee = (id: GridRowId) => {
+    const handleDeleteStockRecord = (id: GridRowId) => {
         handleConfirmationDialogOpen(id);
     }
 
@@ -144,10 +165,26 @@ export default function EmployeesScreen() {
         });
     }
 
-    const handleEditEmployee = (row: EmployeeDataType) => {
+    const handleEditStockRecord = (row: StockRecordType) => {
+        setSelectedProduct(row.product);
         setFormData({ data: row, isUpdate: true });
         handleFormDialogOpen();
     }
+
+    const handleAlertClose = () => {
+        setAlert(prev => ({ ...prev, open: false }));
+    };
+
+    const handleProductsAutocompleteOpen = () => {
+        setIsProductAutocompleteOpen(true);
+        if (products.length === 0) {
+            fetchProducts();
+        }
+    };
+
+    const handleProductsAutocompleteClose = () => {
+        setIsProductAutocompleteOpen(false);
+    };
 
     const handleFormDataChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData(prev => ({
@@ -160,13 +197,9 @@ export default function EmployeesScreen() {
     };
 
 
-    const handleAlertClose = () => {
-        setAlert(prev => ({ ...prev, open: false }));
-    };
-
-    const fetchEmployees = () => {
+    const fetchStockRecords = () => {
         setLoading(prev => ({ ...prev, table: true }));
-        AuthApi.get("/employees/get", {
+        AuthApi.get("/stock/get", {
             params: {
                 page: paginationModel.page,
                 size: paginationModel.pageSize
@@ -179,34 +212,65 @@ export default function EmployeesScreen() {
                 });
             })
             .catch(err => {
-                console.error("Error fetching data:", err);
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Fetching employees failed."
+                    message: "Failed fetching stock records."
                 });
+                console.error("Error fetching data:", err);
             })
             .finally(() => setLoading(prev => ({ ...prev, table: false })));
     };
 
-    const addEmployee = () => {
+    const fetchProducts = () => {
+        setLoading(prev => ({ ...prev, products: true }));
+        AuthApi.get("/products/get_all")
+            .then(res => {
+                setProducts(res.data);
+            })
+            .catch(err => {
+                console.error("Error fetching data:", err);
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Failed fetching products."
+                });
+            })
+            .finally(() => setLoading(prev => ({ ...prev, products: false })));
+    };
+
+    const addStockRecord = () => {
         setLoading(prev => ({ ...prev, form: true }));
-        AuthApi.post("/employees/add", formData.data)
+
+        if (!selectedProduct) {
+            setAlert({
+                open: true,
+                type: "error",
+                message: "A product must be selected to add a stock record."
+            });
+            setLoading(prev => ({ ...prev, form: false }));
+            handleFormDialogClose();
+            return;
+        }
+
+        formData.data["product"] = selectedProduct;
+
+        AuthApi.post("/stock/add", formData.data)
             .then(() => {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Employee registered successfully."
+                    message: "Stock Record added successfully."
                 });
-                fetchEmployees();
+                fetchStockRecords();
             })
             .catch(err => {
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Adding stock record failed."
+                });
                 console.error("Error adding data:", err);
-                setAlert({
-                    open: true,
-                    type: "error",
-                    message: "Failed registering employee."
-                });
             })
             .finally(() => {
                 setLoading(prev => ({ ...prev, form: false }));
@@ -214,24 +278,38 @@ export default function EmployeesScreen() {
             });
     };
 
-    const updateEmployee = () => {
+    const updateStockRecord = () => {
         setLoading(prev => ({ ...prev, form: true }));
-        AuthApi.put("/employees/update", formData.data)
+
+        if (!selectedProduct) {
+            setAlert({
+                open: true,
+                type: "error",
+                message: "A product must be selected to add a stock record."
+            });
+            setLoading(prev => ({ ...prev, form: false }));
+            handleFormDialogClose();
+            return;
+        }
+
+        formData.data["product"] = selectedProduct;
+
+        AuthApi.put("/stock/update", formData.data)
             .then(() => {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Employee updated successfully."
+                    message: "Stock record updated successfully."
                 });
-                fetchEmployees();
+                fetchStockRecords();
             })
             .catch(err => {
-                console.error("Error updating data:", err);
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Employee update failed."
+                    message: "Stock record update failed."
                 });
+                console.error("Error updating data:", err);
             })
             .finally(() => {
                 setLoading(prev => ({ ...prev, form: false }));
@@ -239,29 +317,29 @@ export default function EmployeesScreen() {
             });
     };
 
-    const deleteEmployee = () => {
+    const deleteStockRecord = () => {
         if (!isConfirmationDialogOpen.open) {
             return;
         }
         setLoading(prev => ({ ...prev, form: true }));
-        AuthApi.delete("/employees/delete", {
+        AuthApi.delete("/stock/delete", {
             params: { id: isConfirmationDialogOpen.id }
         })
             .then(() => {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Employee deleted successfully."
+                    message: "Stock record deleted successfully."
                 });
-                fetchEmployees();
+                fetchStockRecords();
             })
             .catch(err => {
-                console.error("Error deleting Employee:", err)
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Employee deletion failed."
+                    message: "Stock record deletion failed."
                 });
+                console.error("Error deleting stock record:", err);
             })
             .finally(() => {
                 setLoading(prev => ({ ...prev, form: false }));
@@ -271,14 +349,16 @@ export default function EmployeesScreen() {
 
     const generateReport = () => {
         setLoading(prev => ({ ...prev, button: true }));
-        AuthApi.get("/employees/generate_report")
+        AuthApi.get("/stock/generate_report")
             .then(() => setGenerateReportDialog({ open: true, success: true }))
             .catch(() => setGenerateReportDialog({ open: true, success: false }))
-            .finally(() => setLoading(prev => ({ ...prev, button: false })))
+            .finally(() => {
+                setLoading(prev => ({ ...prev, button: false }));
+            });
     };
 
     useEffect(() => {
-        fetchEmployees();
+        fetchStockRecords();
     }, [paginationModel]);
 
     return (
@@ -294,7 +374,7 @@ export default function EmployeesScreen() {
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Button onClick={handleFormDialogOpen} startIcon={<Add />}>
-                    <Typography variant="button">Add Employee</Typography>
+                    <Typography variant="button">Add Product</Typography>
                 </Button>
 
                 <Button onClick={generateReport} startIcon={<Download />} loading={loading.button}>
@@ -317,58 +397,47 @@ export default function EmployeesScreen() {
                 />
             </Box>
 
-            {/* Add / update Employee dialog */}
+            {/* Add / update Product dialog */}
             <InsertAndUpdateDialog
                 open={isFormDialogOpen}
                 onClose={handleFormDialogClose}
                 formData={formData}
-                updateHandler={updateEmployee}
-                insertHandler={addEmployee}
-                insertContent="Add Employee"
-                updateContent="Update Employee"
+                insertHandler={addStockRecord}
+                updateHandler={updateStockRecord}
+                insertContent="Add Product"
+                updateContent="Update Product"
                 loading={loading.form}
             >
-                <InsertAndUpdateDialogTextField
-                    name="firstName"
-                    label="First Name"
-                    type="text"
-                    value={formData?.data.firstName}
-                    formDataChangeHandler={handleFormDataChange}
-                    autoFocus={true}
+                <Autocomplete
+                    open={isProductAutocompleteOpen}
+                    onOpen={handleProductsAutocompleteOpen}
+                    onClose={handleProductsAutocompleteClose}
+                    options={products}
+                    getOptionLabel={(option) => option.name}
+                    loading={loading.products}
+                    renderInput={(params) => <TextField {...params} name="product" label="Product" />}
+                    onChange={(_, value) => setSelectedProduct(value)}
+                    value={selectedProduct}
+                    sx={{ marginY: 1 }}
                 />
                 <InsertAndUpdateDialogTextField
-                    name="lastName"
-                    label="Last Name"
-                    type="text"
-                    value={formData?.data.lastName}
-                    formDataChangeHandler={handleFormDataChange}
-                />
-                <InsertAndUpdateDialogTextField
-                    name="phoneNumber"
-                    label="Phone Number"
-                    type="text"
-                    value={formData?.data.phoneNumber}
-                    formDataChangeHandler={handleFormDataChange}
-                />
-                <InsertAndUpdateDialogTextField
-                    name="email"
-                    label="email"
-                    type="text"
-                    value={formData?.data.email}
+                    name="stockAmount"
+                    label="Stock Amount"
+                    type="number"
+                    value={formData?.data.stockAmount}
                     formDataChangeHandler={handleFormDataChange}
                 />
             </InsertAndUpdateDialog>
 
 
-            {/* Delete employee confirmation dialog */}
+            {/* Delete product confirmation dialog */}
             <DeleteAlert
                 open={isConfirmationDialogOpen.open}
                 onClose={handleConfirmationDialogClose}
-                content="Are you sure you want to delete this employee?"
+                content="Are you sure you want to delete this product?"
                 loading={loading.form}
-                deleteHanlder={deleteEmployee}
+                deleteHanlder={deleteStockRecord}
             />
-
 
             {/* Generate report alert */}
             <AlertDialog

@@ -1,6 +1,6 @@
 package com.robustedge.smartpos_backend.services;
 
-import com.robustedge.smartpos_backend.libraries.PDFTableGenerator;
+import com.robustedge.smartpos_backend.PDFGenerators.SimplePdfTableGenerator;
 import com.robustedge.smartpos_backend.models.Supplier;
 import com.robustedge.smartpos_backend.repositories.SupplierRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -47,8 +46,8 @@ public class SupplierService {
         String systemUser = System.getProperty("user.name");
         String fileName = Utils.getDateTimeFileName();
 
-        PDFTableGenerator<Supplier> pdfTableGenerator = new PDFTableGenerator<Supplier>();
-        pdfTableGenerator
+        SimplePdfTableGenerator<Supplier> simplePdfTableGenerator = new SimplePdfTableGenerator<Supplier>();
+        simplePdfTableGenerator
                 .initialize("C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf")
                 .addMetaData()
                 .addHeading("Suppliers")

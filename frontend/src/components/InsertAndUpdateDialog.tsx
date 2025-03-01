@@ -1,12 +1,12 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
-import { ChangeEvent, FormEvent, ReactNode } from "react";
+import { ChangeEvent, FormEvent, InputHTMLAttributes, ReactNode } from "react";
 
 type InsertAndUpdateDialogProps = {
     open: boolean;
     onClose: () => void;
-    updateRow: any;
+    formData: { data: any, isUpdate: boolean } | null;
     updateHandler: () => void;
-    insertHandler: (formJson: { [k: string]: any; }) => void;
+    insertHandler: () => void;
     insertContent: string;
     updateContent: string;
     loading: boolean;
@@ -15,7 +15,7 @@ type InsertAndUpdateDialogProps = {
 export const InsertAndUpdateDialog = ({
     open,
     onClose,
-    updateRow,
+    formData,
     updateHandler,
     insertHandler,
     insertContent,
@@ -32,19 +32,17 @@ export const InsertAndUpdateDialog = ({
                     component: 'form',
                     onSubmit: (event: FormEvent<HTMLFormElement>) => {
                         event.preventDefault();
-                        const formData = new FormData(event.currentTarget);
-                        const formJson = Object.fromEntries((formData as any).entries());
 
-                        if (updateRow) {
+                        if (formData?.isUpdate) {
                             updateHandler();
                         } else {
-                            insertHandler(formJson);
+                            insertHandler();
                         }
                     }
                 }
             }}
         >
-            <DialogTitle>{updateRow ? updateContent : insertContent}</DialogTitle>
+            <DialogTitle>{formData?.isUpdate ? updateContent : insertContent}</DialogTitle>
             <DialogContent>
                 {children}
             </DialogContent>
@@ -59,21 +57,25 @@ export const InsertAndUpdateDialog = ({
 type InsertAndUpdateDialogTextFieldProps = {
     name: string;
     label: string;
-    type: "text" | "number";
+    type: InputHTMLAttributes<unknown>['type'];
     value: any;
-    updateRowChangeHandler: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    formDataChangeHandler: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    autoFocus?: boolean;
 };
 
-export const InsertAndUpdateDialogTextField = ({ name, label, type, value, updateRowChangeHandler }: InsertAndUpdateDialogTextFieldProps) => {
+export const InsertAndUpdateDialogTextField = ({
+    name, label, type, value, formDataChangeHandler, autoFocus = false
+}: InsertAndUpdateDialogTextFieldProps) => {
     return (
         <TextField
+            autoFocus={autoFocus}
             margin="dense"
             id={name}
             name={name}
             label={label}
             type={type}
             value={value}
-            onChange={updateRowChangeHandler}
+            onChange={formDataChangeHandler}
             fullWidth
         />
     );

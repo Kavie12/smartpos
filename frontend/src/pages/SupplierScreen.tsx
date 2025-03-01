@@ -1,6 +1,6 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { Box, Button, Container, Typography } from '@mui/material';
+import { Alert, Box, Button, Container, Typography } from '@mui/material';
 import { Add, DeleteOutlined, Download, Edit } from '@mui/icons-material';
 import { AuthApi } from '../services/Api';
 import AlertDialog from '../components/AlertDialog';
@@ -9,9 +9,9 @@ import { InsertAndUpdateDialog, InsertAndUpdateDialogTextField } from '../compon
 
 type SupplierDataType = {
     id?: number;
-    name?: string;
-    phoneNumber?: string;
-    email?: string;
+    name: string;
+    phoneNumber: string;
+    email: string;
 };
 
 export default function SuppliersScreen() {
@@ -29,10 +29,24 @@ export default function SuppliersScreen() {
         rows: [],
         rowCount: 0
     });
-    const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false);
-    const [isFormLoading, setIsFormLoading] = useState<boolean>(false);
-    const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
-    const [updateRow, setUpdateRow] = useState<SupplierDataType | null>(null);
+    const [loading, setLoading] = useState<{ form: boolean, table: boolean, button: boolean }>({
+        form: false,
+        table: false,
+        button: false
+    });
+    const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
+        open: false,
+        type: null,
+        message: null
+    });
+    const [formData, setFormData] = useState<{ data: SupplierDataType, isUpdate: boolean }>({
+        data: {
+            name: "",
+            phoneNumber: "",
+            email: ""
+        },
+        isUpdate: false
+    });
 
     const columns: GridColDef[] = [
         {
@@ -42,13 +56,13 @@ export default function SuppliersScreen() {
             headerAlign: "left",
             align: "left",
             sortable: false,
-            flex: 1
+            flex: 0.5
         },
         {
             field: "name",
             headerName: "Name",
             sortable: false,
-            flex: 1
+            flex: 2
         },
         {
             field: "phoneNumber",
@@ -66,7 +80,7 @@ export default function SuppliersScreen() {
             field: "actions",
             headerName: "Actions",
             type: "actions",
-            flex: 1,
+            flex: 0.5,
             getActions: ({ id, row }) => {
                 return [
                     <GridActionsCellItem
@@ -88,7 +102,14 @@ export default function SuppliersScreen() {
     ];
 
     const handleFormDialogClose = () => {
-        setUpdateRow(null);
+        setFormData({
+            data: {
+                name: "",
+                phoneNumber: "",
+                email: ""
+            },
+            isUpdate: false
+        });
         setIsFormDialogOpen(false);
     }
 
@@ -115,18 +136,27 @@ export default function SuppliersScreen() {
     }
 
     const handleEditSupplier = (row: SupplierDataType) => {
-        setUpdateRow(row);
+        setFormData({ data: row, isUpdate: true });
         handleFormDialogOpen();
     }
 
-    const handleUpdateRowChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        if (updateRow) {
-            setUpdateRow({ ...updateRow, [e.target.name]: e.target.value });
-        }
+    const handleFormDataChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData(prev => ({
+            ...prev,
+            data: {
+                ...prev.data,
+                [e.target.name]: e.target.value
+            }
+        }));
+    };
+
+
+    const handleAlertClose = () => {
+        setAlert(prev => ({ ...prev, open: false }));
     };
 
     const fetchSuppliers = () => {
-        setIsTableLoading(true);
+        setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/suppliers/get", {
             params: {
                 page: paginationModel.page,
@@ -139,28 +169,63 @@ export default function SuppliersScreen() {
                     rowCount: res.data.page.totalElements
                 });
             })
-            .catch(err => console.error("Error fetching data:", err))
-            .finally(() => setIsTableLoading(false));
+            .catch(err => {
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Failed fetching suppliers."
+                });
+                console.error("Error fetching data:", err);
+            })
+            .finally(() => setLoading(prev => ({ ...prev, table: false })));
     };
 
-    const addSupplier = (data: { [k: string]: any }) => {
-        setIsFormLoading(true);
-        AuthApi.post("/suppliers/add", data)
-            .then(() => fetchSuppliers())
-            .catch(err => console.error("Error fetching data:", err))
+    const addSupplier = () => {
+        setLoading(prev => ({ ...prev, form: true }));
+        AuthApi.post("/suppliers/add", formData.data)
+            .then(() => {
+                setAlert({
+                    open: true,
+                    type: "success",
+                    message: "Supplier registererd successfully."
+                });
+                fetchSuppliers();
+            })
+            .catch(err => {
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Registering supplier failed."
+                });
+                console.error("Error adding data:", err);
+            })
             .finally(() => {
-                setIsFormLoading(false);
+                setLoading(prev => ({ ...prev, form: false }));
                 handleFormDialogClose();
             });
     };
 
     const updateSupplier = () => {
-        setIsFormLoading(true);
-        AuthApi.put("/suppliers/update", updateRow)
-            .then(() => fetchSuppliers())
-            .catch(err => console.error("Error fetching data:", err))
+        setLoading(prev => ({ ...prev, form: true }));
+        AuthApi.put("/suppliers/update", formData.data)
+            .then(() => {
+                setAlert({
+                    open: true,
+                    type: "success",
+                    message: "Supplier updated successfully."
+                });
+                fetchSuppliers();
+            })
+            .catch(err => {
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Supplier update failed."
+                });
+                console.error("Error updaing data:", err);
+            })
             .finally(() => {
-                setIsFormLoading(false);
+                setLoading(prev => ({ ...prev, form: false }));
                 handleFormDialogClose();
             });
     };
@@ -169,25 +234,39 @@ export default function SuppliersScreen() {
         if (!isConfirmationDialogOpen.open) {
             return;
         }
-        setIsFormLoading(true);
+        setLoading(prev => ({ ...prev, form: true }));
         AuthApi.delete("/suppliers/delete", {
             params: { id: isConfirmationDialogOpen.id }
         })
-            .then(() => fetchSuppliers())
-            .catch(err => console.error("Error deleting Supplier:", err))
+            .then(() => {
+                setAlert({
+                    open: true,
+                    type: "success",
+                    message: "Supplier deleted successfully."
+                });
+                fetchSuppliers();
+            })
+            .catch(err => {
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Supplier deletion failed."
+                });
+                console.error("Error deleting Supplier:", err);
+            })
             .finally(() => {
-                setIsFormLoading(false);
+                setLoading(prev => ({ ...prev, form: false }));
                 handleConfirmationDialogClose();
             });
     };
 
     const generateReport = () => {
-        setIsButtonLoading(true);
+        setLoading(prev => ({ ...prev, button: true }));
         AuthApi.get("/suppliers/generate_report")
             .then(() => setGenerateReportDialog({ open: true, success: true }))
             .catch(() => setGenerateReportDialog({ open: true, success: false }))
             .finally(() => {
-                setIsButtonLoading(false);
+                setLoading(prev => ({ ...prev, button: false }));
             });
     };
 
@@ -198,12 +277,20 @@ export default function SuppliersScreen() {
     return (
         <Container maxWidth="xl">
 
+            {/* Alerts */}
+            {alert.open && (
+                <Box sx={{ marginTop: 2 }}>
+                    {alert.type == "success" && <Alert severity="success" onClose={handleAlertClose}>{alert.message}</Alert>}
+                    {alert.type == "error" && <Alert severity="error">{alert.message}</Alert>}
+                </Box>
+            )}
+
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Button onClick={handleFormDialogOpen} startIcon={<Add />}>
                     <Typography variant="button">Add Supplier</Typography>
                 </Button>
 
-                <Button onClick={generateReport} startIcon={<Download />} loading={isButtonLoading}>
+                <Button onClick={generateReport} startIcon={<Download />} loading={loading.button}>
                     <Typography variant="button">Generate Report</Typography>
                 </Button>
             </Box>
@@ -215,7 +302,7 @@ export default function SuppliersScreen() {
                     rows={pageData.rows}
                     rowHeight={40}
                     rowCount={pageData.rowCount}
-                    loading={isTableLoading}
+                    loading={loading.table}
                     pageSizeOptions={[10, 50, 100]}
                     paginationModel={paginationModel}
                     paginationMode="server"
@@ -227,33 +314,34 @@ export default function SuppliersScreen() {
             <InsertAndUpdateDialog
                 open={isFormDialogOpen}
                 onClose={handleFormDialogClose}
-                updateRow={updateRow}
+                formData={formData}
                 updateHandler={updateSupplier}
                 insertHandler={addSupplier}
                 insertContent="Add Supplier"
                 updateContent="Update Supplier"
-                loading={isFormLoading}
+                loading={loading.form}
             >
                 <InsertAndUpdateDialogTextField
                     name="name"
                     label="Name"
                     type="text"
-                    value={updateRow?.name}
-                    updateRowChangeHandler={handleUpdateRowChange}
+                    value={formData?.data.name}
+                    formDataChangeHandler={handleFormDataChange}
+                    autoFocus={true}
                 />
                 <InsertAndUpdateDialogTextField
                     name="phoneNumber"
                     label="Phone Number"
                     type="text"
-                    value={updateRow?.email}
-                    updateRowChangeHandler={handleUpdateRowChange}
+                    value={formData?.data.phoneNumber}
+                    formDataChangeHandler={handleFormDataChange}
                 />
                 <InsertAndUpdateDialogTextField
                     name="email"
-                    label="email"
+                    label="Email"
                     type="text"
-                    value={updateRow?.email}
-                    updateRowChangeHandler={handleUpdateRowChange}
+                    value={formData?.data.email}
+                    formDataChangeHandler={handleFormDataChange}
                 />
             </InsertAndUpdateDialog>
 
@@ -263,7 +351,7 @@ export default function SuppliersScreen() {
                 open={isConfirmationDialogOpen.open}
                 onClose={handleConfirmationDialogClose}
                 content="Are you sure you want to delete this supplier?"
-                loading={isFormLoading}
+                loading={loading.form}
                 deleteHanlder={deleteSupplier}
             />
 

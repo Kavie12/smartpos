@@ -1,17 +1,25 @@
 package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Value;
 
-@Entity
+@Entity(name = "LoyaltyCustomers")
+@Table(name = "loyalty_customers")
 public class LoyaltyCustomer {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     private Integer id;
+
+    @Column(name = "first_name", nullable = false, length = 20)
     private String firstName;
+
+    @Column(name = "last_name", nullable = false, length = 20)
     private String lastName;
+
+    @Column(name = "phone_number", nullable = false, unique = true, length = 20)
     private String phoneNumber;
-    @Value(value = "0")
+
+    @Column(name = "points", nullable = false)
     private Integer points;
 
     public LoyaltyCustomer() {

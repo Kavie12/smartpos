@@ -1,18 +1,29 @@
 package com.robustedge.smartpos_backend.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
-@Entity
+import java.util.List;
+
+@Entity(name = "Supplier")
+@Table(name = "suppliers")
 public class Supplier {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     private Integer id;
+
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
+
+    @Column(name = "phone_number", nullable = false, length = 20)
     private String phoneNumber;
+
+    @Column(name = "email", nullable = false, unique = true, length = 50)
     private String email;
+
+    @OneToMany(mappedBy = "supplier")
+    private List<Product> products;
+
 
     public Supplier() {
     }

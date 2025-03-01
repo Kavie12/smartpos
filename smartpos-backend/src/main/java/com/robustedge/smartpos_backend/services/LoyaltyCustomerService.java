@@ -1,6 +1,6 @@
 package com.robustedge.smartpos_backend.services;
 
-import com.robustedge.smartpos_backend.libraries.PDFTableGenerator;
+import com.robustedge.smartpos_backend.PDFGenerators.SimplePdfTableGenerator;
 import com.robustedge.smartpos_backend.models.LoyaltyCustomer;
 import com.robustedge.smartpos_backend.repositories.LoyaltyCustomerRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -48,8 +47,8 @@ public class LoyaltyCustomerService {
         String systemUser = System.getProperty("user.name");
         String fileName = Utils.getDateTimeFileName();
 
-        PDFTableGenerator<LoyaltyCustomer> pdfTableGenerator = new PDFTableGenerator<LoyaltyCustomer>();
-        pdfTableGenerator
+        SimplePdfTableGenerator<LoyaltyCustomer> simplePdfTableGenerator = new SimplePdfTableGenerator<LoyaltyCustomer>();
+        simplePdfTableGenerator
                 .initialize("C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf")
                 .addMetaData()
                 .addHeading("Loyalty Customers")

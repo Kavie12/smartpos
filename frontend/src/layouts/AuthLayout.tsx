@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
+import { CssBaseline } from "@mui/material";
 
 export default function AuthLayout() {
 
@@ -15,6 +16,7 @@ export default function AuthLayout() {
 
     return (
         <>
+            <CssBaseline />
             <Outlet />
         </>
     );

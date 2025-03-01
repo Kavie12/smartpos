@@ -1,4 +1,4 @@
-package com.robustedge.smartpos_backend.libraries;
+package com.robustedge.smartpos_backend.PDFGenerators;
 
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFont;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class PDFTableGenerator<T> {
+public class SimplePdfTableGenerator<T> {
 
     private PdfFont TIMES_ROMAN;
     private PdfFont TIMES_BOLD;
@@ -29,7 +29,7 @@ public class PDFTableGenerator<T> {
     private PdfFont COURIER;
     private Document doc;
 
-    public PDFTableGenerator<T> initialize(String dest) {
+    public SimplePdfTableGenerator<T> initialize(String dest) {
         // Create file
         File file = new File(dest);
         file.getParentFile().mkdirs();
@@ -54,7 +54,7 @@ public class PDFTableGenerator<T> {
         return this;
     }
 
-    public PDFTableGenerator<T> addMetaData() {
+    public SimplePdfTableGenerator<T> addMetaData() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String date = dateFormat.format(new Date());
 
@@ -69,7 +69,7 @@ public class PDFTableGenerator<T> {
         return this;
     }
 
-    public PDFTableGenerator<T> addHeading(String title) {
+    public SimplePdfTableGenerator<T> addHeading(String title) {
         Style style = new Style()
                 .setFont(HELVETICA_BOLD)
                 .setFontSize(16)
@@ -81,7 +81,7 @@ public class PDFTableGenerator<T> {
         return this;
     }
 
-    public PDFTableGenerator<T> addTable(List<T> list, String[] tableHeaders) {
+    public SimplePdfTableGenerator<T> addTable(List<T> list, String[] tableHeaders) {
         // Create table
         Table table = new Table(UnitValue.createPercentArray(tableHeaders.length)).useAllAvailableWidth();
 
