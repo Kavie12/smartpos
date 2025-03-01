@@ -1,6 +1,6 @@
 package com.robustedge.smartpos_backend.services;
 
-import com.robustedge.smartpos_backend.PDFGenerators.SimplePdfTableGenerator;
+import com.robustedge.smartpos_backend.PDFGenerators.SupplierPDFGenerator;
 import com.robustedge.smartpos_backend.models.Supplier;
 import com.robustedge.smartpos_backend.repositories.SupplierRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
@@ -45,14 +45,14 @@ public class SupplierService {
 
         String systemUser = System.getProperty("user.name");
         String fileName = Utils.getDateTimeFileName();
+        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf";
 
-        SimplePdfTableGenerator<Supplier> simplePdfTableGenerator = new SimplePdfTableGenerator<Supplier>();
-        simplePdfTableGenerator
-                .initialize("C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf")
-                .addMetaData()
-                .addHeading("Suppliers")
-                .addTable(suppliers, fields)
-                .build();
+        SupplierPDFGenerator pdfGenerator = new SupplierPDFGenerator(suppliers);
+        pdfGenerator.initialize(filePath);
+        pdfGenerator.addMetaData();
+        pdfGenerator.addHeading("Loyalty Customers");
+        pdfGenerator.addTable(fields);
+        pdfGenerator.build();
     }
 
 }

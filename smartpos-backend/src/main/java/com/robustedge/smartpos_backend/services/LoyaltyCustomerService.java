@@ -1,6 +1,6 @@
 package com.robustedge.smartpos_backend.services;
 
-import com.robustedge.smartpos_backend.PDFGenerators.SimplePdfTableGenerator;
+import com.robustedge.smartpos_backend.PDFGenerators.LoyaltyCustomerPDFGenerator;
 import com.robustedge.smartpos_backend.models.LoyaltyCustomer;
 import com.robustedge.smartpos_backend.repositories.LoyaltyCustomerRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
@@ -46,14 +46,14 @@ public class LoyaltyCustomerService {
 
         String systemUser = System.getProperty("user.name");
         String fileName = Utils.getDateTimeFileName();
+        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf";
 
-        SimplePdfTableGenerator<LoyaltyCustomer> simplePdfTableGenerator = new SimplePdfTableGenerator<LoyaltyCustomer>();
-        simplePdfTableGenerator
-                .initialize("C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf")
-                .addMetaData()
-                .addHeading("Loyalty Customers")
-                .addTable(loyaltyCustomers, fields)
-                .build();
+        LoyaltyCustomerPDFGenerator pdfGenerator = new LoyaltyCustomerPDFGenerator(loyaltyCustomers);
+        pdfGenerator.initialize(filePath);
+        pdfGenerator.addMetaData();
+        pdfGenerator.addHeading("Loyalty Customers");
+        pdfGenerator.addTable(fields);
+        pdfGenerator.build();
     }
 
 }
