@@ -9,9 +9,9 @@ export default function Navbar() {
     return (
         <>
             <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static">
+                <AppBar position="static" elevation={0} color="transparent">
                     <Toolbar>
-                        <IconButton color="inherit" sx={{ marginRight: 1 }} onClick={() => setOpen(true)}>
+                        <IconButton color="inherit" sx={{ marginRight: 2 }} onClick={() => setOpen(true)}>
                             <Menu />
                         </IconButton>
                         <Link to="/dashboard" style={{ textDecorationLine: "none", color: "inherit" }}>

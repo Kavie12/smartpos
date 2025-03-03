@@ -9,11 +9,18 @@ import '@fontsource/roboto/700.css';
 import { RouterProvider } from 'react-router';
 import AuthProvider from './context/AuthContext.tsx';
 import AppRouter from './routes/AppRouter.tsx';
+import { CssBaseline, ThemeProvider } from '@mui/material';
+import AppTheme from './data/AppTheme.tsx';
+
+
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-      <RouterProvider router={AppRouter} />
+      <ThemeProvider theme={AppTheme}>
+        <CssBaseline />
+        <RouterProvider router={AppRouter} />
+      </ThemeProvider>
     </AuthProvider>
   </StrictMode>
 );

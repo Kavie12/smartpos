@@ -1,6 +1,6 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { Alert, Box, Button, Container, Typography } from '@mui/material';
+import { Alert, Box, Button, Container } from '@mui/material';
 import { Add, DeleteOutlined, Download, Edit } from '@mui/icons-material';
 import { AuthApi } from '../services/Api';
 import AlertDialog from '../components/AlertDialog';
@@ -294,11 +294,11 @@ export default function EmployeesScreen() {
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Button onClick={handleFormDialogOpen} startIcon={<Add />}>
-                    <Typography variant="button">Add Employee</Typography>
+                    Add Employee
                 </Button>
 
                 <Button onClick={generateReport} startIcon={<Download />} loading={loading.button}>
-                    <Typography variant="button">Generate Report</Typography>
+                    Generate Report
                 </Button>
             </Box>
 

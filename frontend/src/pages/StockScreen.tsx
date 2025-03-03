@@ -1,6 +1,6 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { Alert, Autocomplete, Box, Button, Container, TextField, Typography } from '@mui/material';
+import { Alert, Autocomplete, Box, Button, Container, TextField } from '@mui/material';
 import { Add, DeleteOutlined, Download, Edit } from '@mui/icons-material';
 import { AuthApi } from '../services/Api';
 import AlertDialog from '../components/AlertDialog';
@@ -71,13 +71,13 @@ export default function StockScreen() {
 
     const columns: GridColDef[] = [
         {
-            field: "id",
-            headerName: "ID",
-            type: "number",
-            headerAlign: "left",
-            align: "left",
-            sortable: false,
-            flex: 1
+            field: "createdAt",
+            headerName: "Date",
+            type: "dateTime",
+            flex: 1,
+            valueGetter: (value) => {
+                return new Date(value);
+            }
         },
         {
             field: "productName",
@@ -96,15 +96,6 @@ export default function StockScreen() {
             headerAlign: "left",
             sortable: false,
             flex: 1
-        },
-        {
-            field: "createdAt",
-            headerName: "Date",
-            type: "dateTime",
-            flex: 2,
-            valueGetter: (value) => {
-                return new Date(value);
-            }
         },
         {
             field: "actions",
@@ -374,11 +365,11 @@ export default function StockScreen() {
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Button onClick={handleFormDialogOpen} startIcon={<Add />}>
-                    <Typography variant="button">Add Product</Typography>
+                    Add Stock
                 </Button>
 
                 <Button onClick={generateReport} startIcon={<Download />} loading={loading.button}>
-                    <Typography variant="button">Generate Report</Typography>
+                    Generate Report
                 </Button>
             </Box>
 

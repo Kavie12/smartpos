@@ -1,6 +1,6 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { Alert, Autocomplete, Box, Button, Container, TextField, Typography } from '@mui/material';
+import { Alert, Autocomplete, Box, Button, Container, TextField } from '@mui/material';
 import { Add, DeleteOutlined, Download, Edit } from '@mui/icons-material';
 import { AuthApi } from '../services/Api';
 import AlertDialog from '../components/AlertDialog';
@@ -387,11 +387,11 @@ export default function ProductsScreen() {
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Button onClick={handleFormDialogOpen} startIcon={<Add />}>
-                    <Typography variant="button">Add Product</Typography>
+                    Add Product
                 </Button>
 
                 <Button onClick={generateReport} startIcon={<Download />} loading={loading.button}>
-                    <Typography variant="button">Generate Report</Typography>
+                    Generate Report
                 </Button>
             </Box>
 
@@ -460,13 +460,6 @@ export default function ProductsScreen() {
                     label="Retail Price"
                     type="number"
                     value={formData?.data.retailPrice}
-                    formDataChangeHandler={handleFormDataChange}
-                />
-                <InsertAndUpdateDialogTextField
-                    name="stockLevel"
-                    label="Stock Level"
-                    type="number"
-                    value={formData?.data.stockLevel}
                     formDataChangeHandler={handleFormDataChange}
                 />
             </InsertAndUpdateDialog>

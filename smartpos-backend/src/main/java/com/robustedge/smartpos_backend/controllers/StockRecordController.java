@@ -1,10 +1,7 @@
 package com.robustedge.smartpos_backend.controllers;
 
-import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.models.StockRecord;
-import com.robustedge.smartpos_backend.services.ProductService;
 import com.robustedge.smartpos_backend.services.StockRecordService;
-import com.sun.tools.jconsole.JConsoleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -26,13 +23,15 @@ public class StockRecordController {
     }
 
     @GetMapping("/get")
-    public PagedModel<StockRecord> getRecords(@PageableDefault(value = 50, page = 0) Pageable pageable) {
-        return service.getRecords(pageable);
+    public PagedModel<StockRecord> getRecords(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int pageSize
+    ) {
+        return service.getRecords(page, pageSize);
     }
 
     @PostMapping("/add")
     public void addRecord(@RequestBody StockRecord record) {
-        System.out.println(record);
         service.addRecord(record);
     }
 
