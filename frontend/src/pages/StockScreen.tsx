@@ -6,31 +6,7 @@ import { AuthApi } from '../services/Api';
 import AlertDialog from '../components/AlertDialog';
 import DeleteAlert from '../components/DeleteAlert';
 import { InsertAndUpdateDialog, InsertAndUpdateDialogTextField } from '../components/InsertAndUpdateDialog';
-
-type StockRecordType = {
-    id?: number;
-    productName: string;
-    product?: ProductDataType;
-    stockAmount: number;
-    createdAt?: String;
-};
-
-type ProductDataType = {
-    id?: number;
-    barcode: string;
-    name: string;
-    supplier?: SupplierDataType;
-    wholesalePrice: number;
-    retailPrice: number;
-    stockLevel: number;
-};
-
-type SupplierDataType = {
-    id?: number;
-    name: string;
-    phoneNumber: string;
-    email: string;
-};
+import { ProductDataType, StockRecordType } from '../types/types';
 
 export default function StockScreen() {
     const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);

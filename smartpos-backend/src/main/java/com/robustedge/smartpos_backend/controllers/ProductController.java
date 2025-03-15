@@ -27,6 +27,11 @@ public class ProductController {
         return service.getProducts(pageable);
     }
 
+    @GetMapping("/find_by_barcode")
+    public Product findProductByBarcode(@RequestParam("barcode") String barcode) {
+        return service.findProductByBarcode(barcode);
+    }
+
     @PostMapping("/add")
     public void addProduct(@RequestBody Product product) {
         service.addProduct(product);

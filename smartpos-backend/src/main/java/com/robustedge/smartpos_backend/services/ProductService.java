@@ -10,6 +10,7 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -53,5 +54,10 @@ public class ProductService {
         pdfGenerator.addHeading("Products");
         pdfGenerator.addTable(fields);
         pdfGenerator.build();
+    }
+
+    public Product findProductByBarcode(String barcode) {
+        Optional<Product> product = repository.findByBarcode(barcode);
+        return product.orElse(null);
     }
 }

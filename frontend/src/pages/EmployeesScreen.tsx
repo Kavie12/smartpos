@@ -6,14 +6,7 @@ import { AuthApi } from '../services/Api';
 import AlertDialog from '../components/AlertDialog';
 import DeleteAlert from '../components/DeleteAlert';
 import { InsertAndUpdateDialog, InsertAndUpdateDialogTextField } from '../components/InsertAndUpdateDialog';
-
-type EmployeeDataType = {
-    id?: number;
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
-    email: string;
-};
+import { EmployeeDataType } from '../types/types';
 
 export default function EmployeesScreen() {
     const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
@@ -334,7 +327,6 @@ export default function EmployeesScreen() {
                     type="text"
                     value={formData?.data.firstName}
                     formDataChangeHandler={handleFormDataChange}
-                    autoFocus={true}
                 />
                 <InsertAndUpdateDialogTextField
                     name="lastName"

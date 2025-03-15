@@ -46,6 +46,7 @@ export default function LoginScreen() {
                         sx={{ mt: 4 }}
                         type="submit"
                         loading={isProcessing}
+                        disableElevation
                     >
                         Sign in
                     </Button>

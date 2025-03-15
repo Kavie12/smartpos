@@ -6,23 +6,7 @@ import { AuthApi } from '../services/Api';
 import AlertDialog from '../components/AlertDialog';
 import DeleteAlert from '../components/DeleteAlert';
 import { InsertAndUpdateDialog, InsertAndUpdateDialogTextField } from '../components/InsertAndUpdateDialog';
-
-type ProductDataType = {
-    id?: number;
-    barcode: string;
-    name: string;
-    supplier?: SupplierDataType;
-    wholesalePrice: number;
-    retailPrice: number;
-    stockLevel: number;
-};
-
-type SupplierDataType = {
-    id?: number;
-    name: string;
-    phoneNumber: string;
-    email: string;
-};
+import { ProductDataType, SupplierDataType } from '../types/types';
 
 export default function ProductsScreen() {
     const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
@@ -427,7 +411,6 @@ export default function ProductsScreen() {
                     type="text"
                     value={formData?.data.barcode}
                     formDataChangeHandler={handleFormDataChange}
-                    autoFocus={true}
                 />
                 <Autocomplete
                     open={isSupplierAutocompleteOpen}

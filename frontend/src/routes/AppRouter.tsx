@@ -9,6 +9,7 @@ import EmployeesScreen from "../pages/EmployeesScreen";
 import SuppliersScreen from "../pages/SupplierScreen";
 import ProductsScreen from "../pages/ProductsScreen";
 import StockScreen from "../pages/StockScreen";
+import CreateBillScreen from "../pages/CreateBillScreen";
 
 export default createHashRouter([
     {
@@ -53,6 +54,10 @@ export default createHashRouter([
                     {
                         path: "suppliers",
                         element: <SuppliersScreen />
+                    },
+                    {
+                        path: "create_bill",
+                        element: <CreateBillScreen />
                     }
                 ]
             }

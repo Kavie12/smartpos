@@ -60,15 +60,13 @@ type InsertAndUpdateDialogTextFieldProps = {
     type: InputHTMLAttributes<unknown>['type'];
     value: any;
     formDataChangeHandler: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-    autoFocus?: boolean;
 };
 
 export const InsertAndUpdateDialogTextField = ({
-    name, label, type, value, formDataChangeHandler, autoFocus = false
+    name, label, type, value, formDataChangeHandler
 }: InsertAndUpdateDialogTextFieldProps) => {
     return (
         <TextField
-            autoFocus={autoFocus}
             margin="dense"
             id={name}
             name={name}

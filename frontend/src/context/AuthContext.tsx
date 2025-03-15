@@ -41,7 +41,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
                     if (err.response.status === 403) setError("Credentials do not match.");
                     else setError("An unexpected error occurred.");
                 } else if (err.code === "ERR_NETWORK") {
-                    setError("Server is offline.");
+                    setError("Failed connecting to the server.");
                 } else {
                     setError("Something went wrong. Please try again.");
                 }

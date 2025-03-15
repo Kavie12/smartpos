@@ -6,14 +6,7 @@ import { AuthApi } from '../services/Api';
 import AlertDialog from '../components/AlertDialog';
 import DeleteAlert from '../components/DeleteAlert';
 import { InsertAndUpdateDialog, InsertAndUpdateDialogTextField } from '../components/InsertAndUpdateDialog';
-
-type CustomerDataType = {
-    id?: number;
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
-    points: number;
-};
+import { CustomerDataType } from '../types/types';
 
 export default function LoyaltyMembersScreen() {
     const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
@@ -339,7 +332,6 @@ export default function LoyaltyMembersScreen() {
                     type="text"
                     value={formData?.data.firstName}
                     formDataChangeHandler={handleFormDataChange}
-                    autoFocus={true}
                 />
                 <InsertAndUpdateDialogTextField
                     name="lastName"

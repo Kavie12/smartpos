@@ -6,13 +6,7 @@ import { AuthApi } from '../services/Api';
 import AlertDialog from '../components/AlertDialog';
 import DeleteAlert from '../components/DeleteAlert';
 import { InsertAndUpdateDialog, InsertAndUpdateDialogTextField } from '../components/InsertAndUpdateDialog';
-
-type SupplierDataType = {
-    id?: number;
-    name: string;
-    phoneNumber: string;
-    email: string;
-};
+import { SupplierDataType } from '../types/types';
 
 export default function SuppliersScreen() {
     const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
@@ -327,7 +321,6 @@ export default function SuppliersScreen() {
                     type="text"
                     value={formData?.data.name}
                     formDataChangeHandler={handleFormDataChange}
-                    autoFocus={true}
                 />
                 <InsertAndUpdateDialogTextField
                     name="phoneNumber"

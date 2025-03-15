@@ -1,7 +1,8 @@
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { useSidebar } from "../context/SidebarContext";
 import { Link, useLocation } from "react-router";
-import { AddBox, Dashboard, Inventory, LocalShipping, People, Settings, Work } from "@mui/icons-material";
+import { AddBox, Dashboard, Inventory, LocalShipping, Logout, People, Settings, Work } from "@mui/icons-material";
+import { useAuth } from "../context/AuthContext";
 
 interface ListItemLinkProps {
     icon?: React.ReactElement<unknown>;
@@ -24,6 +25,7 @@ function ListItemLink({ icon, text, to }: ListItemLinkProps) {
 export default function Sidebar() {
 
     const { open, setOpen } = useSidebar();
+    const { logout } = useAuth();
 
     const toggleDrawer = (newOpen: boolean) => () => {
         setOpen(newOpen);
@@ -67,9 +69,15 @@ export default function Sidebar() {
             <List>
                 <ListItemLink
                     text="Settings"
-                    to="/settings"
+                    to="/"
                     icon={<Settings />}
                 />
+                <ListItem>
+                    <ListItemButton onClick={logout}>
+                        <ListItemIcon><Logout /></ListItemIcon>
+                        <ListItemText primary="Logout" />
+                    </ListItemButton>
+                </ListItem>
             </List>
         </Box>
     );
