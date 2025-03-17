@@ -1,4 +1,4 @@
-package com.robustedge.smartpos_backend.libraries;
+package com.robustedge.smartpos_backend.PDFGenerators;
 
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFont;
@@ -15,13 +15,11 @@ import com.itextpdf.layout.properties.UnitValue;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class PDFTableGenerator<T> {
+abstract class SimplePdfTableGenerator {
 
     private PdfFont TIMES_ROMAN;
     private PdfFont TIMES_BOLD;
@@ -29,7 +27,7 @@ public class PDFTableGenerator<T> {
     private PdfFont COURIER;
     private Document doc;
 
-    public PDFTableGenerator<T> initialize(String dest) {
+    public void initialize(String dest) {
         // Create file
         File file = new File(dest);
         file.getParentFile().mkdirs();
@@ -50,11 +48,9 @@ public class PDFTableGenerator<T> {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        return this;
     }
 
-    public PDFTableGenerator<T> addMetaData() {
+    public void addMetaData() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String date = dateFormat.format(new Date());
 
@@ -65,11 +61,9 @@ public class PDFTableGenerator<T> {
 
         doc.add(new Paragraph("SmartPOS").addStyle(style));
         doc.add(new Paragraph(date).addStyle(style.setPaddingBottom(20)));
-
-        return this;
     }
 
-    public PDFTableGenerator<T> addHeading(String title) {
+    public void addHeading(String title) {
         Style style = new Style()
                 .setFont(HELVETICA_BOLD)
                 .setFontSize(16)
@@ -77,11 +71,9 @@ public class PDFTableGenerator<T> {
                 .setPaddingBottom(12);
 
         doc.add(new Paragraph(title).addStyle(style));
-
-        return this;
     }
 
-    public PDFTableGenerator<T> addTable(List<T> list, String[] tableHeaders) {
+    public void addTable(String[] tableHeaders) {
         // Create table
         Table table = new Table(UnitValue.createPercentArray(tableHeaders.length)).useAllAvailableWidth();
 
@@ -91,7 +83,7 @@ public class PDFTableGenerator<T> {
         }
 
         // Add table data
-        List<List<String>> dataset = extractData(list);
+        List<List<String>> dataset = extractData();
         for (List<String> record : dataset) {
             for (String field : record) {
                 table.addCell(new Cell().add(new Paragraph(field).setFont(TIMES_ROMAN)));
@@ -99,35 +91,12 @@ public class PDFTableGenerator<T> {
         }
 
         doc.add(table);
-
-        return this;
     }
 
     public void build() {
         doc.close();
     }
 
-    private List<List<String>> extractData(List<T> list) {
-        List<List<String>> resultList = new ArrayList<>();
-
-        for (T item : list) {
-            Field[] fields = item.getClass().getDeclaredFields();
-            List<String> values = new ArrayList<>();
-
-            for (Field field : fields) {
-                field.setAccessible(true);
-                try {
-                    Object value = field.get(item);
-                    values.add(value != null ? value.toString() : "null");
-                } catch (IllegalAccessException e) {
-                    values.add("error");
-                }
-            }
-
-            resultList.add(values);
-        }
-
-        return resultList;
-    }
+    abstract List<List<String>> extractData();
 
 }

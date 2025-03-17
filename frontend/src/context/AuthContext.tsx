@@ -1,10 +1,10 @@
 import { createContext, ReactNode, useContext, useState } from "react";
-import Api from "../services/Api";
+import { NoAuthApi } from "../services/Api";
 
 type AuthContextType = {
     login: (username: string, password: string) => void;
+    logout: () => void;
     isAuthenticated: boolean;
-    token: string | null;
     isProcessing: boolean;
     error: string | null;
     setError: React.Dispatch<React.SetStateAction<string | null>>;
@@ -24,25 +24,24 @@ export const useAuth = () => {
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [token, setToken] = useState<string | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const login = (username: string, password: string) => {
         setIsProcessing(true);
-        Api.post("/auth/authenticate", { username, password })
+        NoAuthApi.post("/auth/authenticate", { username, password })
             .then(res => {
+                const token = res.data;
+                localStorage.setItem("jwtToken", token);
                 setIsAuthenticated(true);
-                setToken(res.data);
             })
             .catch(err => {
                 setIsAuthenticated(false);
-                setToken(null);
                 if (err.response) {
                     if (err.response.status === 403) setError("Credentials do not match.");
                     else setError("An unexpected error occurred.");
                 } else if (err.code === "ERR_NETWORK") {
-                    setError("Server is offline.");
+                    setError("Failed connecting to the server.");
                 } else {
                     setError("Something went wrong. Please try again.");
                 }
@@ -50,9 +49,12 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
             .finally(() => setIsProcessing(false));
     }
 
-    return <AuthContext.Provider value={{ login, isAuthenticated, token, isProcessing, error, setError }}>{children}</AuthContext.Provider>;
+    const logout = () => {
+        localStorage.removeItem("jwtToken");
+        setIsAuthenticated(false);
+    };
+
+    return <AuthContext.Provider value={{ login, logout, isAuthenticated, isProcessing, error, setError }}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;
-
-

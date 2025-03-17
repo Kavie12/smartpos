@@ -9,13 +9,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Entity
+@Entity(name = "User")
+@Table(name = "users")
 public class User implements UserDetails {
-    @Id @GeneratedValue
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     private Integer id;
+
+    @Column(name = "username", nullable = false, unique = true, length = 20)
     private String username;
+
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 10)
     private UserRoles role;
 
     public User() {

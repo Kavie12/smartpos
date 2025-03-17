@@ -2,9 +2,9 @@ package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
 
-@Entity(name = "LoyaltyCustomers")
-@Table(name = "loyalty_customers")
-public class LoyaltyCustomer {
+@Entity(name = "Employee")
+@Table(name = "employees")
+public class Employee {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
@@ -19,24 +19,25 @@ public class LoyaltyCustomer {
     @Column(name = "phone_number", nullable = false, unique = true, length = 20)
     private String phoneNumber;
 
-    @Column(name = "points", nullable = false)
-    private Integer points;
+    @Column(name = "email", nullable = false, unique = true, length = 100)
+    private String email;
 
-    public LoyaltyCustomer() {
+    public Employee() {
     }
 
-    public LoyaltyCustomer(Integer id, String firstName, String lastName, String phoneNumber, Integer points) {
+    public Employee(Integer id, String firstName, String lastName, String phoneNumber, String email) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
-        this.points = points;
+        this.email = email;
     }
 
-    public LoyaltyCustomer(String firstName, String lastName, String phoneNumber) {
+    public Employee(String firstName, String lastName, String phoneNumber, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
+        this.email = email;
     }
 
     public Integer getId() {
@@ -71,22 +72,22 @@ public class LoyaltyCustomer {
         this.phoneNumber = phoneNumber;
     }
 
-    public Integer getPoints() {
-        return points;
+    public String getEmail() {
+        return email;
     }
 
-    public void setPoints(Integer points) {
-        this.points = points;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
     public String toString() {
-        return "LoyaltyCustomer{" +
+        return "Employee{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", points=" + points +
+                ", email='" + email + '\'' +
                 '}';
     }
 }

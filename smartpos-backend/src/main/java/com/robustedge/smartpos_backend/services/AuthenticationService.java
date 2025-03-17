@@ -30,10 +30,10 @@ public class AuthenticationService {
 
     public String authenticate(User user) {
         authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                user.getUsername(),
-                user.getPassword()
-            )
+                new UsernamePasswordAuthenticationToken(
+                        user.getUsername(),
+                        user.getPassword()
+                )
         );
 
         return jwtService.generateToken(user);
