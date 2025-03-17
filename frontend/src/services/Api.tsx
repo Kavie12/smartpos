@@ -9,14 +9,26 @@ export const AuthApi = axios.create({
 });
 
 AuthApi.interceptors.request.use(
-    (config) => {
+    config => {
         const token = localStorage.getItem("jwtToken")
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },
-    (error) => {
+    error => {
+        return Promise.reject(error);
+    }
+);
+
+AuthApi.interceptors.response.use(
+    response => {
+        if (response.status === 403) {
+            alert("Session expired. Please logout and login again.");
+        }
+        return response;
+    },
+    error => {
         return Promise.reject(error);
     }
 );
