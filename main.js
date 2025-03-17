@@ -1,3 +1,4 @@
+const { Menu } = require('electron');
 const { app, BrowserWindow } = require('electron/main')
 
 const createWindow = () => {
@@ -7,7 +8,9 @@ const createWindow = () => {
     });
 
     win.loadURL('http://localhost:5173/');
+    win.setMenuBarVisibility(false);
 }
+
 
 app.whenReady().then(() => {
     createWindow();
