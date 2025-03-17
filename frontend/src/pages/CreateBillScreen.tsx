@@ -14,15 +14,18 @@ export default function CreateBillScreen() {
         setBarcode(e.target.value);
     };
 
+
+    // Changes to be tested
     const handleQuantityIncrement = () => {
-        setQuantity(quantity + 1);
+        setQuantity(prev => prev + 1);
     };
 
     const handleQuantityDecrement = () => {
-        if (quantity > 1) {
-            setQuantity(quantity - 1);
-        }
+        setQuantity(prev => {
+            return prev > 1 ? prev - 1 : prev;
+        });
     };
+    //
 
     const handleQuantityChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const value = parseInt(e.target.value);
