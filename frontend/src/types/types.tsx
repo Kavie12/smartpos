@@ -39,7 +39,16 @@ export type EmployeeDataType = {
     email: string;
 };
 
-export type BillingItemType = {
-    item: ProductDataType,
-    quantity: number
-}
+export type BillingRecordDataType = {
+    id?: number,
+    product: ProductDataType;
+    price?: number;
+    quantity: number;
+};
+
+export type BillingDataType = {
+    id?: number;
+    billingRecords: BillingRecordDataType;
+    loyaltyCustomer: CustomerDataType | null;
+    createdAt: String;
+};

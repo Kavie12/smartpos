@@ -5,19 +5,16 @@ import { ChangeEvent } from "react";
 type QuantityCounterProps = {
     quantity: number;
     setQuantity: React.Dispatch<React.SetStateAction<number>>;
-    color: "grey" | "white";
 };
 
-export default function QuantityCounter({ quantity, setQuantity, color }: QuantityCounterProps) {
+export default function QuantityCounter({ quantity, setQuantity }: QuantityCounterProps) {
 
     const handleQuantityIncrement = () => {
         setQuantity(prev => prev + 1);
     };
 
     const handleQuantityDecrement = () => {
-        setQuantity(prev => {
-            return prev > 1 ? prev - 1 : prev;
-        });
+        setQuantity(prev => prev > 1 ? prev - 1 : prev);
     };
 
     const handleQuantityChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -28,7 +25,7 @@ export default function QuantityCounter({ quantity, setQuantity, color }: Quanti
     };
 
     return (
-        <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, backgroundColor: color == "grey" ? grey[300] : "whitesmoke", borderRadius: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, backgroundColor: grey[200], borderRadius: 1 }}>
             <Button variant="text" sx={{ minWidth: "auto" }} onClick={() => handleQuantityDecrement()}>-</Button>
             <TextField
                 id="quantity"
