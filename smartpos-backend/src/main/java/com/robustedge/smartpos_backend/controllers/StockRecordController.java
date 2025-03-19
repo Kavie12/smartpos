@@ -25,7 +25,7 @@ public class StockRecordController {
     @GetMapping("/get")
     public PagedModel<StockRecord> getRecords(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int pageSize
+            @RequestParam(defaultValue = "50") int pageSize
     ) {
         return service.getRecords(page, pageSize);
     }
