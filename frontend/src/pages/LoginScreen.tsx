@@ -10,6 +10,7 @@ export default function LoginScreen() {
 
     const loginHandler = (e: FormEvent) => {
         e.preventDefault();
+        setError(null);
 
         if (!username || !password) {
             setError("Fill all the details.");

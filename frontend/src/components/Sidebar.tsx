@@ -1,7 +1,7 @@
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { useSidebar } from "../context/SidebarContext";
 import { Link, useLocation } from "react-router";
-import { AddBox, Dashboard, Inventory, LocalShipping, Logout, People, Settings, Work } from "@mui/icons-material";
+import { AddBox, Dashboard, Inventory, LocalShipping, Logout, Money, People, Settings, Work } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 
 interface ListItemLinkProps {
@@ -38,6 +38,11 @@ export default function Sidebar() {
                     text="Dashboard"
                     to="/dashboard"
                     icon={<Dashboard />}
+                />
+                <ListItemLink
+                    text="Billing"
+                    to="/billing"
+                    icon={<Money />}
                 />
                 <ListItemLink
                     text="Stock"

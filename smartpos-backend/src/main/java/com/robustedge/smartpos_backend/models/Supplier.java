@@ -2,6 +2,7 @@ package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "Supplier")
@@ -21,9 +22,8 @@ public class Supplier {
     @Column(name = "email", nullable = false, unique = true, length = 50)
     private String email;
 
-    @OneToMany(mappedBy = "supplier")
-    private List<Product> products;
-
+    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Product> products = new ArrayList<>();
 
     public Supplier() {
     }
