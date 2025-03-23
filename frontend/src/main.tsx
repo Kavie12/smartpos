@@ -21,6 +21,6 @@ createRoot(document.getElementById('root')!).render(
         <CssBaseline />
         <RouterProvider router={AppRouter} />
       </ThemeProvider>
-    </AuthProvider>
+    </AuthProvider>*/
   </StrictMode>
 );
