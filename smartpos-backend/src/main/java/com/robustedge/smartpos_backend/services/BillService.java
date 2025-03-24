@@ -45,4 +45,5 @@ public class BillService {
         Pageable pageable = PageRequest.of(page, pageSize, sort);
         return new PagedModel<>(repository.findAll(pageable));
     }
+
 }

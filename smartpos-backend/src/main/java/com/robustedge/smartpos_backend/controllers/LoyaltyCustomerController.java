@@ -32,19 +32,4 @@ public class LoyaltyCustomerController {
         service.addLoyaltyCustomer(loyaltyCustomer);
     }
 
-    @DeleteMapping("/delete")
-    public void deleteLoyaltyCustomer(Integer id) {
-        service.deleteLoyaltyCustomer(id);
-    }
-
-    @PutMapping("/update")
-    public void updateLoyaltyCustomer(@RequestBody LoyaltyCustomer loyaltyCustomer) {
-        service.updateLoyaltyCustomer(loyaltyCustomer);
-    }
-
-    @GetMapping("/generate_report")
-    public void generateReport() {
-        service.generateReport();
-    }
-
 }

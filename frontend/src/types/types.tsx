@@ -7,7 +7,6 @@ export type SupplierDataType = {
 
 export type StockRecordType = {
     id?: number;
-    productName: string;
     product?: ProductDataType;
     stockAmount: number;
     createdAt?: String;
@@ -51,4 +50,4 @@ export type BillingDataType = {
     billingRecords: BillingRecordDataType;
     loyaltyCustomer: CustomerDataType | null;
     createdAt: String;
-};
+} | null;
