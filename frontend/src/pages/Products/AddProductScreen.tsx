@@ -95,9 +95,9 @@ export default function AddProductScreen() {
             <Box sx={{ px: 5 }}>
                 {/* Alerts */}
                 {alert.open && (
-                    <Box sx={{ marginTop: 2 }}>
+                    <Box sx={{ my: 2 }}>
                         {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                        {alert.type == "error" && <Alert severity="error">{alert.message}</Alert>}
+                        {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
                     </Box>
                 )}
 

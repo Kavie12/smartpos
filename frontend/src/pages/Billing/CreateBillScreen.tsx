@@ -3,13 +3,11 @@ import { AuthApi } from "../../services/Api";
 import { Alert, Box, Button, Grid2, IconButton, TextField, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import QuantityCounter from "../../components/QuantityCounter";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { BillingRecordDataType } from "../../types/types";
 import { ArrowBack } from "@mui/icons-material";
 
 export default function CreateBillScreen() {
-    const location = useLocation();
-    const navigate = useNavigate();
 
     const [barcode, setBarcode] = useState<string | null>(null);
     const [error, setError] = useState<{ emptyBarcode: string | null, wrongBarcode: string | null, saveBill: string | null }>({
@@ -25,7 +23,6 @@ export default function CreateBillScreen() {
         message: null
     });
     const [total, setTotal] = useState<number>(0);
-    const [isUpdateRow, setIsUpdateRow] = useState<boolean>(false);
 
     const clearBill = () => {
         setItems([]);
@@ -93,15 +90,6 @@ export default function CreateBillScreen() {
 
     useEffect(() => {
 
-        if (location.state !== null) {
-            setIsUpdateRow(true);
-            setItems(location.state.billingRecords);
-        }
-
-    }, []);
-
-    useEffect(() => {
-
         setTotal(items.reduce((total, item) => {
             return total + item.product.retailPrice * item.quantity;
         }, 0));
@@ -123,9 +111,9 @@ export default function CreateBillScreen() {
             <Box sx={{ px: 5 }}>
                 {/* Alerts */}
                 {alert.open && (
-                    <Box sx={{ marginTop: 2 }}>
+                    <Box sx={{ my: 2 }}>
                         {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                        {alert.type == "error" && <Alert severity="error">{alert.message}</Alert>}
+                        {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
                     </Box>
                 )}
                 <Grid2 container spacing={4} sx={{ mt: 4 }}>
@@ -161,15 +149,15 @@ export default function CreateBillScreen() {
                                     <Typography fontWeight={"bold"}>Rs. {total}</Typography>
                                 </Box>
                                 <Button variant="contained" sx={{ marginTop: 4 }} onClick={() => saveBill()}>
-                                    {isUpdateRow ? "Save and Print Bill" : "Print Bill"}
+                                    Print Bill
                                 </Button>
                                 <Button
                                     variant="text"
                                     color="error"
                                     sx={{ marginTop: 1 }}
-                                    onClick={() => isUpdateRow ? navigate("/billing") : clearBill()}
+                                    onClick={() => clearBill()}
                                 >
-                                    {isUpdateRow ? "Cancel Editing Bill" : "Cancel Bill"}
+                                    Cancel Bill
                                 </Button>
                             </Box>
                         </Box>

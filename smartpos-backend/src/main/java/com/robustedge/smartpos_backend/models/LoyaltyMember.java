@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity(name = "LoyaltyCustomers")
 @Table(name = "loyalty_customers")
-public class LoyaltyCustomer {
+public class LoyaltyMember {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
@@ -22,10 +22,10 @@ public class LoyaltyCustomer {
     @Column(name = "points", nullable = false)
     private Integer points;
 
-    public LoyaltyCustomer() {
+    public LoyaltyMember() {
     }
 
-    public LoyaltyCustomer(Integer id, String firstName, String lastName, String phoneNumber, Integer points) {
+    public LoyaltyMember(Integer id, String firstName, String lastName, String phoneNumber, Integer points) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -33,7 +33,7 @@ public class LoyaltyCustomer {
         this.points = points;
     }
 
-    public LoyaltyCustomer(String firstName, String lastName, String phoneNumber) {
+    public LoyaltyMember(String firstName, String lastName, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;

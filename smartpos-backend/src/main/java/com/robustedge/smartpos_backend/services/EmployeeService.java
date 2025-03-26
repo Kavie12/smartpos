@@ -27,4 +27,7 @@ public class EmployeeService {
         return new PagedModel<>(repository.findAll(pageable));
     }
 
+    public void deleteEmployee(Integer employeeId) {
+        repository.deleteById(employeeId);
+    }
 }

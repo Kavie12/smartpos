@@ -38,4 +38,8 @@ public class ProductService {
         Optional<Product> product = repository.findByBarcode(barcode);
         return product.orElse(null);
     }
+
+    public void deleteProduct(Integer productId) {
+        repository.deleteById(productId);
+    }
 }

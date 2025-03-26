@@ -37,4 +37,9 @@ public class ProductController {
         service.addProduct(product);
     }
 
+    @DeleteMapping("/delete")
+    public void deleteProduct(@RequestParam(name = "productId") Integer productId) {
+        service.deleteProduct(productId);
+    }
+
 }

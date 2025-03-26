@@ -22,7 +22,7 @@ export type ProductDataType = {
     stockLevel: number;
 };
 
-export type CustomerDataType = {
+export type LoyaltyMemberDataType = {
     id?: number;
     firstName: string;
     lastName: string;
@@ -48,6 +48,6 @@ export type BillingRecordDataType = {
 export type BillingDataType = {
     id?: number;
     billingRecords: BillingRecordDataType;
-    loyaltyCustomer: CustomerDataType | null;
+    loyaltyCustomer: LoyaltyMemberDataType | null;
     createdAt: String;
 } | null;

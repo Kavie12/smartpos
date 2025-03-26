@@ -11,6 +11,7 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StockRecordService {
@@ -38,4 +39,10 @@ public class StockRecordService {
         return new PagedModel<>(repository.findAll(pageable));
     }
 
+    public void deleteRecord(Integer id) {
+        Optional<StockRecord> record = repository.findById(id);
+        Product product = record.orElseThrow().getProduct();
+        product.setStockLevel(product.getStockLevel() - record.orElseThrow().getStockAmount());
+        repository.deleteById(id);
+    }
 }

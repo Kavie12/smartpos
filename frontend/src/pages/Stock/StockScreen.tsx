@@ -1,6 +1,6 @@
-import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, Typography } from '@mui/material';
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
 import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { StockRecordType } from '../../types/types';
@@ -15,16 +15,17 @@ export default function StockScreen() {
         rows: [],
         rowCount: 0
     });
-    const [loading, setLoading] = useState<{ form: boolean, table: boolean, button: boolean, products: boolean }>({
-        form: false,
-        table: false,
-        button: false,
-        products: false
+    const [loading, setLoading] = useState<{ table: boolean }>({
+        table: false
     });
     const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
         open: false,
         type: null,
         message: null
+    });
+    const [deleteDialog, setDeleteDialog] = useState<{ open: boolean, id: GridRowId | null }>({
+        open: false,
+        id: null
     });
 
     const columns: GridColDef[] = [
@@ -73,7 +74,7 @@ export default function StockScreen() {
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
-                        onClick={() => console.log("Delete " + id)}
+                        onClick={() => setDeleteDialog({ id: id, open: true })}
                     />
                 ];
             }
@@ -105,6 +106,33 @@ export default function StockScreen() {
             .finally(() => setLoading(prev => ({ ...prev, table: false })));
     };
 
+    const deleteRecord = () => {
+        AuthApi.delete("/stock/delete", {
+            params: {
+                id: deleteDialog.id
+            }
+        })
+            .then(() => {
+                setAlert({
+                    open: true,
+                    type: "success",
+                    message: "Stock Record deleted successfully."
+                });
+                fetchStockRecords();
+            })
+            .catch(err => {
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Failed to delete Stock Record."
+                });
+                console.error("Error deleting Stock Record:", err);
+            })
+            .finally(() => {
+                setDeleteDialog(prev => ({ ...prev, open: false }));
+            });
+    };
+
     useEffect(() => {
         fetchStockRecords();
     }, [paginationModel]);
@@ -123,9 +151,9 @@ export default function StockScreen() {
 
             {/* Alerts */}
             {alert.open && (
-                <Box sx={{ marginTop: 2 }}>
+                <Box sx={{ my: 2 }}>
                     {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    {alert.type == "error" && <Alert severity="error">{alert.message}</Alert>}
+                    {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
                 </Box>
             )}
 
@@ -143,6 +171,29 @@ export default function StockScreen() {
                     onPaginationModelChange={setPaginationModel}
                 />
             </Box>
+
+            {/* Delete Alert */}
+            <Dialog
+                open={deleteDialog.open}
+                onClose={() => setDeleteDialog(prev => ({ ...prev, open: false }))}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Warning
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to delete this stock record?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialog(prev => ({ ...prev, open: false }))}>Cancel</Button>
+                    <Button onClick={() => deleteRecord()} color="error">
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
         </>
     );

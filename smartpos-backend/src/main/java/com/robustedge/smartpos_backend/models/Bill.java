@@ -23,7 +23,7 @@ public class Bill {
 
     @ManyToOne
     @JoinColumn(name = "loyalty_customer_id")
-    private LoyaltyCustomer loyaltyCustomer;
+    private LoyaltyMember loyaltyMember;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -32,16 +32,16 @@ public class Bill {
     public Bill() {
     }
 
-    public Bill(Integer id, List<BillingRecord> billingRecords, LoyaltyCustomer loyaltyCustomer, LocalDateTime createdAt) {
+    public Bill(Integer id, List<BillingRecord> billingRecords, LoyaltyMember loyaltyMember, LocalDateTime createdAt) {
         this.id = id;
         this.billingRecords = billingRecords;
-        this.loyaltyCustomer = loyaltyCustomer;
+        this.loyaltyMember = loyaltyMember;
         this.createdAt = createdAt;
     }
 
-    public Bill(List<BillingRecord> billingRecords, LoyaltyCustomer loyaltyCustomer) {
+    public Bill(List<BillingRecord> billingRecords, LoyaltyMember loyaltyMember) {
         this.billingRecords = billingRecords;
-        this.loyaltyCustomer = loyaltyCustomer;
+        this.loyaltyMember = loyaltyMember;
     }
 
     public Bill(List<BillingRecord> billingRecords) {
@@ -64,12 +64,12 @@ public class Bill {
         this.billingRecords = billingRecords;
     }
 
-    public LoyaltyCustomer getLoyaltyCustomer() {
-        return loyaltyCustomer;
+    public LoyaltyMember getLoyaltyCustomer() {
+        return loyaltyMember;
     }
 
-    public void setLoyaltyCustomer(LoyaltyCustomer loyaltyCustomer) {
-        this.loyaltyCustomer = loyaltyCustomer;
+    public void setLoyaltyCustomer(LoyaltyMember loyaltyMember) {
+        this.loyaltyMember = loyaltyMember;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -85,7 +85,7 @@ public class Bill {
         return "Bill{" +
                 "id=" + id +
                 ", billingRecords=" + billingRecords +
-                ", loyaltyCustomer=" + loyaltyCustomer +
+                ", loyaltyCustomer=" + loyaltyMember +
                 ", createdAt=" + createdAt +
                 '}';
     }

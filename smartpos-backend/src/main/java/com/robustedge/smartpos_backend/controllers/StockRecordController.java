@@ -33,4 +33,9 @@ public class StockRecordController {
         service.addRecord(record);
     }
 
+    @DeleteMapping("/delete")
+    public void deleteSRecord(@RequestParam(name = "id") Integer id) {
+        service.deleteRecord(id);
+    }
+
 }

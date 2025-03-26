@@ -46,4 +46,7 @@ public class BillService {
         return new PagedModel<>(repository.findAll(pageable));
     }
 
+    public void deleteBill(Integer billId) {
+        repository.deleteById(billId);
+    }
 }

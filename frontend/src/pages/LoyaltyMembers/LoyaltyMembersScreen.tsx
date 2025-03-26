@@ -1,9 +1,9 @@
-import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, Typography } from '@mui/material';
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
 import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
-import { CustomerDataType } from '../../types/types';
+import { LoyaltyMemberDataType } from '../../types/types';
 import { Link } from 'react-router';
 
 export default function LoyaltyMembersScreen() {
@@ -11,19 +11,21 @@ export default function LoyaltyMembersScreen() {
         page: 0,
         pageSize: 10,
     });
-    const [pageData, setPageData] = useState<{ rows: CustomerDataType[], rowCount: number }>({
+    const [pageData, setPageData] = useState<{ rows: LoyaltyMemberDataType[], rowCount: number }>({
         rows: [],
         rowCount: 0
     });
-    const [loading, setLoading] = useState<{ form: boolean, table: boolean, button: boolean }>({
-        form: false,
-        table: false,
-        button: false
+    const [loading, setLoading] = useState<{ table: boolean }>({
+        table: false
     });
     const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
         open: false,
         type: null,
         message: null
+    });
+    const [deleteDialog, setDeleteDialog] = useState<{ open: boolean, id: GridRowId | null }>({
+        open: false,
+        id: null
     });
 
     const columns: GridColDef[] = [
@@ -80,16 +82,16 @@ export default function LoyaltyMembersScreen() {
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
-                        onClick={() => console.log("Delete " + id)}
+                        onClick={() => setDeleteDialog({ id: id, open: true })}
                     />
                 ];
             }
         }
     ];
 
-    const fetchCustomers = () => {
+    const fetchLoyaltyMembers = () => {
         setLoading(prev => ({ ...prev, table: true }));
-        AuthApi.get("/loyalty_customers/get", {
+        AuthApi.get("/loyalty_members/get", {
             params: {
                 page: paginationModel.page,
                 size: paginationModel.pageSize
@@ -106,14 +108,41 @@ export default function LoyaltyMembersScreen() {
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Fetching customers failed."
+                    message: "Fetching loyalty members failed."
                 });
             })
             .finally(() => setLoading(prev => ({ ...prev, table: false })));
     };
 
+    const deleteLoyaltyMember = () => {
+        AuthApi.delete("/loyalty_members/delete", {
+            params: {
+                id: deleteDialog.id
+            }
+        })
+            .then(() => {
+                setAlert({
+                    open: true,
+                    type: "success",
+                    message: "Loyalty member deleted successfully."
+                });
+                fetchLoyaltyMembers();
+            })
+            .catch(err => {
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Failed to delete loyalty member."
+                });
+                console.error("Error deleting loyalty member:", err);
+            })
+            .finally(() => {
+                setDeleteDialog(prev => ({ ...prev, open: false }));
+            });
+    };
+
     useEffect(() => {
-        fetchCustomers();
+        fetchLoyaltyMembers();
     }, [paginationModel]);
 
     return (
@@ -130,9 +159,9 @@ export default function LoyaltyMembersScreen() {
 
             {/* Alerts */}
             {alert.open && (
-                <Box sx={{ marginTop: 2 }}>
+                <Box sx={{ my: 2 }}>
                     {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    {alert.type == "error" && <Alert severity="error">{alert.message}</Alert>}
+                    {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
                 </Box>
             )}
 
@@ -150,6 +179,29 @@ export default function LoyaltyMembersScreen() {
                     onPaginationModelChange={setPaginationModel}
                 />
             </Box>
+
+            {/* Delete Alert */}
+            <Dialog
+                open={deleteDialog.open}
+                onClose={() => setDeleteDialog(prev => ({ ...prev, open: false }))}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Warning
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to delete this loyalty member?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialog(prev => ({ ...prev, open: false }))}>Cancel</Button>
+                    <Button onClick={() => deleteLoyaltyMember()} color="error">
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
         </>
     );

@@ -33,4 +33,9 @@ public class BillController {
         return service.getAllBills();
     }
 
+    @DeleteMapping("/delete")
+    public void deleteBill(@RequestParam(name = "billId") Integer billId) {
+        service.deleteBill(billId);
+    }
+
 }

@@ -32,4 +32,9 @@ public class SupplierController {
         service.addSupplier(supplier);
     }
 
+    @DeleteMapping("/delete")
+    public void deleteSupplier(@RequestParam(name = "supplierId") Integer supplierId) {
+        service.deleteSupplier(supplierId);
+    }
+
 }

@@ -1,6 +1,6 @@
 package com.robustedge.smartpos_backend.services;
 
-import com.robustedge.smartpos_backend.models.LoyaltyCustomer;
+import com.robustedge.smartpos_backend.models.LoyaltyMember;
 import com.robustedge.smartpos_backend.repositories.LoyaltyCustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -10,22 +10,25 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class LoyaltyCustomerService {
+public class LoyaltyMemberService {
 
     @Autowired
     private LoyaltyCustomerRepository repository;
 
-    public void addLoyaltyCustomer(LoyaltyCustomer loyaltyCustomer) {
-        loyaltyCustomer.setPoints(0);
-        repository.save(loyaltyCustomer);
+    public void addLoyaltyMember(LoyaltyMember loyaltyMember) {
+        loyaltyMember.setPoints(0);
+        repository.save(loyaltyMember);
     }
 
-    public List<LoyaltyCustomer> getAllLoyaltyCustomers() {
+    public List<LoyaltyMember> getAllLoyaltyMembers() {
         return repository.findAll();
     }
 
-    public PagedModel<LoyaltyCustomer> getLoyaltyCustomers(Pageable pageable) {
+    public PagedModel<LoyaltyMember> getLoyaltyMembers(Pageable pageable) {
         return new PagedModel<>(repository.findAll(pageable));
     }
 
+    public void deleteLoyaltyMember(Integer id) {
+        repository.deleteById(id);
+    }
 }

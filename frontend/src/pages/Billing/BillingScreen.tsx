@@ -1,13 +1,12 @@
-import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, Typography } from '@mui/material';
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
 import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { BillingDataType, BillingRecordDataType } from '../../types/types';
 
 export default function BillingScreen() {
-    const navigate = useNavigate();
 
     const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
         page: 0,
@@ -24,6 +23,10 @@ export default function BillingScreen() {
         open: false,
         type: null,
         message: null
+    });
+    const [deleteDialog, setDeleteDialog] = useState<{ open: boolean, id: GridRowId | null }>({
+        open: false,
+        id: null
     });
 
     const columns: GridColDef[] = [
@@ -73,22 +76,18 @@ export default function BillingScreen() {
                         label="Edit"
                         className="textPrimary"
                         color="inherit"
-                        onClick={() => navigate("/create_bill", { state: row })}
+                        onClick={() => console.log("Edit " + row)}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
-                        onClick={() => console.log("Delete: " + id)}
+                        onClick={() => setDeleteDialog({ id: id, open: true })}
                     />
                 ];
             }
         }
     ];
-
-    const handleAlertClose = () => {
-        setAlert(prev => ({ ...prev, open: false }));
-    };
 
     const fetchBills = () => {
         setLoading(prev => ({ ...prev, table: true }));
@@ -115,6 +114,33 @@ export default function BillingScreen() {
             .finally(() => setLoading(prev => ({ ...prev, table: false })));
     };
 
+    const deleteBill = () => {
+        AuthApi.delete("/billing/delete", {
+            params: {
+                billId: deleteDialog.id
+            }
+        })
+            .then(() => {
+                setAlert({
+                    open: true,
+                    type: "success",
+                    message: "Bill deleted successfully."
+                });
+                fetchBills();
+            })
+            .catch(err => {
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Failed to delete bill."
+                });
+                console.error("Error deleting bill:", err);
+            })
+            .finally(() => {
+                setDeleteDialog(prev => ({ ...prev, open: false }));
+            });
+    };
+
     useEffect(() => {
         fetchBills();
     }, [paginationModel]);
@@ -133,9 +159,9 @@ export default function BillingScreen() {
 
             {/* Alerts */}
             {alert.open && (
-                <Box sx={{ marginTop: 2 }}>
-                    {alert.type == "success" && <Alert severity="success" onClose={handleAlertClose}>{alert.message}</Alert>}
-                    {alert.type == "error" && <Alert severity="error">{alert.message}</Alert>}
+                <Box sx={{ my: 2 }}>
+                    {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
+                    {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
                 </Box>
             )}
 
@@ -153,6 +179,29 @@ export default function BillingScreen() {
                     onPaginationModelChange={setPaginationModel}
                 />
             </Box>
+
+            {/* Delete Alert */}
+            <Dialog
+                open={deleteDialog.open}
+                onClose={() => setDeleteDialog(prev => ({ ...prev, open: false }))}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Warning
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to delete this bill?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialog(prev => ({ ...prev, open: false }))}>Cancel</Button>
+                    <Button onClick={() => deleteBill()} color="error">
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
         </>
     );

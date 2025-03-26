@@ -27,4 +27,7 @@ public class SupplierService {
         return new PagedModel<>(repository.findAll(pageable));
     }
 
+    public void deleteSupplier(Integer supplierId) {
+        repository.deleteById(supplierId);
+    }
 }

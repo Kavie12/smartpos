@@ -3,7 +3,7 @@ import { Alert, Box, Button, IconButton, TextField, Typography } from "@mui/mate
 import { useState } from "react";
 import { Link } from "react-router";
 import { AuthApi } from "../../services/Api";
-import { CustomerDataType } from "../../types/types";
+import { LoyaltyMemberDataType } from "../../types/types";
 
 export default function AddLoyaltyMemberScreen() {
 
@@ -13,17 +13,17 @@ export default function AddLoyaltyMemberScreen() {
         type: null,
         message: null
     });
-    const [formData, setFormData] = useState<CustomerDataType>({
+    const [formData, setFormData] = useState<LoyaltyMemberDataType>({
         firstName: "",
         lastName: "",
         phoneNumber: "",
         points: 0
     });
 
-    const addCustomer = () => {
+    const addLoyaltyMember = () => {
         setLoading(true);
         console.log(formData);
-        AuthApi.post("/loyalty_customers/add", formData)
+        AuthApi.post("/loyalty_members/add", formData)
             .then(() => {
                 setAlert({
                     open: true,
@@ -59,13 +59,13 @@ export default function AddLoyaltyMemberScreen() {
             <Box sx={{ px: 5 }}>
                 {/* Alerts */}
                 {alert.open && (
-                    <Box sx={{ marginTop: 2 }}>
+                    <Box sx={{ my: 2 }}>
                         {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                        {alert.type == "error" && <Alert severity="error">{alert.message}</Alert>}
+                        {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
                     </Box>
                 )}
 
-                <Box component="form" action={addCustomer} sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "start" }}>
+                <Box component="form" action={addLoyaltyMember} sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "start" }}>
                     <TextField
                         margin="dense"
                         id="firstname"
