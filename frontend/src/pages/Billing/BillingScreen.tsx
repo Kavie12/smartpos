@@ -1,13 +1,15 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { Alert, Box, Button, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
+import { Add, DeleteOutlined, Edit, RemoveRedEye } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { BillingDataType, BillingRecordDataType } from '../../types/types';
 import DeleteDialog from '../../components/DeleteDialog';
 
 export default function BillingScreen() {
+
+    const navigate = useNavigate();
 
     const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
         page: 0,
@@ -74,9 +76,14 @@ export default function BillingScreen() {
             getActions: ({ id, row }) => {
                 return [
                     <GridActionsCellItem
+                        icon={<RemoveRedEye />}
+                        label="see"
+                        color="inherit"
+                        onClick={() => navigate("/bill_details", { state: { id: id } })}
+                    />,
+                    <GridActionsCellItem
                         icon={<Edit />}
                         label="Edit"
-                        className="textPrimary"
                         color="inherit"
                         onClick={() => console.log("Edit " + row)}
                     />,

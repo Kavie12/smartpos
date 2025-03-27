@@ -76,7 +76,6 @@ export default function LoyaltyMembersScreen() {
                     <GridActionsCellItem
                         icon={<Edit />}
                         label="Edit"
-                        className="textPrimary"
                         color="inherit"
                         onClick={() => console.log("Edit " + row)}
                     />,

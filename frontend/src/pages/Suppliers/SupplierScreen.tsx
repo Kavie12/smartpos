@@ -68,7 +68,6 @@ export default function SuppliersScreen() {
                     <GridActionsCellItem
                         icon={<Edit />}
                         label="Edit"
-                        className="textPrimary"
                         color="inherit"
                         onClick={() => console.log("Edit " + row)}
                     />,

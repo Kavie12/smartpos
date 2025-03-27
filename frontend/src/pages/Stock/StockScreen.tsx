@@ -68,7 +68,6 @@ export default function StockScreen() {
                     <GridActionsCellItem
                         icon={<Edit />}
                         label="Edit"
-                        className="textPrimary"
                         color="inherit"
                         onClick={() => console.log("Delete " + row)}
                     />,

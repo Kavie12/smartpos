@@ -75,7 +75,6 @@ export default function EmployeesScreen() {
                     <GridActionsCellItem
                         icon={<Edit />}
                         label="Edit"
-                        className="textPrimary"
                         color="inherit"
                         onClick={() => console.log("Edit " + row)}
                     />,

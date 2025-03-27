@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { AuthApi } from "../../services/Api";
-import { Alert, Box, Button, Grid2, IconButton, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Divider, Grid2, IconButton, TextField, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import QuantityCounter from "../../components/QuantityCounter";
 import { Link } from "react-router";
@@ -90,9 +90,11 @@ export default function CreateBillScreen() {
 
     useEffect(() => {
 
-        setTotal(items.reduce((total, item) => {
-            return total + item.product.retailPrice * item.quantity;
-        }, 0));
+        setTotal(
+            items.reduce((total, item) => {
+                return total + item.product.retailPrice * item.quantity;
+            }, 0)
+        );
 
     }, [items]);
 
@@ -143,7 +145,7 @@ export default function CreateBillScreen() {
                             <Typography variant="h6" fontWeight="bold">Billed Items</Typography>
                             <BilledItems items={items} />
                             <Box sx={{ marginTop: 6, display: "flex", flexDirection: "column" }}>
-                                <Box sx={{ height: 1.5, backgroundColor: grey[400] }} />
+                                <Divider />
                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
                                     <Typography fontWeight={"bold"}>Sub Total:</Typography>
                                     <Typography fontWeight={"bold"}>Rs. {total}</Typography>

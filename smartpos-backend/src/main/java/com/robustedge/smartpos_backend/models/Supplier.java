@@ -22,9 +22,6 @@ public class Supplier {
     @Column(name = "email", nullable = false, unique = true, length = 50)
     private String email;
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Product> products = new ArrayList<>();
-
     public Supplier() {
     }
 

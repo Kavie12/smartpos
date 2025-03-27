@@ -93,7 +93,6 @@ export default function ProductsScreen() {
                     <GridActionsCellItem
                         icon={<Edit />}
                         label="Edit"
-                        className="textPrimary"
                         color="inherit"
                         onClick={() => console.log("Edit " + row)}
                     />,

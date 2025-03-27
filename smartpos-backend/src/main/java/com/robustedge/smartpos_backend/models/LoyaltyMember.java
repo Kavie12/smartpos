@@ -2,8 +2,8 @@ package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
 
-@Entity(name = "LoyaltyCustomers")
-@Table(name = "loyalty_customers")
+@Entity(name = "LoyaltyMember")
+@Table(name = "loyalty_members")
 public class LoyaltyMember {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

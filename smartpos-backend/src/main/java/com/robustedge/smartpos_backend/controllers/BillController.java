@@ -33,6 +33,11 @@ public class BillController {
         return service.getAllBills();
     }
 
+    @GetMapping("get_one")
+    public Bill getOneBill(@RequestParam(name = "billId") Integer billId) {
+        return service.getOneBill(billId);
+    }
+
     @DeleteMapping("/delete")
     public void deleteBill(@RequestParam(name = "billId") Integer billId) {
         service.deleteBill(billId);

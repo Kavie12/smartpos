@@ -15,6 +15,7 @@ import AddProductScreen from "../pages/Products/AddProductScreen";
 import AddSupplierScreen from "../pages/Suppliers/AddSupplierScreen";
 import AddLoyaltyMemberScreen from "../pages/LoyaltyMembers/AddLoyaltyMemberScreen";
 import AddEmployeeScreen from "../pages/Employees/AddEmployeeScreen";
+import BillDetailsScreen from "../pages/Billing/BillDetailsScreen";
 
 export default createHashRouter([
     {
@@ -43,6 +44,10 @@ export default createHashRouter([
                     {
                         path: "create_bill",
                         element: <CreateBillScreen />
+                    },
+                    {
+                        path: "bill_details",
+                        element: <BillDetailsScreen />
                     },
                     {
                         path: "stock",

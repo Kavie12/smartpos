@@ -22,7 +22,7 @@ public class Bill {
     private List<BillingRecord> billingRecords = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "loyalty_customer_id")
+    @JoinColumn(name = "loyalty_member_id")
     private LoyaltyMember loyaltyMember;
 
     @Column(name = "created_at")
