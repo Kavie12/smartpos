@@ -1,10 +1,11 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
+import { Alert, Box, Button, Typography } from '@mui/material';
 import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { ProductDataType } from '../../types/types';
 import { Link } from 'react-router';
+import DeleteDialog from '../../components/DeleteDialog';
 
 export default function ProductsScreen() {
 
@@ -16,8 +17,9 @@ export default function ProductsScreen() {
         rows: [],
         rowCount: 0
     });
-    const [loading, setLoading] = useState<{ table: boolean }>({
-        table: false
+    const [loading, setLoading] = useState<{ table: boolean, delete: boolean }>({
+        table: false,
+        delete: false
     });
     const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
         open: false,
@@ -132,6 +134,7 @@ export default function ProductsScreen() {
     };
 
     const deleteProduct = () => {
+        setLoading(prev => ({ ...prev, delete: true }));
         AuthApi.delete("/products/delete", {
             params: {
                 productId: deleteDialog.id
@@ -154,6 +157,7 @@ export default function ProductsScreen() {
                 console.error("Error deleting product:", err);
             })
             .finally(() => {
+                setLoading(prev => ({ ...prev, delete: false }));
                 setDeleteDialog(prev => ({ ...prev, open: false }));
             });
     };
@@ -198,27 +202,13 @@ export default function ProductsScreen() {
             </Box>
 
             {/* Delete Alert */}
-            <Dialog
+            <DeleteDialog
                 open={deleteDialog.open}
                 onClose={() => setDeleteDialog(prev => ({ ...prev, open: false }))}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">
-                    Warning
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Are you sure you want to delete this product?
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setDeleteDialog(prev => ({ ...prev, open: false }))}>Cancel</Button>
-                    <Button onClick={() => deleteProduct()} color="error">
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                onDelete={() => deleteProduct()}
+                loading={loading.delete}
+                message="Are you sure you want to delete this product?"
+            />
 
         </>
     );
