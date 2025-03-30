@@ -22,7 +22,6 @@ export default function AddLoyaltyMemberScreen() {
 
     const addLoyaltyMember = () => {
         setLoading(true);
-        console.log(formData);
         AuthApi.post("/loyalty_members/add", formData)
             .then(() => {
                 setAlert({
@@ -32,11 +31,10 @@ export default function AddLoyaltyMemberScreen() {
                 });
             })
             .catch(err => {
-                console.error("Error adding data:", err);
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Registering customer failed."
+                    message: err.response.data.message
                 });
             })
             .finally(() => {

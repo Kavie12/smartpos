@@ -2,7 +2,6 @@ package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity(name = "Product")
 @Table(name = "products")

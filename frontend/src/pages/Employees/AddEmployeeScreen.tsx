@@ -31,11 +31,10 @@ export default function AddEmployeeScreen() {
                 });
             })
             .catch(err => {
-                console.error("Error adding data:", err);
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Failed registering employee."
+                    message: err.response.data.message
                 });
             })
             .finally(() => {

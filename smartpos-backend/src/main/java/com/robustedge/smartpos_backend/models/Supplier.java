@@ -23,9 +23,6 @@ public class Supplier {
     @Column(name = "email", nullable = false, unique = true, length = 50)
     private String email;
 
-    @OneToMany(mappedBy = "supplier")
-    private List<Product> products;
-
     @Column(name = "deleted", nullable = false)
     private boolean deleted =  false;
 

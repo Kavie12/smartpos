@@ -10,10 +10,9 @@ import { ArrowBack } from "@mui/icons-material";
 export default function CreateBillScreen() {
 
     const [barcode, setBarcode] = useState<string | null>(null);
-    const [error, setError] = useState<{ emptyBarcode: string | null, wrongBarcode: string | null, saveBill: string | null }>({
-        emptyBarcode: null,
-        wrongBarcode: null,
-        saveBill: null,
+    const [error, setError] = useState<{ barcode: string | null, saveBill: string | null }>({
+        barcode: null,
+        saveBill: null
     });
     const [items, setItems] = useState<BillingRecordDataType[]>([]);
     const [quantity, setQuantity] = useState<number>(1);
@@ -33,11 +32,14 @@ export default function CreateBillScreen() {
     };
 
     const addProduct = () => {
-        setError(prev => ({ ...prev, emptyBarcode: null }));
+
         if (!barcode) {
-            setError(prev => ({ ...prev, emptyBarcode: "Enter barcode" }));
+            setError(prev => ({ ...prev, barcode: "Enter barcode" }));
             return;
         }
+
+        setError(prev => ({ ...prev, barcode: null }));
+
         AuthApi.get("/products/find_by_barcode", {
             params: {
                 barcode: barcode
@@ -45,7 +47,6 @@ export default function CreateBillScreen() {
         })
             .then(res => {
                 if (res.data !== "") {
-                    setError(prev => ({ ...prev, wrongBarcode: null }));
                     setItems(prev =>
                         [
                             ...prev,
@@ -58,13 +59,13 @@ export default function CreateBillScreen() {
                 }
             })
             .catch(err => {
-                setError(prev => ({ ...prev, wrongBarcode: "Product not found" }));
-                console.log(err);
+                setError(prev => ({ ...prev, barcode: err.response.data.message }));
             })
             .finally(() => {
                 setBarcode("");
                 setQuantity(1);
             });
+
     };
 
     const saveBill = () => {
@@ -129,14 +130,14 @@ export default function CreateBillScreen() {
                                     sx={{ width: 400 }}
                                     value={barcode}
                                     onChange={e => handleBarcodeInputChange(e)}
-                                    error={error.emptyBarcode !== null}
+                                    error={error.barcode !== null}
+                                    helperText={error.barcode ? `*${error.barcode}` : null}
                                 />
                                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
                                     <QuantityCounter quantity={quantity} setQuantity={setQuantity} />
                                     <Button variant="contained" onClick={() => addProduct()}>Add</Button>
                                 </Box>
                             </Box>
-                            {error.wrongBarcode && <Typography color="error" sx={{ mt: 1 }}>{error.wrongBarcode}</Typography>}
                         </Box>
                     </Grid2>
                     <Grid2 size={6}>

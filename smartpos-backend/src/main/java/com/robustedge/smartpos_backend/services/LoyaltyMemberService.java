@@ -1,8 +1,10 @@
 package com.robustedge.smartpos_backend.services;
 
+import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.LoyaltyMember;
 import com.robustedge.smartpos_backend.repositories.LoyaltyCustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,11 @@ public class LoyaltyMemberService {
 
     public void addLoyaltyMember(LoyaltyMember loyaltyMember) {
         loyaltyMember.setPoints(0);
-        repository.save(loyaltyMember);
+        try {
+            repository.save(loyaltyMember);
+        } catch (DataIntegrityViolationException e) {
+            throw new ApiRequestException("Loyalty member is already registered.");
+        }
     }
 
     public List<LoyaltyMember> getAllLoyaltyMembers() {

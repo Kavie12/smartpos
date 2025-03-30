@@ -33,7 +33,7 @@ export default function AddSupplierScreen() {
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Registering supplier failed."
+                    message: err.response.data.message
                 });
                 console.error("Error adding data:", err);
             })

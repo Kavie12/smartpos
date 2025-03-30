@@ -1,8 +1,10 @@
 package com.robustedge.smartpos_backend.services;
 
+import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Supplier;
 import com.robustedge.smartpos_backend.repositories.SupplierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,11 @@ public class SupplierService {
     private SupplierRepository repository;
 
     public void addSupplier(Supplier supplier) {
-        repository.save(supplier);
+        try {
+            repository.save(supplier);
+        } catch (DataIntegrityViolationException e) {
+            throw new ApiRequestException("Supplier is already registered.");
+        }
     }
 
     public List<Supplier> getAllSuppliers() {

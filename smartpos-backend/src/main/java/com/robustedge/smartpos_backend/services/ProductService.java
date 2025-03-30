@@ -1,5 +1,6 @@
 package com.robustedge.smartpos_backend.services;
 
+import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.repositories.ProductRepository;
 import com.robustedge.smartpos_backend.repositories.StockRecordRepository;
@@ -39,7 +40,7 @@ public class ProductService {
     }
 
     public Product findProductByBarcode(String barcode) {
-        return repository.findByBarcode(barcode).orElseThrow();
+        return repository.findByBarcode(barcode).orElseThrow(() -> new ApiRequestException("Product not found"));
     }
 
     @Transactional
