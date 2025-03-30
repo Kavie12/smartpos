@@ -1,6 +1,5 @@
 package com.robustedge.smartpos_backend.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -16,7 +15,6 @@ public class Bill {
     @Column(name = "id", updatable = false)
     private Integer id;
 
-    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "bill_id")
     private List<BillingRecord> billingRecords = new ArrayList<>();

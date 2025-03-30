@@ -1,12 +1,12 @@
 package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity(name = "Product")
 @Table(name = "products")
+@SQLDelete(sql = "UPDATE products SET deleted = true WHERE id=?")
 public class Product {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +32,8 @@ public class Product {
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<StockRecord> stockRecords = new ArrayList<>();
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted =  false;
 
     public Product() {
     }

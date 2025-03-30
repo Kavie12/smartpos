@@ -20,11 +20,11 @@ public class SupplierService {
     }
 
     public List<Supplier> getAllSuppliers() {
-        return repository.findAll();
+        return repository.findAllActiveSuppliers();
     }
 
     public PagedModel<Supplier> getSuppliers(Pageable pageable) {
-        return new PagedModel<>(repository.findAll(pageable));
+        return new PagedModel<>(repository.findAllActiveSupplierPage(pageable));
     }
 
     public void deleteSupplier(Integer supplierId) {

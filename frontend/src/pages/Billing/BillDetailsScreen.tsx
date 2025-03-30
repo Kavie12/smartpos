@@ -10,7 +10,7 @@ export default function BillDetailsScreen() {
     const { state } = useLocation();
     const { id } = state;
 
-    const [bill, setBill] = useState<BillingDataType>(null);
+    const [bill, setBill] = useState<BillingDataType | null>(null);
     const [total, setTotal] = useState<number | undefined>(0);
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -75,7 +75,7 @@ export default function BillDetailsScreen() {
                                 < Divider sx={{ mt: 6 }} />
 
                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                    <Typography fontWeight={"bold"}>Sub Total:</Typography>
+                                    <Typography fontWeight={"bold"}>Total:</Typography>
                                     <Typography fontWeight={"bold"}>Rs. {total}</Typography>
                                 </Box>
                             </>

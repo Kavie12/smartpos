@@ -50,4 +50,4 @@ export type BillingDataType = {
     billingRecords: BillingRecordDataType[];
     loyaltyCustomer: LoyaltyMemberDataType | null;
     createdAt: String;
-} | null;
+};

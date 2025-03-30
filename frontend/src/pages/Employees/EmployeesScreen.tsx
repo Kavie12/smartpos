@@ -144,7 +144,9 @@ export default function EmployeesScreen() {
     };
 
     useEffect(() => {
+
         fetchEmployees();
+
     }, [paginationModel]);
 
     return (

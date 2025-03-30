@@ -26,13 +26,13 @@ export default function CreateBillScreen() {
 
     const clearBill = () => {
         setItems([]);
-    }
+    };
 
     const handleBarcodeInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setBarcode(e.target.value);
     };
 
-    const addProduct = (barcode: string | null) => {
+    const addProduct = () => {
         setError(prev => ({ ...prev, emptyBarcode: null }));
         if (!barcode) {
             setError(prev => ({ ...prev, emptyBarcode: "Enter barcode" }));
@@ -55,11 +55,10 @@ export default function CreateBillScreen() {
                             }
                         ]
                     );
-                } else {
-                    setError(prev => ({ ...prev, wrongBarcode: "Product not found" }));
                 }
             })
             .catch(err => {
+                setError(prev => ({ ...prev, wrongBarcode: "Product not found" }));
                 console.log(err);
             })
             .finally(() => {
@@ -134,7 +133,7 @@ export default function CreateBillScreen() {
                                 />
                                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
                                     <QuantityCounter quantity={quantity} setQuantity={setQuantity} />
-                                    <Button variant="contained" onClick={() => addProduct(barcode)}>Add</Button>
+                                    <Button variant="contained" onClick={() => addProduct()}>Add</Button>
                                 </Box>
                             </Box>
                             {error.wrongBarcode && <Typography color="error" sx={{ mt: 1 }}>{error.wrongBarcode}</Typography>}
@@ -147,7 +146,7 @@ export default function CreateBillScreen() {
                             <Box sx={{ marginTop: 6, display: "flex", flexDirection: "column" }}>
                                 <Divider />
                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                    <Typography fontWeight={"bold"}>Sub Total:</Typography>
+                                    <Typography fontWeight={"bold"}>Total:</Typography>
                                     <Typography fontWeight={"bold"}>Rs. {total}</Typography>
                                 </Box>
                                 <Button variant="contained" sx={{ marginTop: 4 }} onClick={() => saveBill()}>

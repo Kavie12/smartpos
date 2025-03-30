@@ -8,7 +8,7 @@ type AuthContextType = {
     isProcessing: boolean;
     error: string | null;
     setError: React.Dispatch<React.SetStateAction<string | null>>;
-}
+};
 
 const AuthContext = createContext<AuthContextType | null>(null);
 

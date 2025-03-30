@@ -24,7 +24,7 @@ export default function MainLayout() {
                     <Outlet />
                 </Box>
             </Box>
-        </SidebarProvider >
+        </SidebarProvider>
     );
 
 }

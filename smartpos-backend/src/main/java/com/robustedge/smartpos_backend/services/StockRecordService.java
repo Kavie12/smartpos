@@ -43,6 +43,7 @@ public class StockRecordService {
         Optional<StockRecord> record = repository.findById(id);
         Product product = record.orElseThrow().getProduct();
         product.setStockLevel(product.getStockLevel() - record.orElseThrow().getStockAmount());
+        productService.updateProduct(product);
         repository.deleteById(id);
     }
 }
