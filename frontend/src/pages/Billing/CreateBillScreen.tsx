@@ -23,52 +23,49 @@ export default function CreateBillScreen() {
     });
     const [total, setTotal] = useState<number>(0);
 
-    const clearBill = () => {
+    const clearBill = (): void => {
         setItems([]);
     };
 
-    const handleBarcodeInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const resetForm = (): void => {
+        setBarcode("");
+        setQuantity(1);
+    };
+
+    const handleBarcodeInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
         setBarcode(e.target.value);
     };
 
-    const addProduct = () => {
-
+    const addProduct = (): void => {
         if (!barcode) {
             setError(prev => ({ ...prev, barcode: "Enter barcode" }));
             return;
         }
-
         setError(prev => ({ ...prev, barcode: null }));
-
         AuthApi.get("/products/find_by_barcode", {
             params: {
                 barcode: barcode
             }
         })
             .then(res => {
+                console.log(res.data);
                 if (res.data !== "") {
-                    setItems(prev =>
-                        [
-                            ...prev,
-                            {
-                                product: res.data,
-                                quantity: quantity
-                            }
-                        ]
-                    );
+                    setItems(prev => [
+                        ...prev,
+                        {
+                            product: res.data,
+                            quantity: quantity
+                        }
+                    ]);
                 }
+                resetForm();
             })
             .catch(err => {
                 setError(prev => ({ ...prev, barcode: err.response.data.message }));
-            })
-            .finally(() => {
-                setBarcode("");
-                setQuantity(1);
             });
-
     };
 
-    const saveBill = () => {
+    const saveBill = (): void => {
         setError(prev => ({ ...prev, saveBill: null }));
         AuthApi.post("/billing/create", {
             billingRecords: items,
@@ -89,13 +86,11 @@ export default function CreateBillScreen() {
     };
 
     useEffect(() => {
-
         setTotal(
             items.reduce((total, item) => {
                 return total + item.product.retailPrice * item.quantity;
             }, 0)
         );
-
     }, [items]);
 
     return (
@@ -122,7 +117,7 @@ export default function CreateBillScreen() {
                     <Grid2 size={6}>
                         <Box>
                             <Typography variant="body2" sx={{ marginBottom: 1 }}>Enter Barcode</Typography>
-                            <Box sx={{ display: "flex", alignItems: "center", columnGap: 4, justifyContent: "space-between" }}>
+                            <Box component="form" action={addProduct} sx={{ display: "flex", alignItems: "center", columnGap: 4, justifyContent: "space-between" }}>
                                 <TextField
                                     id="barcodeInput"
                                     size="small"
@@ -135,7 +130,7 @@ export default function CreateBillScreen() {
                                 />
                                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
                                     <QuantityCounter quantity={quantity} setQuantity={setQuantity} />
-                                    <Button variant="contained" onClick={() => addProduct()}>Add</Button>
+                                    <Button variant="contained" type="submit">Add</Button>
                                 </Box>
                             </Box>
                         </Box>

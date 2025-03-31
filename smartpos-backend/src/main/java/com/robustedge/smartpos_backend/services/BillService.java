@@ -5,7 +5,6 @@ import com.robustedge.smartpos_backend.models.BillingRecord;
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.repositories.BillRepository;
 import com.robustedge.smartpos_backend.repositories.ProductRepository;
-import org.apache.catalina.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

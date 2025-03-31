@@ -21,7 +21,7 @@ public class SupplierService {
         try {
             repository.save(supplier);
         } catch (DataIntegrityViolationException e) {
-            throw new ApiRequestException("Supplier is already registered.");
+            throw new ApiRequestException("The phone number or email belongs to a registered supplier.");
         }
     }
 

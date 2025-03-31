@@ -12,7 +12,7 @@ public class Product {
     @Column(name = "id", updatable = false)
     private Integer id;
 
-    @Column(name = "barcode", length = 20)
+    @Column(name = "barcode", unique = true, length = 20)
     private String barcode;
 
     @Column(name = "name", nullable = false, length = 50)

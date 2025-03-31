@@ -20,7 +20,16 @@ export default function AddEmployeeScreen() {
         email: ""
     });
 
-    const addEmployee = () => {
+    const resetFormData = (): void => {
+        setFormData({
+            firstName: "",
+            lastName: "",
+            phoneNumber: "",
+            email: ""
+        });
+    };
+
+    const addEmployee = (): void => {
         setLoading(true);
         AuthApi.post("/employees/add", formData)
             .then(() => {
@@ -29,6 +38,7 @@ export default function AddEmployeeScreen() {
                     type: "success",
                     message: "Employee registered successfully."
                 });
+                resetFormData();
             })
             .catch(err => {
                 setAlert({

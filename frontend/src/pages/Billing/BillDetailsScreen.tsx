@@ -14,7 +14,7 @@ export default function BillDetailsScreen() {
     const [total, setTotal] = useState<number | undefined>(0);
     const [loading, setLoading] = useState<boolean>(false);
 
-    const fetchBill = () => {
+    const fetchBill = (): void => {
         setLoading(true);
         AuthApi.get("/billing/get_one", {
             params: {
@@ -31,19 +31,15 @@ export default function BillDetailsScreen() {
     };
 
     useEffect(() => {
-
         fetchBill();
-
     }, []);
 
     useEffect(() => {
-
         setTotal(
             bill?.billingRecords.reduce((total, item) => {
                 return total + item.product.retailPrice * item.quantity;
             }, 0)
         );
-
     }, [bill]);
 
     return (

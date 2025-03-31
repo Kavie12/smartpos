@@ -82,7 +82,7 @@ export default function SuppliersScreen() {
         }
     ];
 
-    const fetchSuppliers = () => {
+    const fetchSuppliers = (): void => {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/suppliers/get", {
             params: {
@@ -107,7 +107,7 @@ export default function SuppliersScreen() {
             .finally(() => setLoading(prev => ({ ...prev, table: false })));
     };
 
-    const deleteSupplier = () => {
+    const deleteSupplier = (): void => {
         setLoading(prev => ({ ...prev, delete: true }));
         AuthApi.delete("/suppliers/delete", {
             params: {

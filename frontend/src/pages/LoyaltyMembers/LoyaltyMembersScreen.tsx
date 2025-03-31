@@ -90,7 +90,7 @@ export default function LoyaltyMembersScreen() {
         }
     ];
 
-    const fetchLoyaltyMembers = () => {
+    const fetchLoyaltyMembers = (): void => {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/loyalty_members/get", {
             params: {
@@ -115,7 +115,7 @@ export default function LoyaltyMembersScreen() {
             .finally(() => setLoading(prev => ({ ...prev, table: false })));
     };
 
-    const deleteLoyaltyMember = () => {
+    const deleteLoyaltyMember = (): void => {
         setLoading(prev => ({ ...prev, delete: true }));
         AuthApi.delete("/loyalty_members/delete", {
             params: {

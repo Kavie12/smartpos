@@ -14,12 +14,17 @@ export default function AddStockScreen() {
         message: null
     });
     const [products, setProducts] = useState<ProductDataType[]>([]);
-    const [selectedProduct, setSelectedProduct] = useState<ProductDataType | null | undefined>(null);
     const [formData, setFormData] = useState<StockRecordType>({
         stockAmount: 0
     });
 
-    const fetchProducts = () => {
+    const resetFormData = (): void => {
+        setFormData({
+            stockAmount: 0
+        });
+    };
+
+    const fetchProducts = (): void => {
         setLoading(prev => ({ ...prev, products: true }));
         AuthApi.get("/products/get_all")
             .then(res => {
@@ -36,10 +41,10 @@ export default function AddStockScreen() {
             .finally(() => setLoading(prev => ({ ...prev, products: false })));
     };
 
-    const addStockRecord = () => {
+    const addStockRecord = (): void => {
         setLoading(prev => ({ ...prev, add: true }));
 
-        if (!selectedProduct) {
+        if (!formData.product) {
             setAlert({
                 open: true,
                 type: "error",
@@ -59,8 +64,6 @@ export default function AddStockScreen() {
             return;
         }
 
-        formData.product = selectedProduct;
-
         AuthApi.post("/stock/add", formData)
             .then(() => {
                 setAlert({
@@ -68,6 +71,7 @@ export default function AddStockScreen() {
                     type: "success",
                     message: "Stock Record added successfully."
                 });
+                resetFormData();
             })
             .catch(err => {
                 setAlert({
@@ -112,8 +116,8 @@ export default function AddStockScreen() {
                         getOptionLabel={(option) => option.name}
                         loading={loading.products}
                         renderInput={(params) => <TextField {...params} name="product" label="Product" />}
-                        onChange={(_, value) => setSelectedProduct(value)}
-                        value={selectedProduct}
+                        onChange={(_, value) => setFormData(prev => ({ ...prev, product: value }))}
+                        value={formData.product}
                         sx={{ marginY: 1, width: 400 }}
                     />
                     <TextField

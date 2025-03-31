@@ -89,7 +89,7 @@ export default function EmployeesScreen() {
         }
     ];
 
-    const fetchEmployees = () => {
+    const fetchEmployees = (): void => {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/employees/get", {
             params: {
@@ -114,7 +114,7 @@ export default function EmployeesScreen() {
             .finally(() => setLoading(prev => ({ ...prev, table: false })));
     };
 
-    const deleteEmployee = () => {
+    const deleteEmployee = (): void => {
         setLoading(prev => ({ ...prev, delete: true }));
         AuthApi.delete("/employees/delete", {
             params: {
@@ -144,9 +144,7 @@ export default function EmployeesScreen() {
     };
 
     useEffect(() => {
-
         fetchEmployees();
-
     }, [paginationModel]);
 
     return (

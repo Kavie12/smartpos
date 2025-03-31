@@ -1,3 +1,8 @@
+export type CredentialsType = {
+    username: string;
+    password: string;
+};
+
 export type SupplierDataType = {
     id?: number;
     name: string;
@@ -7,7 +12,7 @@ export type SupplierDataType = {
 
 export type StockRecordType = {
     id?: number;
-    product?: ProductDataType;
+    product?: ProductDataType | null;
     stockAmount: number;
     createdAt?: String;
 };
@@ -16,7 +21,7 @@ export type ProductDataType = {
     id?: number;
     barcode: string;
     name: string;
-    supplier?: SupplierDataType;
+    supplier?: SupplierDataType | null;
     wholesalePrice: number;
     retailPrice: number;
     stockLevel: number;

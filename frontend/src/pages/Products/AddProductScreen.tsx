@@ -14,7 +14,6 @@ export default function AddProductScreen() {
         message: null
     });
     const [suppliers, setSuppliers] = useState<SupplierDataType[]>([]);
-    const [selectedSupplier, setSelectedSupplier] = useState<SupplierDataType | null | undefined>(null);
     const [formData, setFormData] = useState<ProductDataType>({
         barcode: "",
         name: "",
@@ -23,7 +22,17 @@ export default function AddProductScreen() {
         stockLevel: 0
     });
 
-    const fetchSuppliers = () => {
+    const resetFormData = (): void => {
+        setFormData({
+            barcode: "",
+            name: "",
+            wholesalePrice: 0,
+            retailPrice: 0,
+            stockLevel: 0
+        });
+    };
+
+    const fetchSuppliers = (): void => {
         setLoading(prev => ({ ...prev, suppliers: true }));
         AuthApi.get("/suppliers/get_all")
             .then(res => {
@@ -40,10 +49,10 @@ export default function AddProductScreen() {
             .finally(() => setLoading(prev => ({ ...prev, suppliers: false })));
     };
 
-    const addProduct = () => {
+    const addProduct = (): void => {
         setLoading(prev => ({ ...prev, add: true }));
 
-        if (!selectedSupplier) {
+        if (!formData.supplier) {
             setAlert({
                 open: true,
                 type: "error",
@@ -53,8 +62,6 @@ export default function AddProductScreen() {
             return;
         }
 
-        formData.supplier = selectedSupplier;
-
         AuthApi.post("/products/add", formData)
             .then(() => {
                 setAlert({
@@ -62,12 +69,13 @@ export default function AddProductScreen() {
                     type: "success",
                     message: "Product added successfully."
                 });
+                resetFormData();
             })
             .catch(err => {
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Adding product failed."
+                    message: err.response.data.message
                 });
                 console.error("Error adding data:", err);
             })
@@ -116,8 +124,8 @@ export default function AddProductScreen() {
                         getOptionLabel={(option) => option.name}
                         loading={loading.suppliers}
                         renderInput={(params) => <TextField {...params} name="supplier" label="Supplier" />}
-                        onChange={(_, value) => setSelectedSupplier(value)}
-                        value={selectedSupplier}
+                        onChange={(_, value) => setFormData(prev => ({ ...prev, supplier: value }))}
+                        value={formData.supplier}
                         sx={{ width: 400, mt: 2 }}
                     />
                     <TextField

@@ -19,7 +19,15 @@ export default function AddSupplierScreen() {
         email: ""
     });
 
-    const addSupplier = () => {
+    const resetFormData = (): void => {
+        setFormData({
+            name: "",
+            phoneNumber: "",
+            email: ""
+        });
+    };
+
+    const addSupplier = (): void => {
         setLoading(true);
         AuthApi.post("/suppliers/add", formData)
             .then(() => {
@@ -28,6 +36,7 @@ export default function AddSupplierScreen() {
                     type: "success",
                     message: "Supplier registererd successfully."
                 });
+                resetFormData();
             })
             .catch(err => {
                 setAlert({

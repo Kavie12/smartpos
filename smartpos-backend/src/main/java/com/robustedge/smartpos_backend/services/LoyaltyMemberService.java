@@ -22,7 +22,7 @@ public class LoyaltyMemberService {
         try {
             repository.save(loyaltyMember);
         } catch (DataIntegrityViolationException e) {
-            throw new ApiRequestException("Loyalty member is already registered.");
+            throw new ApiRequestException("The phone number belongs to a registered supplier.");
         }
     }
 

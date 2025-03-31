@@ -21,7 +21,7 @@ public class EmployeeService {
         try {
             repository.save(employee);
         } catch (DataIntegrityViolationException e) {
-            throw new ApiRequestException("Employee is already registered.");
+            throw new ApiRequestException("The phone number or email belongs to a registered employee.");
         }
     }
 

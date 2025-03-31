@@ -20,7 +20,16 @@ export default function AddLoyaltyMemberScreen() {
         points: 0
     });
 
-    const addLoyaltyMember = () => {
+    const resetFormData = (): void => {
+        setFormData({
+            firstName: "",
+            lastName: "",
+            phoneNumber: "",
+            points: 0
+        });
+    };
+
+    const addLoyaltyMember = (): void => {
         setLoading(true);
         AuthApi.post("/loyalty_members/add", formData)
             .then(() => {
@@ -29,6 +38,7 @@ export default function AddLoyaltyMemberScreen() {
                     type: "success",
                     message: "Customer registererd successfully."
                 });
+                resetFormData();
             })
             .catch(err => {
                 setAlert({

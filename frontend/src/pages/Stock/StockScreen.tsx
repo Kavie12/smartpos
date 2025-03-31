@@ -32,6 +32,15 @@ export default function StockScreen() {
 
     const columns: GridColDef[] = [
         {
+            field: "id",
+            headerName: "ID",
+            type: "number",
+            headerAlign: "left",
+            align: "left",
+            sortable: false,
+            flex: 0.5
+        },
+        {
             field: "createdAt",
             headerName: "Date",
             type: "dateTime",
@@ -82,7 +91,7 @@ export default function StockScreen() {
         }
     ];
 
-    const fetchStockRecords = () => {
+    const fetchStockRecords = (): void => {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/stock/get", {
             params: {
@@ -107,7 +116,7 @@ export default function StockScreen() {
             .finally(() => setLoading(prev => ({ ...prev, table: false })));
     };
 
-    const deleteRecord = () => {
+    const deleteRecord = (): void => {
         setLoading(prev => ({ ...prev, delete: true }));
         AuthApi.delete("/stock/delete", {
             params: {

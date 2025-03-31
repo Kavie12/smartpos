@@ -35,6 +35,15 @@ export default function BillingScreen() {
 
     const columns: GridColDef[] = [
         {
+            field: "id",
+            headerName: "ID",
+            type: "number",
+            headerAlign: "left",
+            align: "left",
+            sortable: false,
+            flex: 0.5
+        },
+        {
             field: "createdAt",
             headerName: "Date",
             type: "dateTime",
@@ -98,7 +107,7 @@ export default function BillingScreen() {
         }
     ];
 
-    const fetchBills = () => {
+    const fetchBills = (): void => {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/billing/get", {
             params: {
@@ -123,7 +132,7 @@ export default function BillingScreen() {
             .finally(() => setLoading(prev => ({ ...prev, table: false })));
     };
 
-    const deleteBill = () => {
+    const deleteBill = (): void => {
         setLoading(prev => ({ ...prev, delete: true }));
         AuthApi.delete("/billing/delete", {
             params: {

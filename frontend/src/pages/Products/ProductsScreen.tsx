@@ -107,7 +107,7 @@ export default function ProductsScreen() {
         }
     ];
 
-    const fetchProducts = () => {
+    const fetchProducts = (): void => {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/products/get", {
             params: {
@@ -132,7 +132,7 @@ export default function ProductsScreen() {
             .finally(() => setLoading(prev => ({ ...prev, table: false })));
     };
 
-    const deleteProduct = () => {
+    const deleteProduct = (): void => {
         setLoading(prev => ({ ...prev, delete: true }));
         AuthApi.delete("/products/delete", {
             params: {
