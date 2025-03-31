@@ -2,7 +2,6 @@ import { createHashRouter } from "react-router";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import LoginScreen from "../pages/LoginScreen";
-import ProtectedRoute from "./ProtectedRoute";
 import LoyaltyMembersScreen from "../pages/LoyaltyMembers/LoyaltyMembersScreen";
 import EmployeesScreen from "../pages/Employees/EmployeesScreen";
 import SuppliersScreen from "../pages/Suppliers/SupplierScreen";
@@ -21,76 +20,55 @@ export default createHashRouter([
     {
         element: <AuthLayout />,
         children: [
-            {
-                index: true,
-                element: <LoginScreen />
-            },
+            { index: true, element: <LoginScreen /> },
         ]
     },
     {
-        element: (
-            <ProtectedRoute>
-                <MainLayout />
-            </ProtectedRoute>
-        ),
+        element: <MainLayout />,
         children: [
             {
-                path: "/",
+                path: "billing",
                 children: [
-                    {
-                        path: "billing",
-                        element: <BillingScreen />
-                    },
-                    {
-                        path: "create_bill",
-                        element: <CreateBillScreen />
-                    },
-                    {
-                        path: "bill_details",
-                        element: <BillDetailsScreen />
-                    },
-                    {
-                        path: "stock",
-                        element: <StockScreen />
-                    },
-                    {
-                        path: "add_stock",
-                        element: <AddStockScreen />
-                    },
-                    {
-                        path: "products",
-                        element: <ProductsScreen />
-                    },
-                    {
-                        path: "add_product",
-                        element: <AddProductScreen />
-                    },
-                    {
-                        path: "suppliers",
-                        element: <SuppliersScreen />
-                    },
-                    {
-                        path: "add_supplier",
-                        element: <AddSupplierScreen />
-                    },
-                    {
-                        path: "loyalty_members",
-                        element: <LoyaltyMembersScreen />
-                    },
-                    {
-                        path: "add_loyalty_member",
-                        element: <AddLoyaltyMemberScreen />
-                    },
-                    {
-                        path: "employees",
-                        element: <EmployeesScreen />
-                    },
-                    {
-                        path: "add_employee",
-                        element: <AddEmployeeScreen />
-                    },
+                    { index: true, element: <BillingScreen /> },
+                    { path: "create_bill", element: <CreateBillScreen /> },
+                    { path: "bill_details/:billId", element: <BillDetailsScreen /> }
                 ]
-            }
+            },
+            {
+                path: "stock",
+                children: [
+                    { index: true, element: <StockScreen /> },
+                    { path: "add_stock", element: <AddStockScreen /> }
+                ]
+            },
+            {
+                path: "products",
+                children: [
+                    { index: true, element: <ProductsScreen /> },
+                    { path: "add_product", element: <AddProductScreen /> }
+                ]
+            },
+            {
+                path: "suppliers",
+                children: [
+                    { index: true, element: <SuppliersScreen /> },
+                    { path: "add_supplier", element: <AddSupplierScreen /> },
+                ]
+            },
+            {
+                path: "loyalty_members",
+                children: [
+                    { index: true, element: <LoyaltyMembersScreen /> },
+                    { path: "add_loyalty_member", element: <AddLoyaltyMemberScreen /> },
+                ]
+            },
+            {
+                path: "employees",
+                children: [
+                    { index: true, element: <EmployeesScreen /> },
+                    { path: "add_employee", element: <AddEmployeeScreen /> },
+                ]
+            },
         ]
     }
 ]);

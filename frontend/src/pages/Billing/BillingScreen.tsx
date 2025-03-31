@@ -88,7 +88,7 @@ export default function BillingScreen() {
                         icon={<RemoveRedEye />}
                         label="see"
                         color="inherit"
-                        onClick={() => navigate("/bill_details", { state: { id: id } })}
+                        onClick={() => navigate(`./bill_details/${id}`)}
                     />,
                     <GridActionsCellItem
                         icon={<Edit />}
@@ -170,7 +170,7 @@ export default function BillingScreen() {
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Typography variant="h6" fontWeight="bold">Billing</Typography>
-                <Link to="/create_bill">
+                <Link to="./create_bill">
                     <Button startIcon={<Add />}>
                         Create Bill
                     </Button>

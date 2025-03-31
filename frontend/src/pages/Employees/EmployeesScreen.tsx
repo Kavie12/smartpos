@@ -152,7 +152,7 @@ export default function EmployeesScreen() {
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Typography variant="h6" fontWeight="bold">Employee</Typography>
-                <Link to="/add_employee">
+                <Link to="./add_employee">
                     <Button startIcon={<Add />}>
                         Add Employee
                     </Button>

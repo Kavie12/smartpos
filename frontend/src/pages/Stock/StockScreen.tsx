@@ -154,7 +154,7 @@ export default function StockScreen() {
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Typography variant="h6" fontWeight="bold">Stock Records</Typography>
-                <Link to="/add_stock">
+                <Link to="./add_stock">
                     <Button startIcon={<Add />}>
                         Add Stock
                     </Button>

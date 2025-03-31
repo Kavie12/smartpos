@@ -170,7 +170,7 @@ export default function ProductsScreen() {
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Typography variant="h6" fontWeight="bold">Products</Typography>
-                <Link to="/add_product">
+                <Link to="./add_product">
                     <Button startIcon={<Add />}>
                         Add Product
                     </Button>

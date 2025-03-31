@@ -1,5 +1,6 @@
 package com.robustedge.smartpos_backend.services;
 
+import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Bill;
 import com.robustedge.smartpos_backend.models.BillingRecord;
 import com.robustedge.smartpos_backend.models.Product;
@@ -48,7 +49,7 @@ public class BillService {
     }
 
     public Bill getOneBill(Integer billId) {
-        return repository.findById(billId).orElseThrow();
+        return repository.findById(billId).orElseThrow(() -> new ApiRequestException("Invalid bill ID."));
     }
 
     public void deleteBill(Integer billId) {

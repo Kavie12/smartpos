@@ -1,11 +1,23 @@
-import { Outlet } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import SidebarProvider from "../context/SidebarContext";
 import { Box, CssBaseline } from "@mui/material";
 import Sidebar, { DrawerHeader } from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { DRAWER_WIDTH } from "../data/Constants";
+import { useAuth } from "../context/AuthContext";
+import { useEffect } from "react";
 
 export default function MainLayout() {
+
+    const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate("/");
+        }
+    }, [isAuthenticated, navigate]);
+
     return (
         <SidebarProvider>
             <Box sx={{ display: "flex", flexGrow: 1 }}>

@@ -1,38 +1,47 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useParams } from "react-router";
 import { BillingDataType, BillingRecordDataType } from "../../types/types";
 import { AuthApi } from "../../services/Api";
-import { Box, Card, CardContent, CircularProgress, Divider, IconButton, Typography } from "@mui/material";
+import { Alert, Box, Card, CardContent, CircularProgress, Divider, IconButton, Typography } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 
 export default function BillDetailsScreen() {
 
-    const { state } = useLocation();
-    const { id } = state;
+    const { billId } = useParams();
 
     const [bill, setBill] = useState<BillingDataType | null>(null);
     const [total, setTotal] = useState<number | undefined>(0);
     const [loading, setLoading] = useState<boolean>(false);
+    const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
+        open: false,
+        type: null,
+        message: null
+    });
 
     const fetchBill = (): void => {
         setLoading(true);
         AuthApi.get("/billing/get_one", {
             params: {
-                billId: id
+                billId: billId
             }
         })
             .then(res => {
+                console.log(res.data);
                 setBill(res.data);
             })
             .catch(err => {
-                console.error("Error fetching data:", err);
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: err.response.data.message
+                });
             })
             .finally(() => setLoading(false));
     };
 
     useEffect(() => {
         fetchBill();
-    }, []);
+    }, [billId]);
 
     useEffect(() => {
         setTotal(
@@ -53,32 +62,42 @@ export default function BillDetailsScreen() {
                 <Typography variant="h6" fontWeight="bold">Bill Details</Typography>
             </Box>
 
-            <Card sx={{ mx: 5, mt: 4, p: 2, width: 600 }}>
-                <CardContent>
-                    {loading ? (
-                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <CircularProgress />
-                        </Box>
-                    ) :
-                        (
-                            <>
-                                <Box sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}>
-                                    {bill?.billingRecords.map((billingRecord, i) => (
-                                        <BillingRecordInfo billingRecord={billingRecord} key={i} />
-                                    ))}
-                                </Box>
+            <Box sx={{ mx: 5, mt: 4 }}>
+                {/* Alerts */}
+                {alert.open && (
+                    <Box sx={{ my: 2 }}>
+                        {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
+                        {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
+                    </Box>
+                )}
 
-                                < Divider sx={{ mt: 6 }} />
+                <Card sx={{ p: 2, width: 600 }}>
+                    <CardContent>
+                        {loading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                <CircularProgress />
+                            </Box>
+                        ) :
+                            (
+                                <>
+                                    <Box sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}>
+                                        {bill?.billingRecords.map((billingRecord, i) => (
+                                            <BillingRecordInfo billingRecord={billingRecord} key={i} />
+                                        ))}
+                                    </Box>
 
-                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                    <Typography fontWeight={"bold"}>Total:</Typography>
-                                    <Typography fontWeight={"bold"}>Rs. {total}</Typography>
-                                </Box>
-                            </>
-                        )
-                    }
-                </CardContent>
-            </Card>
+                                    < Divider sx={{ mt: 6 }} />
+
+                                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+                                        <Typography fontWeight={"bold"}>Total:</Typography>
+                                        <Typography fontWeight={"bold"}>Rs. {total}</Typography>
+                                    </Box>
+                                </>
+                            )
+                        }
+                    </CardContent>
+                </Card>
+            </Box>
         </>
     );
 }

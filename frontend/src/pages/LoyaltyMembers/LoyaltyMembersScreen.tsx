@@ -153,7 +153,7 @@ export default function LoyaltyMembersScreen() {
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Typography variant="h6" fontWeight="bold">Loyalty Members</Typography>
-                <Link to="/add_loyalty_member">
+                <Link to="./add_loyalty_member">
                     <Button startIcon={<Add />}>
                         Add Loyalty Member
                     </Button>

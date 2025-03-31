@@ -145,7 +145,7 @@ export default function SuppliersScreen() {
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Typography variant="h6" fontWeight="bold">Suppliers</Typography>
-                <Link to="/add_supplier">
+                <Link to="./add_supplier">
                     <Button startIcon={<Add />}>
                         Add Supplier
                     </Button>
