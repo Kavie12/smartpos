@@ -10,7 +10,7 @@ export const AuthApi = axios.create({
 
 AuthApi.interceptors.request.use(
     config => {
-        const token = localStorage.getItem("jwtToken")
+        const token = localStorage.getItem("jwtToken");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

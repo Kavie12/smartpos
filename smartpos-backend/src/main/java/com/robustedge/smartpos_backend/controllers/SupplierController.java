@@ -33,18 +33,8 @@ public class SupplierController {
     }
 
     @DeleteMapping("/delete")
-    public void deleteSupplier(Integer id) {
-        service.deleteSupplier(id);
-    }
-
-    @PutMapping("/update")
-    public void updateSupplier(@RequestBody Supplier supplier) {
-        service.updateSupplier(supplier);
-    }
-
-    @GetMapping("/generate_report")
-    public void generateReport() {
-        service.generateReport();
+    public void deleteSupplier(@RequestParam(name = "supplierId") Integer supplierId) {
+        service.deleteSupplier(supplierId);
     }
 
 }

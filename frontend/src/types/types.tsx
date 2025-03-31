@@ -1,3 +1,8 @@
+export type CredentialsType = {
+    username: string;
+    password: string;
+};
+
 export type SupplierDataType = {
     id?: number;
     name: string;
@@ -7,8 +12,7 @@ export type SupplierDataType = {
 
 export type StockRecordType = {
     id?: number;
-    productName: string;
-    product?: ProductDataType;
+    product?: ProductDataType | null;
     stockAmount: number;
     createdAt?: String;
 };
@@ -17,13 +21,13 @@ export type ProductDataType = {
     id?: number;
     barcode: string;
     name: string;
-    supplier?: SupplierDataType;
+    supplier?: SupplierDataType | null;
     wholesalePrice: number;
     retailPrice: number;
     stockLevel: number;
 };
 
-export type CustomerDataType = {
+export type LoyaltyMemberDataType = {
     id?: number;
     firstName: string;
     lastName: string;
@@ -48,7 +52,7 @@ export type BillingRecordDataType = {
 
 export type BillingDataType = {
     id?: number;
-    billingRecords: BillingRecordDataType;
-    loyaltyCustomer: CustomerDataType | null;
+    billingRecords: BillingRecordDataType[];
+    loyaltyCustomer: LoyaltyMemberDataType | null;
     createdAt: String;
 };

@@ -1,10 +1,10 @@
 package com.robustedge.smartpos_backend.services;
 
-import com.robustedge.smartpos_backend.PDFGenerators.EmployeePDFGenerator;
+import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Employee;
 import com.robustedge.smartpos_backend.repositories.EmployeeRepository;
-import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,11 @@ public class EmployeeService {
     private EmployeeRepository repository;
 
     public void addEmployee(Employee employee) {
-        repository.save(employee);
+        try {
+            repository.save(employee);
+        } catch (DataIntegrityViolationException e) {
+            throw new ApiRequestException("The phone number or email belongs to a registered employee.");
+        }
     }
 
     public List<Employee> getAllEmployees() {
@@ -29,30 +33,7 @@ public class EmployeeService {
         return new PagedModel<>(repository.findAll(pageable));
     }
 
-    public void deleteEmployee(Integer id) {
-        repository.deleteById(id);
+    public void deleteEmployee(Integer employeeId) {
+        repository.deleteById(employeeId);
     }
-
-    public void updateEmployee(Employee employee) {
-        if (employee.getId() != null) {
-            repository.save(employee);
-        }
-    }
-
-    public void generateReport() {
-        List<Employee> employees = getAllEmployees();
-        String[] fields = {"ID", "First Name", "Last Name", "Phone Number", "Email"};
-
-        String systemUser = System.getProperty("user.name");
-        String fileName = Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf";
-
-        EmployeePDFGenerator pdfGenerator = new EmployeePDFGenerator(employees);
-        pdfGenerator.initialize(filePath);
-        pdfGenerator.addMetaData();
-        pdfGenerator.addHeading("Employees");
-        pdfGenerator.addTable(fields);
-        pdfGenerator.build();
-    }
-
 }

@@ -3,8 +3,6 @@ package com.robustedge.smartpos_backend.controllers;
 import com.robustedge.smartpos_backend.models.StockRecord;
 import com.robustedge.smartpos_backend.services.StockRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,17 +34,8 @@ public class StockRecordController {
     }
 
     @DeleteMapping("/delete")
-    public void deleteRecord(Integer id) {
+    public void deleteSRecord(@RequestParam(name = "id") Integer id) {
         service.deleteRecord(id);
     }
 
-    @PutMapping("/update")
-    public void updateRecord(@RequestBody StockRecord record) {
-        service.updateRecord(record);
-    }
-
-    @GetMapping("/generate_report")
-    public void generateReport() {
-        service.generateReport();
-    }
 }

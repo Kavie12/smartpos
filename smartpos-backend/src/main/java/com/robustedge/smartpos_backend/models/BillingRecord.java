@@ -1,6 +1,5 @@
 package com.robustedge.smartpos_backend.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity(name = "BillingRecord")
@@ -20,10 +19,6 @@ public class BillingRecord {
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
-
-    @JsonBackReference
-    @ManyToOne
-    private Bill bill;
 
     public BillingRecord() {
     }
@@ -73,14 +68,6 @@ public class BillingRecord {
         this.quantity = quantity;
     }
 
-    public Bill getBill() {
-        return bill;
-    }
-
-    public void setBill(Bill bill) {
-        this.bill = bill;
-    }
-
     @Override
     public String toString() {
         return "BillingRecord{" +
@@ -88,7 +75,6 @@ public class BillingRecord {
                 ", product=" + product +
                 ", price=" + price +
                 ", quantity=" + quantity +
-                ", bill=" + bill +
                 '}';
     }
 }

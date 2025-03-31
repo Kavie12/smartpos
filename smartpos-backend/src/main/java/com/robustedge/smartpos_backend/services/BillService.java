@@ -13,6 +13,7 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BillService {
@@ -45,4 +46,22 @@ public class BillService {
         Pageable pageable = PageRequest.of(page, pageSize, sort);
         return new PagedModel<>(repository.findAll(pageable));
     }
+
+    public Bill getOneBill(Integer billId) {
+        return repository.findById(billId).orElseThrow();
+    }
+
+    public void deleteBill(Integer billId) {
+        Optional<Bill> bill = repository.findById(billId);
+        List<BillingRecord> billingRecords = bill.orElseThrow().getBillingRecords();
+
+        // Update quantity
+        for (BillingRecord billingRecord : billingRecords) {
+            Product product = billingRecord.getProduct();
+            product.setStockLevel(product.getStockLevel() + billingRecord.getQuantity());
+        }
+
+        repository.deleteById(billId);
+    }
+
 }

@@ -1,14 +1,14 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
-type AlertDialogProps = {
+type DeleteDialogType = {
     open: boolean;
     onClose: () => void;
-    success: boolean;
-    successContent: string;
-    errorContent: string;
+    onDelete: () => void;
+    loading: boolean;
+    message: string;
 };
 
-export default function AlertDialog({ open, onClose, success, successContent, errorContent }: AlertDialogProps) {
+export default function DeleteDialog({ open, onClose, onDelete, loading, message }: DeleteDialogType) {
     return (
         <Dialog
             open={open}
@@ -17,15 +17,18 @@ export default function AlertDialog({ open, onClose, success, successContent, er
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle id="alert-dialog-title">
-                {success ? "Success" : "Error"}
+                Warning
             </DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
-                    {success ? successContent : errorContent}
+                    {message}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>OK</Button>
+                <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={onDelete} color="error" loading={loading}>
+                    Delete
+                </Button>
             </DialogActions>
         </Dialog>
     );

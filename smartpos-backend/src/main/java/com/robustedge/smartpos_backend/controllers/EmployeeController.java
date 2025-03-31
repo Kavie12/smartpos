@@ -33,18 +33,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/delete")
-    public void deleteEmployee(Integer id) {
-        service.deleteEmployee(id);
+    public void deleteEmployee(@RequestParam(name = "employeeId") Integer employeeId) {
+        service.deleteEmployee(employeeId);
     }
-
-    @PutMapping("/update")
-    public void updateEmployee(@RequestBody Employee employee) {
-        service.updateEmployee(employee);
-    }
-
-    @GetMapping("/generate_report")
-    public void generateReport() {
-        service.generateReport();
-    }
-
 }

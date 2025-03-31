@@ -38,18 +38,8 @@ public class ProductController {
     }
 
     @DeleteMapping("/delete")
-    public void deleteProduct(Integer id) {
-        service.deleteProduct(id);
-    }
-
-    @PutMapping("/update")
-    public void updateProduct(@RequestBody Product product) {
-        service.updateProduct(product);
-    }
-
-    @GetMapping("/generate_report")
-    public void generateReport() {
-        service.generateReport();
+    public void deleteProduct(@RequestParam(name = "productId") Integer productId) {
+        service.deleteProduct(productId);
     }
 
 }
