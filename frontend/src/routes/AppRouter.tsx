@@ -6,15 +6,16 @@ import LoyaltyMembersScreen from "../pages/LoyaltyMembers/LoyaltyMembersScreen";
 import EmployeesScreen from "../pages/Employees/EmployeesScreen";
 import SuppliersScreen from "../pages/Suppliers/SupplierScreen";
 import ProductsScreen from "../pages/Products/ProductsScreen";
-import StockScreen from "../pages/Stock/StockScreen";
+import StockScreen from "../pages/StockRecords/StockScreen";
 import CreateBillScreen from "../pages/Billing/CreateBillScreen";
 import BillingScreen from "../pages/Billing/BillingScreen";
-import AddStockScreen from "../pages/Stock/AddStockScreen";
 import AddProductScreen from "../pages/Products/AddProductScreen";
 import AddSupplierScreen from "../pages/Suppliers/AddSupplierScreen";
 import AddLoyaltyMemberScreen from "../pages/LoyaltyMembers/AddLoyaltyMemberScreen";
 import AddEmployeeScreen from "../pages/Employees/AddEmployeeScreen";
 import BillDetailsScreen from "../pages/Billing/BillDetailsScreen";
+import AddStockRecordScreen from "../pages/StockRecords/AddStockRecordScreen";
+import UpdateStockRecordScreen from "../pages/StockRecords/UpdateStockRecordScreen";
 
 export default createHashRouter([
     {
@@ -35,10 +36,11 @@ export default createHashRouter([
                 ]
             },
             {
-                path: "stock",
+                path: "stock_records",
                 children: [
                     { index: true, element: <StockScreen /> },
-                    { path: "add_stock", element: <AddStockScreen /> }
+                    { path: "add_stock_record", element: <AddStockRecordScreen /> },
+                    { path: "update_stock_record/:recordId", element: <UpdateStockRecordScreen /> }
                 ]
             },
             {

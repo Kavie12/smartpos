@@ -1,11 +1,10 @@
-import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { Alert, Box, Button, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit, RemoveRedEye } from '@mui/icons-material';
+import { Add, OpenInNew } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { Link, useNavigate } from 'react-router';
 import { BillingDataType, BillingRecordDataType } from '../../types/types';
-import DeleteDialog from '../../components/DeleteDialog';
 
 export default function BillingScreen() {
 
@@ -27,10 +26,6 @@ export default function BillingScreen() {
         open: false,
         type: null,
         message: null
-    });
-    const [deleteDialog, setDeleteDialog] = useState<{ open: boolean, id: GridRowId | null }>({
-        open: false,
-        id: null
     });
 
     const columns: GridColDef[] = [
@@ -79,28 +74,16 @@ export default function BillingScreen() {
         },
         {
             field: "actions",
-            headerName: "Actions",
+            headerName: "View",
             type: "actions",
             flex: 1,
-            getActions: ({ id, row }) => {
+            getActions: ({ id }) => {
                 return [
                     <GridActionsCellItem
-                        icon={<RemoveRedEye />}
-                        label="see"
+                        icon={<OpenInNew />}
+                        label="View"
                         color="inherit"
                         onClick={() => navigate(`./bill_details/${id}`)}
-                    />,
-                    <GridActionsCellItem
-                        icon={<Edit />}
-                        label="Edit"
-                        color="inherit"
-                        onClick={() => console.log("Edit " + row)}
-                    />,
-                    <GridActionsCellItem
-                        icon={<DeleteOutlined />}
-                        label="Delete"
-                        color="inherit"
-                        onClick={() => setDeleteDialog({ id: id, open: true })}
                     />
                 ];
             }
@@ -130,35 +113,6 @@ export default function BillingScreen() {
                 console.error("Error fetching data:", err);
             })
             .finally(() => setLoading(prev => ({ ...prev, table: false })));
-    };
-
-    const deleteBill = (): void => {
-        setLoading(prev => ({ ...prev, delete: true }));
-        AuthApi.delete("/billing/delete", {
-            params: {
-                billId: deleteDialog.id
-            }
-        })
-            .then(() => {
-                setAlert({
-                    open: true,
-                    type: "success",
-                    message: "Bill deleted successfully."
-                });
-                fetchBills();
-            })
-            .catch(err => {
-                setAlert({
-                    open: true,
-                    type: "error",
-                    message: "Failed to delete bill."
-                });
-                console.error("Error deleting bill:", err);
-            })
-            .finally(() => {
-                setLoading(prev => ({ ...prev, delete: false }));
-                setDeleteDialog(prev => ({ ...prev, open: false }));
-            });
     };
 
     useEffect(() => {
@@ -199,15 +153,6 @@ export default function BillingScreen() {
                     onPaginationModelChange={setPaginationModel}
                 />
             </Box>
-
-            {/* Delete Alert */}
-            <DeleteDialog
-                open={deleteDialog.open}
-                onClose={() => setDeleteDialog(prev => ({ ...prev, open: false }))}
-                onDelete={() => deleteBill()}
-                loading={loading.delete}
-                message="Are you sure you want to delete this bill?"
-            />
 
         </>
     );

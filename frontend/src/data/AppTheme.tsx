@@ -8,7 +8,7 @@ const AppTheme = createTheme({
         },
         primary: {
             main: grey[900]
-        },
+        }
     },
     typography: {
         button: {

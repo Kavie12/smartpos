@@ -1,107 +1,104 @@
 import { ArrowBack } from "@mui/icons-material";
-import { Alert, Autocomplete, Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { AuthApi } from "../../services/Api";
-import { ProductDataType, StockRecordType } from "../../types/types";
+import { StockRecordType } from "../../types/types";
 
-export default function AddStockScreen() {
+export default function UpdateStockRecordScreen() {
 
-    const [loading, setLoading] = useState<{ products: boolean, add: boolean }>({ products: false, add: false });
+    const { recordId } = useParams();
+
+    const [loading, setLoading] = useState<{ products: boolean, update: boolean }>({ products: false, update: false });
     const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
         open: false,
         type: null,
         message: null
     });
-    const [products, setProducts] = useState<ProductDataType[]>([]);
-    const [formData, setFormData] = useState<StockRecordType>({
+    const [stockRecord, setStockRecord] = useState<StockRecordType>({
         stockAmount: 0
     });
 
-    const resetFormData = (): void => {
-        setFormData({
-            stockAmount: 0
-        });
-    };
-
-    const fetchProducts = (): void => {
-        setLoading(prev => ({ ...prev, products: true }));
-        AuthApi.get("/products/get_all")
+    const fetchStockRecord = (): void => {
+        AuthApi.get("/stock_records/get_one", {
+            params: {
+                recordId: recordId
+            }
+        })
             .then(res => {
-                setProducts(res.data);
+                setStockRecord(res.data);
             })
             .catch(err => {
-                console.error("Error fetching data:", err);
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Failed fetching products."
+                    message: "Failed fetching stock record."
                 });
-            })
-            .finally(() => setLoading(prev => ({ ...prev, products: false })));
+                console.error("Error fetching data:", err);
+            });
     };
 
-    const addStockRecord = (): void => {
-        setLoading(prev => ({ ...prev, add: true }));
+    const updateStockRecord = (): void => {
+        setLoading(prev => ({ ...prev, update: true }));
 
-        if (!formData.product) {
+        if (!stockRecord.product) {
             setAlert({
                 open: true,
                 type: "error",
                 message: "A product must be selected to add a stock record."
             });
-            setLoading(prev => ({ ...prev, add: false }));
+            setLoading(prev => ({ ...prev, update: false }));
             return;
         }
 
-        if (formData.stockAmount <= 0) {
+        if (stockRecord.stockAmount <= 0) {
             setAlert({
                 open: true,
                 type: "error",
                 message: "Enter a valid stock amount."
             });
-            setLoading(prev => ({ ...prev, add: false }));
+            setLoading(prev => ({ ...prev, update: false }));
             return;
         }
 
-        AuthApi.post("/stock/add", formData)
+        AuthApi.put("/stock_records/update", stockRecord)
             .then(() => {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Stock Record added successfully."
+                    message: "Stock Record updated successfully."
                 });
-                resetFormData();
+                fetchStockRecord();
             })
             .catch(err => {
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Adding stock record failed."
+                    message: "Updating stock record failed."
                 });
-                console.error("Error adding data:", err);
+                console.error("Error updating data:", err);
             })
             .finally(() => {
-                setLoading(prev => ({ ...prev, add: false }));
+                setLoading(prev => ({ ...prev, update: false }));
             });
     };
 
     useEffect(() => {
-        fetchProducts();
+        fetchStockRecord();
     }, []);
 
     return (
         <>
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
-                <Link to="/stock">
+                <Link to="/stock_records">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Add Stock</Typography>
+                <Typography variant="h6" fontWeight="bold">Update Stock Record</Typography>
             </Box>
 
-            <Box component="form" action={addStockRecord} sx={{ px: 5 }}>
+            <Box component="form" action={updateStockRecord} sx={{ px: 5 }}>
                 {/* Alerts */}
                 {alert.open && (
                     <Box sx={{ my: 2 }}>
@@ -111,14 +108,14 @@ export default function AddStockScreen() {
                 )}
 
                 <Box sx={{ marginTop: 2, display: "flex", flexDirection: "column", alignItems: "start" }}>
-                    <Autocomplete
-                        options={products}
-                        getOptionLabel={(option) => option.name}
-                        loading={loading.products}
-                        renderInput={(params) => <TextField {...params} name="product" label="Product" />}
-                        onChange={(_, value) => setFormData(prev => ({ ...prev, product: value }))}
-                        value={formData.product}
-                        sx={{ marginY: 1, width: 400 }}
+                    <TextField
+                        margin="dense"
+                        id="productName"
+                        name="productName"
+                        label="Product Name"
+                        value={stockRecord.product?.name || ""}
+                        sx={{ width: 400 }}
+                        disabled
                     />
                     <TextField
                         margin="dense"
@@ -126,18 +123,18 @@ export default function AddStockScreen() {
                         name="stockAmount"
                         label="Stock Amount"
                         type="number"
-                        value={formData.stockAmount}
+                        value={stockRecord.stockAmount}
                         sx={{ width: 400, mt: 2 }}
-                        onChange={(e) => setFormData(prev => ({ ...prev, stockAmount: parseInt(e.target.value) }))}
+                        onChange={(e) => setStockRecord(prev => ({ ...prev, stockAmount: parseInt(e.target.value) }))}
                     />
 
                     <Button
                         variant="contained"
                         type="submit"
                         sx={{ mt: 2 }}
-                        loading={loading.add}
+                        loading={loading.update}
                     >
-                        Add
+                        Update
                     </Button>
                 </Box>
             </Box>

@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { BillingDataType, BillingRecordDataType } from "../../types/types";
 import { AuthApi } from "../../services/Api";
-import { Alert, Box, Card, CardContent, CircularProgress, Divider, IconButton, Typography } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
+import { Alert, Box, Button, Card, CardActions, CardContent, CircularProgress, Divider, IconButton, Typography } from "@mui/material";
+import { ArrowBack, Delete, Edit } from "@mui/icons-material";
+import DeleteDialog from "../../components/DeleteDialog";
 
 export default function BillDetailsScreen() {
 
@@ -11,15 +12,19 @@ export default function BillDetailsScreen() {
 
     const [bill, setBill] = useState<BillingDataType | null>(null);
     const [total, setTotal] = useState<number | undefined>(0);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<{ bill: boolean, delete: boolean }>({
+        bill: false,
+        delete: false
+    });
     const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
         open: false,
         type: null,
         message: null
     });
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
 
     const fetchBill = (): void => {
-        setLoading(true);
+        setLoading(prev => ({ ...prev, bill: true }));
         AuthApi.get("/billing/get_one", {
             params: {
                 billId: billId
@@ -36,7 +41,37 @@ export default function BillDetailsScreen() {
                     message: err.response.data.message
                 });
             })
-            .finally(() => setLoading(false));
+            .finally(() => {
+                setLoading(prev => ({ ...prev, bill: false }))
+            });
+    };
+
+    const deleteBill = (): void => {
+        setLoading(prev => ({ ...prev, delete: true }));
+        AuthApi.delete("/billing/delete", {
+            params: {
+                billId: bill?.id
+            }
+        })
+            .then(() => {
+                setAlert({
+                    open: true,
+                    type: "success",
+                    message: "Bill deleted successfully."
+                });
+            })
+            .catch(err => {
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Failed to delete bill."
+                });
+                console.error("Error deleting bill:", err);
+            })
+            .finally(() => {
+                setLoading(prev => ({ ...prev, delete: false }));
+                setIsDeleteDialogOpen(false);
+            });
     };
 
     useEffect(() => {
@@ -73,7 +108,7 @@ export default function BillDetailsScreen() {
 
                 <Card sx={{ p: 2, width: 600 }}>
                     <CardContent>
-                        {loading ? (
+                        {loading.bill ? (
                             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                                 <CircularProgress />
                             </Box>
@@ -96,8 +131,21 @@ export default function BillDetailsScreen() {
                             )
                         }
                     </CardContent>
+                    <CardActions sx={{ marginTop: 4, justifyContent: "end" }}>
+                        <Button startIcon={<Edit />} size="small">Edit</Button>
+                        <Button startIcon={<Delete />} size="small" color="error" onClick={() => setIsDeleteDialogOpen(true)}>Delete</Button>
+                    </CardActions>
                 </Card>
             </Box>
+
+            {/* Delete Alert */}
+            <DeleteDialog
+                open={isDeleteDialogOpen}
+                onClose={() => setIsDeleteDialogOpen(false)}
+                onDelete={() => deleteBill()}
+                loading={loading.delete}
+                message="Are you sure you want to delete this bill?"
+            />
         </>
     );
 }

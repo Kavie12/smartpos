@@ -1,5 +1,6 @@
 package com.robustedge.smartpos_backend.services;
 
+import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.models.StockRecord;
 import com.robustedge.smartpos_backend.repositories.StockRecordRepository;
@@ -11,7 +12,6 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class StockRecordService {
@@ -23,9 +23,11 @@ public class StockRecordService {
     private ProductService productService;
 
     public void addRecord(StockRecord record) {
+        // Change stock level of the product
         Product product = record.getProduct();
         product.setStockLevel(product.getStockLevel() + record.getStockAmount());
         productService.updateProduct(product);
+
         repository.save(record);
     }
 
@@ -40,10 +42,30 @@ public class StockRecordService {
     }
 
     public void deleteRecord(Integer id) {
-        Optional<StockRecord> record = repository.findById(id);
-        Product product = record.orElseThrow().getProduct();
-        product.setStockLevel(product.getStockLevel() - record.orElseThrow().getStockAmount());
+        // Get the existing record
+        StockRecord record = repository.findById(id).orElseThrow();
+
+        // Deduct stock amount of the relevant product
+        Product product = record.getProduct();
+        product.setStockLevel(product.getStockLevel() - record.getStockAmount());
         productService.updateProduct(product);
+
         repository.deleteById(id);
+    }
+
+    public void updateRecord(StockRecord newRecord) {
+        // Get the existing record
+        StockRecord oldRecord = repository.findById(newRecord.getId()).orElseThrow();
+
+        // Change stock level of the product
+        Product product = oldRecord.getProduct();
+        product.setStockLevel(product.getStockLevel() - oldRecord.getStockAmount() + newRecord.getStockAmount());
+        productService.updateProduct(product);
+
+        repository.save(newRecord);
+    }
+
+    public StockRecord getOneRecord(Integer recordId) {
+        return repository.findById(recordId).orElseThrow(() -> new ApiRequestException("Invalid Stock Record Id."));
     }
 }

@@ -231,7 +231,7 @@ export default function Sidebar() {
         />
         <DrawerLink
           text="Stock"
-          to="/stock"
+          to="/stock_records"
           icon={<AddBox />}
         />
         <DrawerLink

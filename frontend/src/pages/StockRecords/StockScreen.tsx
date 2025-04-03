@@ -4,10 +4,12 @@ import { Alert, Box, Button, Typography } from '@mui/material';
 import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { StockRecordType } from '../../types/types';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import DeleteDialog from '../../components/DeleteDialog';
 
 export default function StockScreen() {
+    const navigate = useNavigate();
+
     const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
         page: 0,
         pageSize: 10,
@@ -72,13 +74,13 @@ export default function StockScreen() {
             headerName: "Actions",
             type: "actions",
             flex: 1,
-            getActions: ({ id, row }) => {
+            getActions: ({ id }) => {
                 return [
                     <GridActionsCellItem
                         icon={<Edit />}
                         label="Edit"
                         color="inherit"
-                        onClick={() => console.log("Delete " + row)}
+                        onClick={() => navigate(`./update_stock_record/${id}`)}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
@@ -93,7 +95,7 @@ export default function StockScreen() {
 
     const fetchStockRecords = (): void => {
         setLoading(prev => ({ ...prev, table: true }));
-        AuthApi.get("/stock/get", {
+        AuthApi.get("/stock_records/get", {
             params: {
                 page: paginationModel.page,
                 size: paginationModel.pageSize
@@ -118,7 +120,7 @@ export default function StockScreen() {
 
     const deleteRecord = (): void => {
         setLoading(prev => ({ ...prev, delete: true }));
-        AuthApi.delete("/stock/delete", {
+        AuthApi.delete("/stock_records/delete", {
             params: {
                 id: deleteDialog.id
             }
@@ -154,7 +156,7 @@ export default function StockScreen() {
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Typography variant="h6" fontWeight="bold">Stock Records</Typography>
-                <Link to="./add_stock">
+                <Link to="./add_stock_record">
                     <Button startIcon={<Add />}>
                         Add Stock
                     </Button>
