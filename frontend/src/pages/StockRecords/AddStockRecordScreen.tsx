@@ -115,7 +115,7 @@ export default function AddStockRecordScreen() {
                         options={products}
                         getOptionLabel={(option) => option.name}
                         loading={loading.products}
-                        renderInput={(params) => <TextField {...params} name="product" label="Product" />}
+                        renderInput={(params) => <TextField {...params} name="product" label="Product" autoFocus />}
                         onChange={(_, value) => setFormData(prev => ({ ...prev, product: value }))}
                         value={formData.product}
                         sx={{ marginY: 1, width: 400 }}

@@ -27,14 +27,24 @@ public class ProductController {
         return service.getProducts(pageable);
     }
 
+    @GetMapping("/get_one")
+    public Product getOne(@RequestParam(name = "productId") Integer productId) {
+        return service.getOne(productId);
+    }
+
     @GetMapping("/find_by_barcode")
-    public Product findProductByBarcode(@RequestParam("barcode") String barcode) {
+    public Product findProductByBarcode(@RequestParam(name = "barcode") String barcode) {
         return service.findProductByBarcode(barcode);
     }
 
     @PostMapping("/add")
     public void addProduct(@RequestBody Product product) {
         service.addProduct(product);
+    }
+
+    @PutMapping("/update")
+    public void updateProduct(@RequestBody Product product) {
+        service.updateProduct(product);
     }
 
     @DeleteMapping("/delete")

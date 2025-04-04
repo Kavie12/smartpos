@@ -34,7 +34,17 @@ public class LoyaltyMemberService {
         return new PagedModel<>(repository.findAll(pageable));
     }
 
+    public void updateLoyaltyMember(LoyaltyMember loyaltyMember) {
+        if (loyaltyMember != null) {
+            repository.save(loyaltyMember);
+        }
+    }
+
     public void deleteLoyaltyMember(Integer id) {
         repository.deleteById(id);
+    }
+
+    public LoyaltyMember getOne(Integer id) {
+        return repository.findById(id).orElseThrow(() -> new ApiRequestException("Loyalty member not found."));
     }
 }

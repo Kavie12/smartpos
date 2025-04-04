@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { BillingDataType, BillingRecordDataType } from "../../types/types";
 import { AuthApi } from "../../services/Api";
 import { Alert, Box, Button, Card, CardActions, CardContent, CircularProgress, Divider, IconButton, Typography } from "@mui/material";
@@ -8,6 +8,7 @@ import DeleteDialog from "../../components/DeleteDialog";
 
 export default function BillDetailsScreen() {
 
+    const navigate = useNavigate();
     const { billId } = useParams();
 
     const [bill, setBill] = useState<BillingDataType | null>(null);
@@ -132,7 +133,7 @@ export default function BillDetailsScreen() {
                         }
                     </CardContent>
                     <CardActions sx={{ marginTop: 4, justifyContent: "end" }}>
-                        <Button startIcon={<Edit />} size="small">Edit</Button>
+                        <Button startIcon={<Edit />} size="small" onClick={() => navigate(`/billing/update_bill/${billId}`)}>Update</Button>
                         <Button startIcon={<Delete />} size="small" color="error" onClick={() => setIsDeleteDialogOpen(true)}>Delete</Button>
                     </CardActions>
                 </Card>

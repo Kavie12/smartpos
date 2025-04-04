@@ -5,9 +5,10 @@ import { ChangeEvent } from "react";
 type QuantityCounterProps = {
     quantity: number;
     setQuantity: React.Dispatch<React.SetStateAction<number>>;
+    color: "grey" | "white";
 };
 
-export default function QuantityCounter({ quantity, setQuantity }: QuantityCounterProps) {
+export default function QuantityCounter({ quantity, setQuantity, color }: QuantityCounterProps) {
 
     const handleQuantityIncrement = () => {
         setQuantity(prev => prev + 1);
@@ -25,8 +26,8 @@ export default function QuantityCounter({ quantity, setQuantity }: QuantityCount
     };
 
     return (
-        <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, backgroundColor: grey[200], borderRadius: 1 }}>
-            <Button variant="text" sx={{ minWidth: "auto" }} onClick={() => handleQuantityDecrement()}>-</Button>
+        <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, backgroundColor: color == "grey" ? grey[200] : "whitesmoke", borderRadius: 1 }}>
+            <Button variant="text" sx={{ minWidth: "auto" }} onClick={handleQuantityDecrement}>-</Button>
             <TextField
                 id="quantity"
                 variant="standard"
@@ -47,7 +48,7 @@ export default function QuantityCounter({ quantity, setQuantity }: QuantityCount
                 value={quantity}
                 onChange={handleQuantityChange}
             />
-            <Button variant="text" sx={{ minWidth: "auto" }} onClick={() => handleQuantityIncrement()}>+</Button>
+            <Button variant="text" sx={{ minWidth: "auto" }} onClick={handleQuantityIncrement}>+</Button>
         </Box>
     );
 }

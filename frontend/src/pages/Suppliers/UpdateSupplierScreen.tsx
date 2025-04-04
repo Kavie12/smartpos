@@ -1,11 +1,13 @@
 import { ArrowBack } from "@mui/icons-material";
 import { Alert, Box, Button, IconButton, TextField, Typography } from "@mui/material";
-import { useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router";
 import { AuthApi } from "../../services/Api";
 import { SupplierDataType } from "../../types/types";
 
-export default function AddSupplierScreen() {
+export default function UpdateSupplierScreen() {
+
+    const { supplierId } = useParams();
 
     const [loading, setLoading] = useState<boolean>(false);
     const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
@@ -13,30 +15,40 @@ export default function AddSupplierScreen() {
         type: null,
         message: null
     });
-    const [formData, setFormData] = useState<SupplierDataType>({
+    const [supplier, setSupplier] = useState<SupplierDataType>({
         name: "",
         phoneNumber: "",
         email: ""
     });
 
-    const resetFormData = (): void => {
-        setFormData({
-            name: "",
-            phoneNumber: "",
-            email: ""
-        });
+    const fetchSupplier = (): void => {
+        AuthApi.get("/suppliers/get_one", {
+            params: {
+                supplierId: supplierId
+            }
+        })
+            .then(res => {
+                setSupplier(res.data);
+            })
+            .catch(err => {
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Failed fetching supplier."
+                });
+                console.error("Error fetching data:", err);
+            });
     };
 
-    const addSupplier = (): void => {
+    const updateSupplier = (): void => {
         setLoading(true);
-        AuthApi.post("/suppliers/add", formData)
+        AuthApi.put("/suppliers/update", supplier)
             .then(() => {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Supplier registererd successfully."
+                    message: "Supplier updated successfully."
                 });
-                resetFormData();
             })
             .catch(err => {
                 setAlert({
@@ -44,12 +56,16 @@ export default function AddSupplierScreen() {
                     type: "error",
                     message: err.response.data.message
                 });
-                console.error("Error adding data:", err);
+                console.error("Error updating data:", err);
             })
             .finally(() => {
                 setLoading(false);
             });
     };
+
+    useEffect(() => {
+        fetchSupplier();
+    }, []);
 
     return (
         <>
@@ -59,7 +75,7 @@ export default function AddSupplierScreen() {
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Add Supplier</Typography>
+                <Typography variant="h6" fontWeight="bold">Update Supplier</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>
@@ -71,34 +87,33 @@ export default function AddSupplierScreen() {
                     </Box>
                 )}
 
-                <Box component="form" action={addSupplier} sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "start" }}>
+                <Box component="form" action={updateSupplier} sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "start" }}>
                     <TextField
                         margin="dense"
                         id="supplierName"
                         name="supplierName"
                         label="Supplier Name"
-                        value={formData.name}
+                        value={supplier.name}
                         sx={{ width: 400 }}
-                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                        autoFocus
+                        onChange={(e) => setSupplier(prev => ({ ...prev, name: e.target.value }))}
                     />
                     <TextField
                         margin="dense"
                         id="phoneNumber"
                         name="phoneNumber"
                         label="Phone Number"
-                        value={formData.phoneNumber}
+                        value={supplier.phoneNumber}
                         sx={{ width: 400, mt: 2 }}
-                        onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                        onChange={(e) => setSupplier(prev => ({ ...prev, phoneNumber: e.target.value }))}
                     />
                     <TextField
                         margin="dense"
                         id="email"
                         name="email"
                         label="Email"
-                        value={formData.email}
+                        value={supplier.email}
                         sx={{ width: 400, mt: 2 }}
-                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                        onChange={(e) => setSupplier(prev => ({ ...prev, email: e.target.value }))}
                     />
                     <Button
                         variant="contained"
@@ -106,7 +121,7 @@ export default function AddSupplierScreen() {
                         sx={{ mt: 2 }}
                         loading={loading}
                     >
-                        Add
+                        Update
                     </Button>
                 </Box>
             </Box>

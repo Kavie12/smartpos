@@ -82,6 +82,7 @@ export default function AddEmployeeScreen() {
                         value={formData.firstName}
                         sx={{ width: 400 }}
                         onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                        autoFocus
                     />
                     <TextField
                         margin="dense"

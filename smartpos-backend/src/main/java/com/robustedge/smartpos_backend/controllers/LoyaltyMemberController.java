@@ -27,9 +27,19 @@ public class LoyaltyMemberController {
         return service.getLoyaltyMembers(pageable);
     }
 
+    @GetMapping("/get_one")
+    public LoyaltyMember getOne(@RequestParam(name = "id") Integer id) {
+        return service.getOne(id);
+    }
+
     @PostMapping("/add")
     public void addLoyaltyMember(@RequestBody LoyaltyMember loyaltyMember) {
         service.addLoyaltyMember(loyaltyMember);
+    }
+
+    @PutMapping("/update")
+    public void updateLoyaltyMember(@RequestBody LoyaltyMember loyaltyMember) {
+        service.updateLoyaltyMember(loyaltyMember);
     }
 
     @DeleteMapping("/delete")

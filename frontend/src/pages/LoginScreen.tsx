@@ -50,6 +50,7 @@ export default function LoginScreen() {
                         type="submit"
                         loading={isProcessing}
                         disableElevation
+                        size="large"
                     >
                         Sign in
                     </Button>

@@ -22,7 +22,7 @@ export const useAuth = () => {
     return authContext;
 };
 
-const AuthProvider = ({ children }: { children: ReactNode }) => {
+export default function AuthProvider({ children }: { children: ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -55,6 +55,4 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return <AuthContext.Provider value={{ login, logout, isAuthenticated, isProcessing, error, setError }}>{children}</AuthContext.Provider>;
-};
-
-export default AuthProvider;
+}

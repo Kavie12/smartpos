@@ -1,20 +1,22 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthApi } from "../../services/Api";
 import { Alert, Box, Button, Divider, Grid2, IconButton, TextField, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import QuantityCounter from "../../components/QuantityCounter";
 import { Link } from "react-router";
 import { BillingRecordDataType } from "../../types/types";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Delete } from "@mui/icons-material";
+import { useBilling } from "../../context/BillingContext";
 
 export default function CreateBillScreen() {
+
+    const { bill, setBill, clearBill } = useBilling();
 
     const [barcode, setBarcode] = useState<string | null>(null);
     const [error, setError] = useState<{ barcode: string | null, saveBill: string | null }>({
         barcode: null,
         saveBill: null
     });
-    const [items, setItems] = useState<BillingRecordDataType[]>([]);
     const [quantity, setQuantity] = useState<number>(1);
     const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
         open: false,
@@ -23,17 +25,9 @@ export default function CreateBillScreen() {
     });
     const [total, setTotal] = useState<number>(0);
 
-    const clearBill = (): void => {
-        setItems([]);
-    };
-
     const resetForm = (): void => {
         setBarcode("");
         setQuantity(1);
-    };
-
-    const handleBarcodeInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-        setBarcode(e.target.value);
     };
 
     const addProduct = (): void => {
@@ -50,13 +44,36 @@ export default function CreateBillScreen() {
             .then(res => {
                 console.log(res.data);
                 if (res.data !== "") {
-                    setItems(prev => [
-                        ...prev,
-                        {
-                            product: res.data,
-                            quantity: quantity
+                    setBill(prev => {
+
+                        const existingItemIndex = prev.billingRecords.findIndex(
+                            record => record.product.id === res.data.id
+                        );
+
+                        if (existingItemIndex >= 0) {
+                            const updatedRecords = [...prev.billingRecords];
+                            updatedRecords[existingItemIndex] = {
+                                ...updatedRecords[existingItemIndex],
+                                quantity: updatedRecords[existingItemIndex].quantity + quantity
+                            };
+
+                            return {
+                                ...prev,
+                                billingRecords: updatedRecords
+                            };
+                        } else {
+                            return {
+                                ...prev,
+                                billingRecords: [
+                                    ...prev.billingRecords,
+                                    {
+                                        product: res.data,
+                                        quantity: quantity
+                                    }
+                                ]
+                            };
                         }
-                    ]);
+                    });
                 }
                 resetForm();
             })
@@ -67,13 +84,10 @@ export default function CreateBillScreen() {
 
     const saveBill = (): void => {
         setError(prev => ({ ...prev, saveBill: null }));
-        AuthApi.post("/billing/create", {
-            billingRecords: items,
-            loyaltyCustomer: null
-        })
+        AuthApi.post("/billing/create", bill)
             .then(() => {
                 clearBill();
-                setAlert(prev => ({ ...prev, open: true, type: "success", message: "Bill Saved" }));
+                setAlert(prev => ({ ...prev, open: true, type: "success", message: "Bill saved successfully." }));
             })
             .catch(err => {
                 setError(prev => ({ ...prev, saveBill: err }));
@@ -87,15 +101,14 @@ export default function CreateBillScreen() {
 
     useEffect(() => {
         setTotal(
-            items.reduce((total, item) => {
+            bill.billingRecords.reduce((total, item) => {
                 return total + item.product.retailPrice * item.quantity;
             }, 0)
         );
-    }, [items]);
+    }, [bill]);
 
     return (
         <>
-
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/billing">
                     <IconButton>
@@ -114,7 +127,9 @@ export default function CreateBillScreen() {
                     </Box>
                 )}
                 <Grid2 container spacing={4} sx={{ mt: 4 }}>
-                    <Grid2 size={6}>
+                    <Grid2 size={6} sx={{ display: "flex", flexDirection: "column", rowGap: 6 }}>
+
+                        {/* Barcode Input */}
                         <Box>
                             <Typography variant="body2" sx={{ marginBottom: 1 }}>Enter Barcode</Typography>
                             <Box component="form" action={addProduct} sx={{ display: "flex", alignItems: "center", columnGap: 4, justifyContent: "space-between" }}>
@@ -124,37 +139,53 @@ export default function CreateBillScreen() {
                                     autoFocus
                                     sx={{ width: 400 }}
                                     value={barcode}
-                                    onChange={e => handleBarcodeInputChange(e)}
+                                    onChange={e => setBarcode(e.target.value)}
                                     error={error.barcode !== null}
                                     helperText={error.barcode ? `*${error.barcode}` : null}
                                 />
                                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
-                                    <QuantityCounter quantity={quantity} setQuantity={setQuantity} />
+                                    <QuantityCounter quantity={quantity} setQuantity={setQuantity} color="grey" />
                                     <Button variant="contained" type="submit">Add</Button>
                                 </Box>
                             </Box>
                         </Box>
+
+                        {/* Loyalty Member ID Input */}
+                        <Box>
+                            <Typography variant="body2" sx={{ marginBottom: 1 }}>Enter Loyalty Member ID</Typography>
+                            <Box component="form" action={addProduct} sx={{ display: "flex", alignItems: "center", columnGap: 4, justifyContent: "space-between" }}>
+                                <TextField
+                                    id="loyaltyCustomerInput"
+                                    size="small"
+                                    sx={{ width: 400 }}
+                                />
+                                <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
+                                    <Button variant="contained" type="submit">Add</Button>
+                                </Box>
+                            </Box>
+                        </Box>
+
                     </Grid2>
                     <Grid2 size={6}>
                         <Box sx={{ backgroundColor: grey[200], borderRadius: 2, paddingX: 4, paddingY: 3 }}>
                             <Typography variant="h6" fontWeight="bold">Billed Items</Typography>
-                            <BilledItems items={items} />
+                            <BilledItems items={bill.billingRecords} />
                             <Box sx={{ marginTop: 6, display: "flex", flexDirection: "column" }}>
                                 <Divider />
                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
                                     <Typography fontWeight={"bold"}>Total:</Typography>
                                     <Typography fontWeight={"bold"}>Rs. {total}</Typography>
                                 </Box>
-                                <Button variant="contained" sx={{ marginTop: 4 }} onClick={() => saveBill()}>
+                                <Button variant="contained" sx={{ marginTop: 4 }} onClick={saveBill}>
                                     Print Bill
                                 </Button>
                                 <Button
                                     variant="text"
                                     color="error"
                                     sx={{ marginTop: 1 }}
-                                    onClick={() => clearBill()}
+                                    onClick={clearBill}
                                 >
-                                    Cancel Bill
+                                    Clear Bill
                                 </Button>
                             </Box>
                         </Box>
@@ -181,13 +212,37 @@ const BilledItems = ({ items }: { items: BillingRecordDataType[] }) => {
 
 const BilledItem = ({ item, key }: { item: BillingRecordDataType, key: number }) => {
 
+    const { setBill } = useBilling();
+    const [quantity, setQuantity] = useState<number>(item.quantity);
+
+    const removeItem = () => {
+        setBill(prev => ({
+            billingRecords: prev.billingRecords.filter(record => record.product.id !== item.product.id)
+        }));
+    };
+
+    useEffect(() => {
+        setBill(prev => ({
+            billingRecords: prev.billingRecords.map(record =>
+                record.product.id === item.product.id ? { ...record, quantity: quantity } : record
+            )
+        }));
+    }, [quantity]);
+
+    useEffect(() => {
+        setQuantity(item.quantity);
+    }, [item.quantity]);
+
     return (
         <Box key={key} sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
                 <Typography>{item.product.name}</Typography>
-                <Typography>{item.quantity}x</Typography>
+                <QuantityCounter quantity={quantity} setQuantity={setQuantity} color="white" />
             </Box>
-            <Typography>Rs. {item.product.retailPrice * item.quantity}</Typography>
+            <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
+                <Typography>Rs. {item.product.retailPrice * item.quantity}</Typography>
+                <IconButton size="small" onClick={removeItem}><Delete /></IconButton>
+            </Box>
         </Box>
     );
 };

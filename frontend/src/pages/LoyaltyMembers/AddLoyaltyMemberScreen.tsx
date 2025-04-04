@@ -36,7 +36,7 @@ export default function AddLoyaltyMemberScreen() {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Customer registererd successfully."
+                    message: "Loyalty member registererd successfully."
                 });
                 resetFormData();
             })
@@ -82,6 +82,7 @@ export default function AddLoyaltyMemberScreen() {
                         value={formData.firstName}
                         sx={{ width: 400 }}
                         onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                        autoFocus
                     />
                     <TextField
                         margin="dense"

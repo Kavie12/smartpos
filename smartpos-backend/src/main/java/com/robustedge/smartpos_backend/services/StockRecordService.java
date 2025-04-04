@@ -12,6 +12,7 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class StockRecordService {
@@ -57,10 +58,21 @@ public class StockRecordService {
         // Get the existing record
         StockRecord oldRecord = repository.findById(newRecord.getId()).orElseThrow();
 
+        Product oldProduct = oldRecord.getProduct();
+        Product newProduct = newRecord.getProduct();
+
         // Change stock level of the product
-        Product product = oldRecord.getProduct();
-        product.setStockLevel(product.getStockLevel() - oldRecord.getStockAmount() + newRecord.getStockAmount());
-        productService.updateProduct(product);
+        if (Objects.equals(oldProduct.getId(), newProduct.getId())) {
+            // If product is not changed
+            oldProduct.setStockLevel(oldProduct.getStockLevel() - oldRecord.getStockAmount() + newRecord.getStockAmount());
+            productService.updateProduct(oldProduct);
+        } else {
+            // If product is changed
+            oldProduct.setStockLevel(oldProduct.getStockLevel() - oldRecord.getStockAmount());
+            newProduct.setStockLevel(newProduct.getStockLevel() + newRecord.getStockAmount());
+            productService.updateProduct(oldProduct);
+            productService.updateProduct(newProduct);
+        }
 
         repository.save(newRecord);
     }

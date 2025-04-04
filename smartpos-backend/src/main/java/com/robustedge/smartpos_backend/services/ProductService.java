@@ -34,6 +34,10 @@ public class ProductService {
         return repository.findAllActiveProducts();
     }
 
+    public Product getOne(Integer productId) {
+        return repository.findById(productId).orElseThrow(() -> new ApiRequestException("Product not found."));
+    }
+
     public PagedModel<Product> getProducts(Pageable pageable) {
         return new PagedModel<>(repository.findAllActiveProductPage(pageable));
     }

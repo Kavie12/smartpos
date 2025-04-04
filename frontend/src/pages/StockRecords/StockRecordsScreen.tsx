@@ -7,7 +7,7 @@ import { StockRecordType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
 import DeleteDialog from '../../components/DeleteDialog';
 
-export default function StockScreen() {
+export default function StockRecordsScreen() {
     const navigate = useNavigate();
 
     const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
@@ -46,6 +46,7 @@ export default function StockScreen() {
             field: "createdAt",
             headerName: "Date",
             type: "dateTime",
+            sortable: false,
             flex: 1,
             valueGetter: (value) => {
                 return new Date(value);
@@ -183,6 +184,8 @@ export default function StockScreen() {
                     paginationModel={paginationModel}
                     paginationMode="server"
                     onPaginationModelChange={setPaginationModel}
+                    disableColumnMenu={true}
+                    disableColumnResize={true}
                 />
             </Box>
 

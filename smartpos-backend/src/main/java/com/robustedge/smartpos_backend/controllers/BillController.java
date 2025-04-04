@@ -38,6 +38,11 @@ public class BillController {
         return service.getOneBill(billId);
     }
 
+    @PutMapping("update")
+    public void updateBill(@RequestBody Bill bill) {
+        service.updateBill(bill);
+    }
+
     @DeleteMapping("/delete")
     public void deleteBill(@RequestParam(name = "billId") Integer billId) {
         service.deleteBill(billId);

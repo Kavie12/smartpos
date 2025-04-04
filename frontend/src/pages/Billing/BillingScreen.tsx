@@ -42,6 +42,7 @@ export default function BillingScreen() {
             field: "createdAt",
             headerName: "Date",
             type: "dateTime",
+            sortable: false,
             flex: 1,
             valueGetter: (value) => {
                 return new Date(value);
@@ -151,6 +152,8 @@ export default function BillingScreen() {
                     paginationModel={paginationModel}
                     paginationMode="server"
                     onPaginationModelChange={setPaginationModel}
+                    disableColumnMenu={true}
+                    disableColumnResize={true}
                 />
             </Box>
 

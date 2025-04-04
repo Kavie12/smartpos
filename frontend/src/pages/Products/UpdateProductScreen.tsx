@@ -1,36 +1,28 @@
 import { ArrowBack } from "@mui/icons-material";
 import { Alert, Autocomplete, Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { AuthApi } from "../../services/Api";
 import { ProductDataType, SupplierDataType } from "../../types/types";
 
-export default function AddProductScreen() {
+export default function UpdateProductScreen() {
 
-    const [loading, setLoading] = useState<{ suppliers: boolean, add: boolean }>({ suppliers: false, add: false });
+    const { productId } = useParams();
+
+    const [loading, setLoading] = useState<{ suppliers: boolean, update: boolean }>({ suppliers: false, update: false });
     const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
         open: false,
         type: null,
         message: null
     });
     const [suppliers, setSuppliers] = useState<SupplierDataType[]>([]);
-    const [formData, setFormData] = useState<ProductDataType>({
+    const [product, setProduct] = useState<ProductDataType>({
         barcode: "",
         name: "",
         wholesalePrice: 0,
         retailPrice: 0,
         stockLevel: 0
     });
-
-    const resetFormData = (): void => {
-        setFormData({
-            barcode: "",
-            name: "",
-            wholesalePrice: 0,
-            retailPrice: 0,
-            stockLevel: 0
-        });
-    };
 
     const fetchSuppliers = (): void => {
         setLoading(prev => ({ ...prev, suppliers: true }));
@@ -49,27 +41,45 @@ export default function AddProductScreen() {
             .finally(() => setLoading(prev => ({ ...prev, suppliers: false })));
     };
 
-    const addProduct = (): void => {
-        setLoading(prev => ({ ...prev, add: true }));
+    const fetchProduct = (): void => {
+        AuthApi.get("/products/get_one", {
+            params: {
+                productId: productId
+            }
+        })
+            .then(res => {
+                setProduct(res.data);
+            })
+            .catch(err => {
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Failed fetching product."
+                });
+                console.error("Error fetching data:", err);
+            });
+    };
 
-        if (!formData.supplier) {
+    const updateProduct = (): void => {
+        setLoading(prev => ({ ...prev, update: true }));
+
+        if (!product.supplier) {
             setAlert({
                 open: true,
                 type: "error",
                 message: "A supplier must be selected to add a product."
             });
-            setLoading(prev => ({ ...prev, add: false }));
+            setLoading(prev => ({ ...prev, update: false }));
             return;
         }
 
-        AuthApi.post("/products/add", formData)
+        AuthApi.put("/products/update", product)
             .then(() => {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Product added successfully."
+                    message: "Product updated successfully."
                 });
-                resetFormData();
             })
             .catch(err => {
                 setAlert({
@@ -77,14 +87,15 @@ export default function AddProductScreen() {
                     type: "error",
                     message: err.response.data.message
                 });
-                console.error("Error adding data:", err);
+                console.error("Error updating data:", err);
             })
             .finally(() => {
-                setLoading(prev => ({ ...prev, add: false }));
+                setLoading(prev => ({ ...prev, update: false }));
             });
     };
 
     useEffect(() => {
+        fetchProduct();
         fetchSuppliers();
     }, []);
 
@@ -97,7 +108,7 @@ export default function AddProductScreen() {
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Add Product</Typography>
+                <Typography variant="h6" fontWeight="bold">Update Product</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>
@@ -109,24 +120,23 @@ export default function AddProductScreen() {
                     </Box>
                 )}
 
-                <Box component="form" action={addProduct} sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "start" }}>
+                <Box component="form" action={updateProduct} sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "start" }}>
                     <TextField
                         margin="dense"
                         id="barcode"
                         name="barcode"
                         label="Barcode"
-                        value={formData.barcode}
+                        value={product.barcode}
                         sx={{ width: 400 }}
-                        onChange={(e) => setFormData(prev => ({ ...prev, barcode: e.target.value }))}
-                        autoFocus
+                        onChange={(e) => setProduct(prev => ({ ...prev, barcode: e.target.value }))}
                     />
                     <Autocomplete
                         options={suppliers}
                         getOptionLabel={(option) => option.name}
                         loading={loading.suppliers}
                         renderInput={(params) => <TextField {...params} name="supplier" label="Supplier" />}
-                        onChange={(_, value) => setFormData(prev => ({ ...prev, supplier: value }))}
-                        value={formData.supplier}
+                        onChange={(_, value) => setProduct(prev => ({ ...prev, supplier: value }))}
+                        value={suppliers.find(supplier => supplier.id == product.supplier?.id) || null}
                         sx={{ width: 400, mt: 2 }}
                     />
                     <TextField
@@ -134,9 +144,9 @@ export default function AddProductScreen() {
                         id="productName"
                         name="productName"
                         label="Product Name"
-                        value={formData.name}
+                        value={product.name}
                         sx={{ width: 400, mt: 2 }}
-                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={(e) => setProduct(prev => ({ ...prev, name: e.target.value }))}
                     />
                     <TextField
                         margin="dense"
@@ -144,9 +154,9 @@ export default function AddProductScreen() {
                         name="wholesalePrice"
                         label="Wholesale Price"
                         type="number"
-                        value={formData.wholesalePrice}
+                        value={product.wholesalePrice}
                         sx={{ width: 400, mt: 2 }}
-                        onChange={(e) => setFormData(prev => ({ ...prev, wholesalePrice: parseFloat(e.target.value) }))}
+                        onChange={(e) => setProduct(prev => ({ ...prev, wholesalePrice: parseFloat(e.target.value) }))}
                     />
                     <TextField
                         margin="dense"
@@ -154,18 +164,18 @@ export default function AddProductScreen() {
                         name="retailPrice"
                         label="Retail Price"
                         type="number"
-                        value={formData.retailPrice}
+                        value={product.retailPrice}
                         sx={{ width: 400, mt: 2 }}
-                        onChange={(e) => setFormData(prev => ({ ...prev, retailPrice: parseFloat(e.target.value) }))}
+                        onChange={(e) => setProduct(prev => ({ ...prev, retailPrice: parseFloat(e.target.value) }))}
                     />
 
                     <Button
                         variant="contained"
                         type="submit"
                         sx={{ mt: 2 }}
-                        loading={loading.add}
+                        loading={loading.update}
                     >
-                        Add
+                        Update
                     </Button>
                 </Box>
             </Box>

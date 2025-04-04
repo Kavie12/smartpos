@@ -5,6 +5,7 @@ import com.robustedge.smartpos_backend.models.Bill;
 import com.robustedge.smartpos_backend.models.BillingRecord;
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.repositories.BillRepository;
+import com.robustedge.smartpos_backend.repositories.BillingRecordRepository;
 import com.robustedge.smartpos_backend.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,9 @@ public class BillService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private BillingRecordRepository billingRecordRepository;
 
     public void createBill(Bill bill) {
         for (BillingRecord record : bill.getBillingRecords()) {
@@ -65,4 +69,15 @@ public class BillService {
         repository.deleteById(billId);
     }
 
+    public void updateBill(Bill bill) {
+        for (BillingRecord billingRecord : bill.getBillingRecords()) {
+            // Update quantity
+            BillingRecord oldBillingRecord = billingRecordRepository.findById(billingRecord.getId()).orElseThrow();
+            Product product = billingRecord.getProduct();
+            product.setStockLevel(product.getStockLevel() - billingRecord.getQuantity() + oldBillingRecord.getQuantity());
+            productRepository.save(product);
+
+            billingRecordRepository.save(billingRecord);
+        }
+    }
 }

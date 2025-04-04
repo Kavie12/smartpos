@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -33,7 +34,17 @@ public class EmployeeService {
         return new PagedModel<>(repository.findAll(pageable));
     }
 
+    public Employee getOne(Integer employeeId) {
+        return repository.findById(employeeId).orElseThrow(() -> new ApiRequestException("Employee not found."));
+    }
+
     public void deleteEmployee(Integer employeeId) {
         repository.deleteById(employeeId);
+    }
+
+    public void updateEmployee(Employee employee) {
+        if (employee.getId() != null) {
+            repository.save(employee);
+        }
     }
 }

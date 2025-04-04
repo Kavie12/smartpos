@@ -33,6 +33,16 @@ public class SupplierService {
         return new PagedModel<>(repository.findAllActiveSupplierPage(pageable));
     }
 
+    public Supplier getOne(Integer supplierId) {
+        return repository.findById(supplierId).orElseThrow(() -> new ApiRequestException("Supplier not found."));
+    }
+
+    public void updateSupplier(Supplier supplier) {
+        if (supplier.getId() != null) {
+            repository.save(supplier);
+        }
+    }
+
     public void deleteSupplier(Integer supplierId) {
         repository.deleteById(supplierId);
     }

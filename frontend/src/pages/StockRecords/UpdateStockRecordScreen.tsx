@@ -1,9 +1,9 @@
 import { ArrowBack } from "@mui/icons-material";
-import { Alert, Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { Alert, Autocomplete, Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { AuthApi } from "../../services/Api";
-import { StockRecordType } from "../../types/types";
+import { ProductDataType, StockRecordType } from "../../types/types";
 
 export default function UpdateStockRecordScreen() {
 
@@ -15,9 +15,27 @@ export default function UpdateStockRecordScreen() {
         type: null,
         message: null
     });
+    const [products, setProducts] = useState<ProductDataType[]>([]);
     const [stockRecord, setStockRecord] = useState<StockRecordType>({
         stockAmount: 0
     });
+
+    const fetchProducts = (): void => {
+        setLoading(prev => ({ ...prev, products: true }));
+        AuthApi.get("/products/get_all")
+            .then(res => {
+                setProducts(res.data);
+            })
+            .catch(err => {
+                console.error("Error fetching data:", err);
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Failed fetching products."
+                });
+            })
+            .finally(() => setLoading(prev => ({ ...prev, products: false })));
+    };
 
     const fetchStockRecord = (): void => {
         AuthApi.get("/stock_records/get_one", {
@@ -69,6 +87,7 @@ export default function UpdateStockRecordScreen() {
                     message: "Stock Record updated successfully."
                 });
                 fetchStockRecord();
+                fetchProducts();
             })
             .catch(err => {
                 setAlert({
@@ -85,6 +104,7 @@ export default function UpdateStockRecordScreen() {
 
     useEffect(() => {
         fetchStockRecord();
+        fetchProducts();
     }, []);
 
     return (
@@ -108,14 +128,14 @@ export default function UpdateStockRecordScreen() {
                 )}
 
                 <Box sx={{ marginTop: 2, display: "flex", flexDirection: "column", alignItems: "start" }}>
-                    <TextField
-                        margin="dense"
-                        id="productName"
-                        name="productName"
-                        label="Product Name"
-                        value={stockRecord.product?.name || ""}
-                        sx={{ width: 400 }}
-                        disabled
+                    <Autocomplete
+                        options={products}
+                        getOptionLabel={(option) => option.name}
+                        loading={loading.products}
+                        renderInput={(params) => <TextField {...params} name="product" label="Product" />}
+                        onChange={(_, value) => setStockRecord(prev => ({ ...prev, product: value }))}
+                        value={products.find(product => product.id === stockRecord.product?.id) || null}
+                        sx={{ marginY: 1, width: 400 }}
                     />
                     <TextField
                         margin="dense"

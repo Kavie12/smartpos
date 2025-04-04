@@ -27,9 +27,19 @@ public class SupplierController {
         return service.getSuppliers(pageable);
     }
 
+    @GetMapping("/get_one")
+    public Supplier getOne(@RequestParam(name = "supplierId") Integer supplierId) {
+        return service.getOne(supplierId);
+    }
+
     @PostMapping("/add")
     public void addSupplier(@RequestBody Supplier supplier) {
         service.addSupplier(supplier);
+    }
+
+    @PutMapping("/update")
+    public void updateSupplier(@RequestBody Supplier supplier) {
+        service.updateSupplier(supplier);
     }
 
     @DeleteMapping("/delete")

@@ -4,10 +4,12 @@ import { Alert, Box, Button, Typography } from '@mui/material';
 import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { ProductDataType } from '../../types/types';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import DeleteDialog from '../../components/DeleteDialog';
 
 export default function ProductsScreen() {
+
+    const navigate = useNavigate();
 
     const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
         page: 0,
@@ -88,13 +90,13 @@ export default function ProductsScreen() {
             headerName: "Actions",
             type: "actions",
             flex: 1,
-            getActions: ({ id, row }) => {
+            getActions: ({ id }) => {
                 return [
                     <GridActionsCellItem
                         icon={<Edit />}
                         label="Edit"
                         color="inherit"
-                        onClick={() => console.log("Edit " + row)}
+                        onClick={() => navigate(`./update_product/${id}`)}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
@@ -197,6 +199,8 @@ export default function ProductsScreen() {
                     paginationModel={paginationModel}
                     paginationMode="server"
                     onPaginationModelChange={setPaginationModel}
+                    disableColumnMenu={true}
+                    disableColumnResize={true}
                 />
             </Box>
 
