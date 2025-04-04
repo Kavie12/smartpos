@@ -27,8 +27,13 @@ public class ProductController {
         return service.getProducts(pageable);
     }
 
+    @GetMapping("/get_one")
+    public Product getOne(@RequestParam(name = "productId") Integer productId) {
+        return service.getOne(productId);
+    }
+
     @GetMapping("/find_by_barcode")
-    public Product findProductByBarcode(@RequestParam("barcode") String barcode) {
+    public Product findProductByBarcode(@RequestParam(name = "barcode") String barcode) {
         return service.findProductByBarcode(barcode);
     }
 
@@ -37,19 +42,14 @@ public class ProductController {
         service.addProduct(product);
     }
 
-    @DeleteMapping("/delete")
-    public void deleteProduct(Integer id) {
-        service.deleteProduct(id);
-    }
-
     @PutMapping("/update")
     public void updateProduct(@RequestBody Product product) {
         service.updateProduct(product);
     }
 
-    @GetMapping("/generate_report")
-    public void generateReport() {
-        service.generateReport();
+    @DeleteMapping("/delete")
+    public void deleteProduct(@RequestParam(name = "productId") Integer productId) {
+        service.deleteProduct(productId);
     }
 
 }

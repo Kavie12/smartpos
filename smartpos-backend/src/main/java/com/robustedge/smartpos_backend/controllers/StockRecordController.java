@@ -3,15 +3,13 @@ package com.robustedge.smartpos_backend.controllers;
 import com.robustedge.smartpos_backend.models.StockRecord;
 import com.robustedge.smartpos_backend.services.StockRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/v1/stock")
+@RequestMapping(path = "/api/v1/stock_records")
 public class StockRecordController {
 
     @Autowired
@@ -24,10 +22,15 @@ public class StockRecordController {
 
     @GetMapping("/get")
     public PagedModel<StockRecord> getRecords(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int pageSize
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "pageSize", defaultValue = "50") int pageSize
     ) {
         return service.getRecords(page, pageSize);
+    }
+
+    @GetMapping("/get_one")
+    public StockRecord getOneRecord(@RequestParam(name = "recordId") Integer recordId) {
+        return service.getOneRecord(recordId);
     }
 
     @PostMapping("/add")
@@ -35,18 +38,14 @@ public class StockRecordController {
         service.addRecord(record);
     }
 
-    @DeleteMapping("/delete")
-    public void deleteRecord(Integer id) {
-        service.deleteRecord(id);
-    }
-
     @PutMapping("/update")
     public void updateRecord(@RequestBody StockRecord record) {
         service.updateRecord(record);
     }
 
-    @GetMapping("/generate_report")
-    public void generateReport() {
-        service.generateReport();
+    @DeleteMapping("/delete")
+    public void deleteSRecord(@RequestParam(name = "id") Integer id) {
+        service.deleteRecord(id);
     }
+
 }

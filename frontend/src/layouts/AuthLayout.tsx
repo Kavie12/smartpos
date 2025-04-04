@@ -10,7 +10,7 @@ export default function AuthLayout() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate("/dashboard");
+            navigate("/billing");
         }
     }, [isAuthenticated, navigate]);
 

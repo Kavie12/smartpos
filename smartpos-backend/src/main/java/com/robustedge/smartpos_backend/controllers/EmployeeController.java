@@ -27,14 +27,14 @@ public class EmployeeController {
         return service.getEmployees(pageable);
     }
 
+    @GetMapping("/get_one")
+    public Employee getOne(@RequestParam(name = "employeeId") Integer employeeId) {
+        return service.getOne(employeeId);
+    }
+
     @PostMapping("/add")
     public void addEmployee(@RequestBody Employee employee) {
         service.addEmployee(employee);
-    }
-
-    @DeleteMapping("/delete")
-    public void deleteEmployee(Integer id) {
-        service.deleteEmployee(id);
     }
 
     @PutMapping("/update")
@@ -42,9 +42,8 @@ public class EmployeeController {
         service.updateEmployee(employee);
     }
 
-    @GetMapping("/generate_report")
-    public void generateReport() {
-        service.generateReport();
+    @DeleteMapping("/delete")
+    public void deleteEmployee(@RequestParam(name = "employeeId") Integer employeeId) {
+        service.deleteEmployee(employeeId);
     }
-
 }
