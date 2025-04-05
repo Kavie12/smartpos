@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,10 +47,10 @@ public class BillService {
         return repository.findAll();
     }
 
-    public PagedModel<Bill> getBills(int page, int pageSize) {
+    public PagedModel<Bill> getBills(LocalDate searchDate, int page, int pageSize) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         Pageable pageable = PageRequest.of(page, pageSize, sort);
-        return new PagedModel<>(repository.findAll(pageable));
+        return new PagedModel<>(repository.findFilteredBills(searchDate, pageable));
     }
 
     public Bill getOneBill(Integer billId) {

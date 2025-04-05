@@ -4,8 +4,11 @@ import com.robustedge.smartpos_backend.models.StockRecord;
 import com.robustedge.smartpos_backend.services.StockRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedModel;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -22,10 +25,12 @@ public class StockRecordController {
 
     @GetMapping("/get")
     public PagedModel<StockRecord> getRecords(
+            @RequestParam(name = "searchKey") String searchKey,
+            @RequestParam(name = "searchDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "pageSize", defaultValue = "50") int pageSize
     ) {
-        return service.getRecords(page, pageSize);
+        return service.getRecords(searchKey, searchDate, page, pageSize);
     }
 
     @GetMapping("/get_one")

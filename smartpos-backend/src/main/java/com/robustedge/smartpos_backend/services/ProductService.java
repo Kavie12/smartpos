@@ -38,8 +38,8 @@ public class ProductService {
         return repository.findById(productId).orElseThrow(() -> new ApiRequestException("Product not found."));
     }
 
-    public PagedModel<Product> getProducts(Pageable pageable) {
-        return new PagedModel<>(repository.findAllActiveProductPage(pageable));
+    public PagedModel<Product> getProducts(String searchKey, Pageable pageable) {
+        return new PagedModel<>(repository.findFilteredActiveProducts(searchKey, pageable));
     }
 
     public void updateProduct(Product product) {

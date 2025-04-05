@@ -11,6 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,10 +38,10 @@ public class StockRecordService {
         return repository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 
-    public PagedModel<StockRecord> getRecords(int page, int pageSize) {
+    public PagedModel<StockRecord> getRecords(String searchKey, LocalDate searchDate, int page, int pageSize) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         Pageable pageable = PageRequest.of(page, pageSize, sort);
-        return new PagedModel<>(repository.findAll(pageable));
+        return new PagedModel<>(repository.findFilteredStockRecords(searchKey, searchDate, pageable));
     }
 
     public void deleteRecord(Integer id) {

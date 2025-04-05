@@ -4,8 +4,10 @@ import com.robustedge.smartpos_backend.models.Bill;
 import com.robustedge.smartpos_backend.services.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedModel;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -22,10 +24,11 @@ public class BillController {
 
     @GetMapping("/get")
     public PagedModel<Bill> getBills(
+            @RequestParam(name = "searchDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "25") int pageSize
     ) {
-        return service.getBills(page, pageSize);
+        return service.getBills(searchDate, page, pageSize);
     }
 
     @GetMapping("get_all")

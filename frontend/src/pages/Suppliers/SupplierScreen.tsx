@@ -1,7 +1,7 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
+import { Alert, Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { SupplierDataType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
@@ -32,6 +32,7 @@ export default function SuppliersScreen() {
         open: false,
         id: null
     });
+    const [searchKey, setSearchKey] = useState<string>("");
 
     const columns: GridColDef[] = [
         {
@@ -89,6 +90,7 @@ export default function SuppliersScreen() {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/suppliers/get", {
             params: {
+                searchKey: searchKey,
                 page: paginationModel.page,
                 size: paginationModel.pageSize
             }
@@ -141,13 +143,29 @@ export default function SuppliersScreen() {
 
     useEffect(() => {
         fetchSuppliers();
-    }, [paginationModel]);
+    }, [paginationModel, searchKey]);
 
     return (
         <>
-
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
-                <Typography variant="h6" fontWeight="bold">Suppliers</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
+                    <Typography variant="h6" fontWeight="bold">Suppliers</Typography>
+                    <TextField
+                        size="small"
+                        placeholder="Search"
+                        value={searchKey}
+                        onChange={e => setSearchKey(e.target.value)}
+                        slotProps={{
+                            input: {
+                                startAdornment:
+                                    <InputAdornment position="start">
+                                        <Search fontSize="small" />
+                                    </InputAdornment>,
+                                style: { fontSize: 14 }
+                            }
+                        }}
+                    />
+                </Box>
                 <Link to="./add_supplier">
                     <Button startIcon={<Add />}>
                         Add Supplier
@@ -188,7 +206,6 @@ export default function SuppliersScreen() {
                 loading={loading.delete}
                 message="Are you sure you want to delete this supplier?"
             />
-
         </>
     );
 }

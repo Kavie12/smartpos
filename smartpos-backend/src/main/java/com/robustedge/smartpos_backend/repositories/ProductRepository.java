@@ -20,6 +20,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p WHERE p.deleted = false")
     List<Product> findAllActiveProducts();
 
-    @Query("SELECT p FROM Product p WHERE p.deleted = false")
-    Page<Product> findAllActiveProductPage(Pageable pageable);
+    @Query("SELECT p FROM Product p WHERE p.deleted = false and (:searchKey is null or p.barcode like %:searchKey% or p.name like %:searchKey% or p.supplier.name like %:searchKey%)")
+    Page<Product> findFilteredActiveProducts(@Param("searchKey") String searchKey, Pageable pageable);
 }

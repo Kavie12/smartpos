@@ -1,7 +1,7 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
+import { Alert, Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { EmployeeDataType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
@@ -32,6 +32,7 @@ export default function EmployeesScreen() {
         open: false,
         id: null
     });
+    const [searchKey, setSearchKey] = useState<string>("");
 
     const columns: GridColDef[] = [
         {
@@ -95,6 +96,7 @@ export default function EmployeesScreen() {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/employees/get", {
             params: {
+                searchKey: searchKey,
                 page: paginationModel.page,
                 size: paginationModel.pageSize
             }
@@ -147,13 +149,29 @@ export default function EmployeesScreen() {
 
     useEffect(() => {
         fetchEmployees();
-    }, [paginationModel]);
+    }, [paginationModel, searchKey]);
 
     return (
         <>
-
-            <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
-                <Typography variant="h6" fontWeight="bold">Employee</Typography>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginY: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
+                    <Typography variant="h6" fontWeight="bold">Employee</Typography>
+                    <TextField
+                        size="small"
+                        placeholder="Search"
+                        value={searchKey}
+                        onChange={e => setSearchKey(e.target.value)}
+                        slotProps={{
+                            input: {
+                                startAdornment:
+                                    <InputAdornment position="start">
+                                        <Search fontSize="small" />
+                                    </InputAdornment>,
+                                style: { fontSize: 14 }
+                            }
+                        }}
+                    />
+                </Box>
                 <Link to="./add_employee">
                     <Button startIcon={<Add />}>
                         Add Employee
@@ -194,7 +212,6 @@ export default function EmployeesScreen() {
                 loading={loading.delete}
                 message="Are you sure you want to delete this employee?"
             />
-
         </>
     );
 }

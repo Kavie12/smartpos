@@ -29,8 +29,8 @@ public class SupplierService {
         return repository.findAllActiveSuppliers();
     }
 
-    public PagedModel<Supplier> getSuppliers(Pageable pageable) {
-        return new PagedModel<>(repository.findAllActiveSupplierPage(pageable));
+    public PagedModel<Supplier> getSuppliers(String searchKey, Pageable pageable) {
+        return new PagedModel<>(repository.findFilteredActiveSuppliers(searchKey, pageable));
     }
 
     public Supplier getOne(Integer supplierId) {

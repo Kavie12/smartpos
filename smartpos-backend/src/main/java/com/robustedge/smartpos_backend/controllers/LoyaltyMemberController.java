@@ -23,8 +23,11 @@ public class LoyaltyMemberController {
     }
 
     @GetMapping("/get")
-    public PagedModel<LoyaltyMember> getLoyaltyMembers(@PageableDefault(value = 50, page = 0) Pageable pageable) {
-        return service.getLoyaltyMembers(pageable);
+    public PagedModel<LoyaltyMember> getLoyaltyMembers(
+            @RequestParam(name = "searchKey") String searchKey,
+            @PageableDefault(value = 50, page = 0) Pageable pageable
+    ) {
+        return service.getLoyaltyMembers(searchKey, pageable);
     }
 
     @GetMapping("/get_one")

@@ -5,6 +5,8 @@ import { Add, OpenInNew } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { Link, useNavigate } from 'react-router';
 import { BillingDataType, BillingRecordDataType } from '../../types/types';
+import { Dayjs } from 'dayjs';
+import { DatePicker } from '@mui/x-date-pickers';
 
 export default function BillingScreen() {
 
@@ -27,6 +29,7 @@ export default function BillingScreen() {
         type: null,
         message: null
     });
+    const [searchDate, setSearchDate] = useState<Dayjs | null>(null);
 
     const columns: GridColDef[] = [
         {
@@ -95,6 +98,7 @@ export default function BillingScreen() {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/billing/get", {
             params: {
+                searchDate: searchDate?.format("YYYY-MM-DD"),
                 page: paginationModel.page,
                 size: paginationModel.pageSize
             }
@@ -118,13 +122,29 @@ export default function BillingScreen() {
 
     useEffect(() => {
         fetchBills();
-    }, [paginationModel]);
+    }, [paginationModel, searchDate]);
 
     return (
         <>
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
-                <Typography variant="h6" fontWeight="bold">Billing</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
+                    <Typography variant="h6" fontWeight="bold">Billing</Typography>
+                    <DatePicker
+                        label="Filter by date"
+                        slotProps={{
+                            textField: { size: 'small' },
+                            field: { clearable: true }
+                        }}
+                        sx={{
+                            "& .MuiOutlinedInput-input": {
+                                fontSize: 14
+                            }
+                        }}
+                        value={searchDate}
+                        onChange={value => setSearchDate(value)}
+                    />
+                </Box>
                 <Link to="./create_bill">
                     <Button startIcon={<Add />}>
                         Create Bill

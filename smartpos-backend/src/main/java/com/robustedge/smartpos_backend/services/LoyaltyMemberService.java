@@ -2,7 +2,7 @@ package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.LoyaltyMember;
-import com.robustedge.smartpos_backend.repositories.LoyaltyCustomerRepository;
+import com.robustedge.smartpos_backend.repositories.LoyaltyMemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +15,7 @@ import java.util.List;
 public class LoyaltyMemberService {
 
     @Autowired
-    private LoyaltyCustomerRepository repository;
+    private LoyaltyMemberRepository repository;
 
     public void addLoyaltyMember(LoyaltyMember loyaltyMember) {
         loyaltyMember.setPoints(0);
@@ -30,8 +30,8 @@ public class LoyaltyMemberService {
         return repository.findAll();
     }
 
-    public PagedModel<LoyaltyMember> getLoyaltyMembers(Pageable pageable) {
-        return new PagedModel<>(repository.findAll(pageable));
+    public PagedModel<LoyaltyMember> getLoyaltyMembers(String searchKey, Pageable pageable) {
+        return new PagedModel<>(repository.findFilteredLoyaltyMembers(searchKey, pageable));
     }
 
     public void updateLoyaltyMember(LoyaltyMember loyaltyMember) {

@@ -1,11 +1,13 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
+import { Alert, Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { StockRecordType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
 import DeleteDialog from '../../components/DeleteDialog';
+import { DatePicker } from '@mui/x-date-pickers';
+import { Dayjs } from 'dayjs';
 
 export default function StockRecordsScreen() {
     const navigate = useNavigate();
@@ -31,6 +33,8 @@ export default function StockRecordsScreen() {
         open: false,
         id: null
     });
+    const [searchKey, setSearchKey] = useState<string>("");
+    const [searchDate, setSearchDate] = useState<Dayjs | null>(null);
 
     const columns: GridColDef[] = [
         {
@@ -98,6 +102,8 @@ export default function StockRecordsScreen() {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/stock_records/get", {
             params: {
+                searchKey: searchKey,
+                searchDate: searchDate?.format("YYYY-MM-DD"),
                 page: paginationModel.page,
                 size: paginationModel.pageSize
             }
@@ -150,13 +156,44 @@ export default function StockRecordsScreen() {
 
     useEffect(() => {
         fetchStockRecords();
-    }, [paginationModel]);
+    }, [paginationModel, searchKey, searchDate]);
 
     return (
         <>
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
-                <Typography variant="h6" fontWeight="bold">Stock Records</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
+                    <Typography variant="h6" fontWeight="bold">Stock Records</Typography>
+                    <TextField
+                        size="small"
+                        placeholder="Search"
+                        value={searchKey}
+                        onChange={e => setSearchKey(e.target.value)}
+                        slotProps={{
+                            input: {
+                                startAdornment:
+                                    <InputAdornment position="start">
+                                        <Search fontSize="small" />
+                                    </InputAdornment>,
+                                style: { fontSize: 14 }
+                            }
+                        }}
+                    />
+                    <DatePicker
+                        label="Filter by date"
+                        slotProps={{
+                            textField: { size: 'small' },
+                            field: { clearable: true }
+                        }}
+                        sx={{
+                            "& .MuiOutlinedInput-input": {
+                                fontSize: 14
+                            }
+                        }}
+                        value={searchDate}
+                        onChange={value => setSearchDate(value)}
+                    />
+                </Box>
                 <Link to="./add_stock_record">
                     <Button startIcon={<Add />}>
                         Add Stock

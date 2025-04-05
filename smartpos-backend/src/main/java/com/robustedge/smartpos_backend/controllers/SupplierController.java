@@ -23,8 +23,11 @@ public class SupplierController {
     }
 
     @GetMapping("/get")
-    public PagedModel<Supplier> getSuppliers(@PageableDefault(value = 50, page = 0) Pageable pageable) {
-        return service.getSuppliers(pageable);
+    public PagedModel<Supplier> getSuppliers(
+        @RequestParam(name = "searchKey") String searchKey,
+        @PageableDefault(value = 50, page = 0) Pageable pageable
+    ) {
+        return service.getSuppliers(searchKey, pageable);
     }
 
     @GetMapping("/get_one")

@@ -8,7 +8,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -30,8 +29,8 @@ public class EmployeeService {
         return repository.findAll();
     }
 
-    public PagedModel<Employee> getEmployees(Pageable pageable) {
-        return new PagedModel<>(repository.findAll(pageable));
+    public PagedModel<Employee> getEmployees(String searchKey, Pageable pageable) {
+        return new PagedModel<>(repository.findFilteredEmployees(searchKey, pageable));
     }
 
     public Employee getOne(Integer employeeId) {

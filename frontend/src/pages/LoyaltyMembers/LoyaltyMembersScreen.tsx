@@ -1,7 +1,7 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
+import { Alert, Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { LoyaltyMemberDataType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
@@ -32,6 +32,7 @@ export default function LoyaltyMembersScreen() {
         open: false,
         id: null
     });
+    const [searchKey, setSearchKey] = useState<string>("");
 
     const columns: GridColDef[] = [
         {
@@ -98,6 +99,7 @@ export default function LoyaltyMembersScreen() {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/loyalty_members/get", {
             params: {
+                searchKey: searchKey,
                 page: paginationModel.page,
                 size: paginationModel.pageSize
             }
@@ -150,13 +152,30 @@ export default function LoyaltyMembersScreen() {
 
     useEffect(() => {
         fetchLoyaltyMembers();
-    }, [paginationModel]);
+    }, [paginationModel, searchKey]);
 
     return (
         <>
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
-                <Typography variant="h6" fontWeight="bold">Loyalty Members</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
+                    <Typography variant="h6" fontWeight="bold">Loyalty Members</Typography>
+                    <TextField
+                        size="small"
+                        placeholder="Search"
+                        value={searchKey}
+                        onChange={e => setSearchKey(e.target.value)}
+                        slotProps={{
+                            input: {
+                                startAdornment:
+                                    <InputAdornment position="start">
+                                        <Search fontSize="small" />
+                                    </InputAdornment>,
+                                style: { fontSize: 14 }
+                            }
+                        }}
+                    />
+                </Box>
                 <Link to="./add_loyalty_member">
                     <Button startIcon={<Add />}>
                         Add Loyalty Member

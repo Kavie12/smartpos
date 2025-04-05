@@ -6,6 +6,8 @@ import Navbar from "../components/Navbar";
 import { DRAWER_WIDTH } from "../data/Constants";
 import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 export default function MainLayout() {
 
@@ -20,22 +22,24 @@ export default function MainLayout() {
 
     return (
         <SidebarProvider>
-            <Box sx={{ display: "flex", flexGrow: 1 }}>
-                <CssBaseline />
-                <Navbar />
-                <Sidebar />
-                <Box
-                    component="main"
-                    sx={{
-                        flexGrow: 1,
-                        p: 3,
-                        width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` }
-                    }}
-                >
-                    <DrawerHeader />
-                    <Outlet />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Box sx={{ display: "flex", flexGrow: 1 }}>
+                    <CssBaseline />
+                    <Navbar />
+                    <Sidebar />
+                    <Box
+                        component="main"
+                        sx={{
+                            flexGrow: 1,
+                            p: 3,
+                            width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` }
+                        }}
+                    >
+                        <DrawerHeader />
+                        <Outlet />
+                    </Box>
                 </Box>
-            </Box>
+            </LocalizationProvider>
         </SidebarProvider>
     );
 

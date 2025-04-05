@@ -23,8 +23,11 @@ public class ProductController {
     }
 
     @GetMapping("/get")
-    public PagedModel<Product> getProducts(@PageableDefault(value = 50, page = 0) Pageable pageable) {
-        return service.getProducts(pageable);
+    public PagedModel<Product> getProducts(
+            @RequestParam(name = "searchKey") String searchKey,
+            @PageableDefault(value = 50, page = 0) Pageable pageable
+    ) {
+        return service.getProducts(searchKey, pageable);
     }
 
     @GetMapping("/get_one")
