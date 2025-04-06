@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BillService {
@@ -36,43 +35,43 @@ public class BillService {
     @Autowired
     private LoyaltyMemberRepository loyaltyMemberRepository;
 
-    private final ReceiptGenerator receiptGenerator = new ReceiptGenerator();
+    public void createBill(Bill bill, boolean redeemPoints) {
+        checkForSufficientStockLevel(bill.getBillingRecords());
 
-    private void generateReceipt(List<BillingRecord> billingRecords) {
-        String systemUser = System.getProperty("user.name");
-        String fileName = "receipt_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf";
-        receiptGenerator.initialize(filePath);
-        receiptGenerator.addBillingRecords(billingRecords);
-        receiptGenerator.build();
-    }
-
-    public void createBill(Bill bill) {
-        double total = (double) 0;
-        double pointsGranted = (double) 0;
-        for (BillingRecord record : bill.getBillingRecords()) {
+        double total = 0;
+        for (BillingRecord billingRecord: bill.getBillingRecords()) {
             // Set current selling price
-            record.setPrice(record.getProduct().getRetailPrice());
+            billingRecord.setPrice(billingRecord.getProduct().getRetailPrice());
 
             // Calculate total
-            total += record.getPrice() * record.getQuantity();
+            total += billingRecord.getPrice() * billingRecord.getQuantity();
 
             // Deduct stock level
-            Product product = record.getProduct();
-            product.setStockLevel(product.getStockLevel() - record.getQuantity());
+            Product product = billingRecord.getProduct();
+            product.setStockLevel(product.getStockLevel() - billingRecord.getQuantity());
             productRepository.save(product);
         }
 
-        // Update loyalty member points
+        // Set total
+        bill.setTotal(total);
+
         LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
         if (loyaltyMember != null) {
-            pointsGranted = (double) total / 1000;
-            loyaltyMember.setPoints(loyaltyMember.getPoints() + pointsGranted);
+            double pointsGranted = calculatePointsGranted(total, bill.getBillingRecords());
+
+            // Set points granted
+            bill.setPointsGranted(pointsGranted);
+
+            // set points redeemed
+            bill.setPointsRedeemed(redeemPoints ? loyaltyMember.getPoints() : 0);
+
+            // Update loyalty member points
+            loyaltyMember.setPoints(redeemPoints ? pointsGranted : loyaltyMember.getPoints() + pointsGranted);
             loyaltyMemberRepository.save(loyaltyMember);
         }
 
-        generateReceipt(bill.getBillingRecords());
-        repository.save(bill);
+        Bill savedBill = repository.save(bill);
+        generateReceipt(savedBill);
     }
 
     public List<Bill> getAllBills() {
@@ -90,34 +89,83 @@ public class BillService {
     }
 
     public void deleteBill(Integer billId) {
-        Optional<Bill> bill = repository.findById(billId);
-        List<BillingRecord> billingRecords = bill.orElseThrow().getBillingRecords();
+        Bill bill = repository.findById(billId).orElseThrow(() -> new ApiRequestException("Bill not found."));
 
         // Update quantity
-        for (BillingRecord billingRecord : billingRecords) {
+        for (BillingRecord billingRecord : bill.getBillingRecords()) {
             Product product = billingRecord.getProduct();
             product.setStockLevel(product.getStockLevel() + billingRecord.getQuantity());
         }
+
+        // Update loyalty member points
+        LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
+        loyaltyMember.setPoints(loyaltyMember.getPoints() + bill.getPointsRedeemed() - bill.getPointsGranted());
 
         repository.deleteById(billId);
     }
 
     public void updateBill(Bill bill) {
+        if (bill.getId() == null) {
+            return;
+        }
+
+        checkForSufficientStockLevel(bill.getBillingRecords());
+
+        double total = 0;
         for (BillingRecord billingRecord : bill.getBillingRecords()) {
-            // Update quantity
+            // Calculate total
+            total += billingRecord.getPrice() * billingRecord.getQuantity();
+
+            // Update product quantity
             BillingRecord oldBillingRecord = billingRecordRepository.findById(billingRecord.getId()).orElseThrow();
             Product product = billingRecord.getProduct();
             product.setStockLevel(product.getStockLevel() - billingRecord.getQuantity() + oldBillingRecord.getQuantity());
             productRepository.save(product);
-
-            billingRecordRepository.save(billingRecord);
         }
 
-        generateReceipt(bill.getBillingRecords());
+        // Set total
+        bill.setTotal(total);
+
+        // Set points granted
+        double pointsGranted = calculatePointsGranted(total, bill.getBillingRecords());
+        bill.setPointsGranted(pointsGranted);
+
+        // Update loyalty member points
+        LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
+        loyaltyMember.setPoints(bill.getPointsRedeemed() > 0 ? pointsGranted : loyaltyMember.getPoints() + pointsGranted);
+        loyaltyMemberRepository.save(loyaltyMember);
+
+        repository.save(bill);
+        generateReceipt(bill);
     }
 
     public void printBill(Integer billId) {
         Bill bill = repository.findById(billId).orElseThrow(() -> new ApiRequestException("Bill not found."));
-        generateReceipt(bill.getBillingRecords());
+        generateReceipt(bill);
+    }
+
+    private void generateReceipt(Bill bill) {
+        String systemUser = System.getProperty("user.name");
+        String fileName = "receipt_" + Utils.getDateTimeFileName();
+        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf";
+
+        ReceiptGenerator receiptGenerator = new ReceiptGenerator(bill);
+        receiptGenerator.initialize(filePath);
+        receiptGenerator.addData();
+        receiptGenerator.build();
+    }
+
+    private double calculatePointsGranted(double total, List<BillingRecord> billingRecords) {
+        return (double) Math.round(total / 1000 * 100) / 100;
+    }
+
+    private void checkForSufficientStockLevel(List<BillingRecord> billingRecords) {
+        for (BillingRecord billingRecord: billingRecords) {
+            // Check for sufficient stock level
+            Product product = billingRecord.getProduct();
+            if (product.getStockLevel() < billingRecord.getQuantity()) {
+                throw new ApiRequestException(product.getName() + " has no sufficient stock level.");
+            }
+        }
     }
 }

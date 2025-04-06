@@ -10,24 +10,28 @@ import com.itextpdf.layout.Style;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TabAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
+import com.robustedge.smartpos_backend.models.Bill;
 import com.robustedge.smartpos_backend.models.BillingRecord;
+import com.robustedge.smartpos_backend.models.LoyaltyMember;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
 
 public class ReceiptGenerator {
 
-    private PdfFont COURIER;
-    private PdfFont COURIER_BOLD;
+    private PdfFont FONT;
     private Document doc;
 
     private Style dividerStyles;
     private Style headerStyles;
-    private Style normalTextStyle;
-    private Style boldTextStyle;
+    private Style textStyle;
+
+    private Bill bill;
+
+    public ReceiptGenerator(Bill bill) {
+        this.bill = bill;
+    }
 
     public void initialize(String dest) {
         // Create file
@@ -49,8 +53,7 @@ public class ReceiptGenerator {
 
     private void initFonts() {
         try {
-            COURIER = PdfFontFactory.createFont(StandardFonts.COURIER);
-            COURIER_BOLD = PdfFontFactory.createFont(StandardFonts.COURIER_BOLD);
+            FONT = PdfFontFactory.createFont(StandardFonts.COURIER_BOLD);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load fonts", e);
         }
@@ -58,19 +61,15 @@ public class ReceiptGenerator {
 
     private void initStyles() {
         dividerStyles = new Style()
-                .setFont(COURIER)
+                .setFont(FONT)
                 .setFontSize(16)
                 .setTextAlignment(TextAlignment.CENTER);
         headerStyles = new Style()
-                .setFont(COURIER)
+                .setFont(FONT)
                 .setFontSize(24)
                 .setTextAlignment(TextAlignment.CENTER);
-        normalTextStyle = new Style()
-                .setFont(COURIER)
-                .setFontSize(16)
-                .setTextAlignment(TextAlignment.LEFT);
-        boldTextStyle = new Style()
-                .setFont(COURIER_BOLD)
+        textStyle = new Style()
+                .setFont(FONT)
                 .setFontSize(16)
                 .setTextAlignment(TextAlignment.LEFT);
     }
@@ -84,58 +83,89 @@ public class ReceiptGenerator {
     }
 
     public void addHeading() {
-        doc.add(new Paragraph("******************************************************").addStyle(dividerStyles));
+        addStarDivider();
         doc.add(new Paragraph("SMARTPOS").addStyle(headerStyles));
-        doc.add(new Paragraph("******************************************************").addStyle(dividerStyles));
+        addStarDivider();
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String date = dateFormat.format(new Date());
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String date = bill.getCreatedAt().format(dateTimeFormatter);
 
-        Paragraph p = new Paragraph("Receipt").addStyle(normalTextStyle);
-        p.add(new Tab());
-        p.addTabStops(new TabStop(1000, TabAlignment.RIGHT));
-        p.add(date);
-        doc.add(p);
+        addNormalField("Receipt ID: " + bill.getId(), date);
 
-        doc.add(new Paragraph("------------------------------------------------------").addStyle(dividerStyles));
+        addDashDivider();
     }
 
-    public void addBillingRecords(List<BillingRecord> billingRecords) {
-        double total = 0;
-        doc.add(new Paragraph().addStyle(new Style().setMarginTop(12)));
-        for (BillingRecord billingRecord : billingRecords) {
-            doc.add(getBillingRecord(billingRecord.getProduct().getName(), billingRecord.getQuantity(), billingRecord.getPrice()));
-            total += billingRecord.getQuantity() * billingRecord.getPrice();
+    public void addData() {
+        // Billing records
+        addSpacing(12);
+        for (BillingRecord billingRecord : bill.getBillingRecords()) {
+            addBillingRecord(billingRecord.getProduct().getName(), billingRecord.getQuantity(), billingRecord.getPrice());
         }
-        doc.add(new Paragraph().addStyle(new Style().setMarginTop(12)));
+
+        addSpacing(12);
+        addDashDivider();
+        addSpacing(12);
+
+        // Sub total
+        addBoldField("Sub Total", "Rs. " + String.valueOf(bill.getTotal()));
+
+        // Points redeemed
+        if (bill.getPointsRedeemed() > 0) {
+            addBoldField("Points Redeemed", String.valueOf(bill.getPointsRedeemed()));
+        }
+
+        // Total
+        addBoldField("Total", "Rs. " + String.valueOf(bill.getTotal() - bill.getPointsRedeemed()));
+
+        addSpacing(48);
+
+        // Loyalty member details
+        if (bill.getLoyaltyMember() != null) {
+            LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
+            addBoldField("Loyalty Member ID", loyaltyMember.getPhoneNumber());
+            addBoldField("Points Granted", String.valueOf(bill.getPointsGranted()));
+            addBoldField("Total Points", String.valueOf(loyaltyMember.getPoints()));
+        }
+    }
+
+    private void addNormalField(String left, String right) {
+        Paragraph p = new Paragraph().addStyle(textStyle);
+        p.add(left);
+        p.add(new Tab());
+        p.addTabStops(new TabStop(1000, TabAlignment.RIGHT));
+        p.add(right);
+        doc.add(p);
+    }
+
+    private void addBoldField(String left, String right) {
+        Paragraph p = new Paragraph().addStyle(textStyle);
+        p.add(left);
+        p.add(new Tab());
+        p.addTabStops(new TabStop(1000, TabAlignment.RIGHT));
+        p.add(right);
+        doc.add(p);
+    }
+
+    private void addBillingRecord(String itemName, int qty, double price) {
+        addNormalField(String.valueOf(qty) + " x " + itemName, "Rs. " + String.valueOf(qty * price));
+    }
+
+    private void addSpacing(int value) {
+        doc.add(new Paragraph().addStyle(new Style().setMarginTop(value)));
+    }
+
+    private void addStarDivider() {
+        doc.add(new Paragraph("******************************************************").addStyle(dividerStyles));
+    }
+
+    private void addDashDivider() {
         doc.add(new Paragraph("------------------------------------------------------").addStyle(dividerStyles));
-        doc.add(new Paragraph().addStyle(new Style().setMarginTop(12)));
-        doc.add(getTotal(total));
-    }
-
-    private Paragraph getBillingRecord(String itemName, int qty, double price) {
-        Paragraph p = new Paragraph().addStyle(normalTextStyle);
-        p.add(String.valueOf(qty) + " x " + itemName);
-        p.add(new Tab());
-        p.addTabStops(new TabStop(1000, TabAlignment.RIGHT));
-        p.add("Rs. " + String.valueOf(qty * price));
-        return p;
-    }
-
-    private Paragraph getTotal(double total) {
-        Paragraph p = new Paragraph().addStyle(boldTextStyle);
-        p.add("Total");
-        p.add(new Tab());
-        p.addTabStops(new TabStop(1000, TabAlignment.RIGHT));
-        p.add("Rs. " + String.valueOf(total));
-        return p;
     }
 
     public void build() {
-        doc.add(new Paragraph().addStyle(new Style().setMarginTop(24)));
+        addSpacing(48);
         doc.add(new Paragraph("********************* Thank You! *********************").addStyle(dividerStyles));
 
         doc.close();
     }
-
 }

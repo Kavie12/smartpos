@@ -23,6 +23,15 @@ public class Bill {
     @JoinColumn(name = "loyalty_member_id")
     private LoyaltyMember loyaltyMember;
 
+    @Column(name = "points_granted")
+    private double pointsGranted;
+
+    @Column(name = "points_redeemed")
+    private double pointsRedeemed;
+
+    @Column(name = "total")
+    private double total;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -30,20 +39,22 @@ public class Bill {
     public Bill() {
     }
 
-    public Bill(Integer id, List<BillingRecord> billingRecords, LoyaltyMember loyaltyMember, LocalDateTime createdAt) {
+    public Bill(Integer id, List<BillingRecord> billingRecords, LoyaltyMember loyaltyMember, double pointsGranted, double pointsRedeemed, double total, LocalDateTime createdAt) {
         this.id = id;
         this.billingRecords = billingRecords;
         this.loyaltyMember = loyaltyMember;
+        this.pointsGranted = pointsGranted;
+        this.pointsRedeemed = pointsRedeemed;
+        this.total = total;
         this.createdAt = createdAt;
     }
 
-    public Bill(List<BillingRecord> billingRecords, LoyaltyMember loyaltyMember) {
+    public Bill(List<BillingRecord> billingRecords, LoyaltyMember loyaltyMember, double pointsGranted, double pointsRedeemed, double total) {
         this.billingRecords = billingRecords;
         this.loyaltyMember = loyaltyMember;
-    }
-
-    public Bill(List<BillingRecord> billingRecords) {
-        this.billingRecords = billingRecords;
+        this.pointsGranted = pointsGranted;
+        this.pointsRedeemed = pointsRedeemed;
+        this.total = total;
     }
 
     public Integer getId() {
@@ -74,6 +85,30 @@ public class Bill {
         return createdAt;
     }
 
+    public double getPointsGranted() {
+        return pointsGranted;
+    }
+
+    public void setPointsGranted(double pointsGranted) {
+        this.pointsGranted = pointsGranted;
+    }
+
+    public double getPointsRedeemed() {
+        return pointsRedeemed;
+    }
+
+    public void setPointsRedeemed(double pointsRedeemed) {
+        this.pointsRedeemed = pointsRedeemed;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -84,6 +119,9 @@ public class Bill {
                 "id=" + id +
                 ", billingRecords=" + billingRecords +
                 ", loyaltyMember=" + loyaltyMember +
+                ", pointsGranted=" + pointsGranted +
+                ", pointsRedeemed=" + pointsRedeemed +
+                ", total=" + total +
                 ", createdAt=" + createdAt +
                 '}';
     }

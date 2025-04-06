@@ -2,18 +2,24 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { BasicAlertType, BillingDataType, BillingRecordDataType } from "../../types/types";
 import { AuthApi } from "../../services/Api";
-import { Box, Button, Card, CardActions, CardContent, CircularProgress, Divider, IconButton, Typography } from "@mui/material";
+import { Box, Button, Card, CardActions, CardContent, CircularProgress, Divider, Grid2, IconButton, Typography } from "@mui/material";
 import { ArrowBack, Delete, Edit, Print } from "@mui/icons-material";
 import DeleteDialog from "../../components/DeleteDialog";
 import BasicAlert from "../../components/BasicAlert";
+import { grey } from "@mui/material/colors";
 
 export default function BillDetailsScreen() {
 
     const navigate = useNavigate();
     const { billId } = useParams();
 
-    const [bill, setBill] = useState<BillingDataType | null>(null);
-    const [total, setTotal] = useState<number | undefined>(0);
+    const [bill, setBill] = useState<BillingDataType>({
+        billingRecords: [],
+        loyaltyMember: null,
+        pointsGranted: 0,
+        pointsRedeemed: 0,
+        total: 0
+    });
     const [loading, setLoading] = useState<{ bill: boolean, print: boolean, delete: boolean }>({
         bill: false,
         print: false,
@@ -35,7 +41,6 @@ export default function BillDetailsScreen() {
             }
         })
             .then(res => {
-                console.log(res.data);
                 setBill(res.data);
             })
             .catch(err => {
@@ -109,14 +114,6 @@ export default function BillDetailsScreen() {
         fetchBill();
     }, [billId]);
 
-    useEffect(() => {
-        setTotal(
-            bill?.billingRecords.reduce((total, item) => {
-                return total + item.product.retailPrice * item.quantity;
-            }, 0)
-        );
-    }, [bill]);
-
     return (
         <>
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
@@ -135,28 +132,23 @@ export default function BillDetailsScreen() {
                     onClose={() => setAlert(prev => ({ ...prev, open: false }))}
                 />
 
-                <Card sx={{ p: 2, width: 600 }}>
+                <Card sx={{ p: 2 }}>
                     <CardContent>
                         {loading.bill ? (
-                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <Box sx={{ display: "flex", justifyContent: "center" }}>
                                 <CircularProgress />
                             </Box>
                         ) :
                             (
-                                <>
-                                    <Box sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}>
-                                        {bill?.billingRecords.map((billingRecord, i) => (
-                                            <BillingRecordInfo billingRecord={billingRecord} key={i} />
-                                        ))}
-                                    </Box>
-
-                                    < Divider sx={{ mt: 6 }} />
-
-                                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                        <Typography fontWeight={"bold"}>Total:</Typography>
-                                        <Typography fontWeight={"bold"}>Rs. {total}</Typography>
-                                    </Box>
-                                </>
+                                <Grid2 container spacing={8}>
+                                    <Grid2 size={6}>
+                                        <BillDetails bill={bill} />
+                                    </Grid2>
+                                    <Grid2 size={6}>
+                                        {/* Loyalty member details */}
+                                        <LoyaltyMemberDetails bill={bill} />
+                                    </Grid2>
+                                </Grid2>
                             )
                         }
                     </CardContent>
@@ -215,3 +207,69 @@ function BillingRecordInfo({ billingRecord }: { billingRecord: BillingRecordData
         </Box>
     );
 }
+
+const BillDetails = ({ bill }: { bill: BillingDataType }) => {
+    return (
+        <>
+            {/* Id and date */}
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography variant="body2">Bill ID: {bill.id}</Typography>
+                <Typography variant="body2">
+                    {bill.createdAt ? new Date(bill.createdAt.toString()).toLocaleString() : "N/A"}
+                </Typography>
+            </Box>
+
+            <Divider sx={{ mt: 2 }} />
+
+            {/* Billing records */}
+            <Box sx={{ display: "flex", flexDirection: "column", rowGap: 1, mt: 4 }}>
+                {bill.billingRecords.map((billingRecord, i) => (
+                    <BillingRecordInfo billingRecord={billingRecord} key={i} />
+                ))}
+            </Box>
+
+            < Divider sx={{ mt: 6 }} />
+
+            {/* Sub Total */}
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+                <Typography fontWeight={"bold"}>Sub Total:</Typography>
+                <Typography fontWeight={"bold"}>Rs. {bill.total}</Typography>
+            </Box>
+
+            {
+                /* Points Redeemed */
+                bill.pointsRedeemed > 0 && (
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+                        <Typography fontWeight={"bold"}>Points Redeemed:</Typography>
+                        <Typography fontWeight={"bold"}>{bill.pointsRedeemed}</Typography>
+                    </Box>
+                )
+            }
+
+            {/* Total */}
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+                <Typography fontWeight={"bold"}>Total:</Typography>
+                <Typography fontWeight={"bold"}>Rs. {bill.total - bill.pointsRedeemed}</Typography>
+            </Box>
+        </>
+    );
+};
+
+const LoyaltyMemberDetails = ({ bill }: { bill: BillingDataType }) => {
+    return (
+        bill.loyaltyMember &&
+        (
+            <Box sx={{ backgroundColor: grey[200], borderRadius: 2, paddingX: 4, paddingY: 3 }}>
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <Typography variant="h6">Loyalty Member Details</Typography>
+                </Box>
+                <Box sx={{ mt: 2, display: "flex", flexDirection: "column", rowGap: 1 }}>
+                    <Typography>ID: {bill.loyaltyMember.phoneNumber}</Typography>
+                    <Typography>Name: {bill.loyaltyMember.firstName + " " + bill.loyaltyMember.lastName}</Typography>
+                    <Typography>Points Granted: {bill.pointsGranted}</Typography>
+                    <Typography>Total Points: {bill.loyaltyMember.points}</Typography>
+                </Box>
+            </Box>
+        )
+    );
+};

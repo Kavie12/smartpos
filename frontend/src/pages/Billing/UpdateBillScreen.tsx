@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AuthApi } from "../../services/Api";
-import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, IconButton, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import QuantityCounter from "../../components/QuantityCounter";
 import { Link, useParams } from "react-router";
@@ -12,6 +12,10 @@ export default function UpdateBillScreen() {
 
     const { billId } = useParams();
 
+    const [loading, setLoading] = useState<{ fetch: boolean, update: boolean }>({
+        fetch: false,
+        update: false
+    });
     const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
         open: false,
         type: null,
@@ -19,11 +23,15 @@ export default function UpdateBillScreen() {
     });
     const [bill, setBill] = useState<BillingDataType>({
         billingRecords: [],
-        loyaltyMember: null
+        loyaltyMember: null,
+        pointsGranted: 0,
+        pointsRedeemed: 0,
+        total: 0
     });
     const [total, setTotal] = useState<number>(0);
 
     const updateBill = (): void => {
+        setLoading(prev => ({ ...prev, update: true }))
         AuthApi.put("/billing/update", bill)
             .then(() => {
                 setAlert(prev => ({ ...prev, open: true, type: "success", message: "Bill updated successfully." }));
@@ -32,10 +40,13 @@ export default function UpdateBillScreen() {
             .catch(err => {
                 setAlert(prev => ({ ...prev, open: true, type: "success", message: "Error updating bill" }));
                 console.log(err);
+            }).finally(() => {
+                setLoading(prev => ({ ...prev, update: false }));
             });
     };
 
     const fetchBill = (): void => {
+        setLoading(prev => ({ ...prev, fetch: true }));
         AuthApi.get("/billing/get_one", {
             params: {
                 billId: billId
@@ -51,6 +62,8 @@ export default function UpdateBillScreen() {
                     message: "Failed fetching bill."
                 });
                 console.error("Error fetching data:", err);
+            }).finally(() => {
+                setLoading(prev => ({ ...prev, fetch: false }));
             });
     };
 
@@ -84,23 +97,29 @@ export default function UpdateBillScreen() {
                     onClose={() => setAlert(prev => ({ ...prev, open: false }))}
                 />
 
-                <Box>
-                    <Box sx={{ backgroundColor: grey[200], borderRadius: 2, paddingX: 4, paddingY: 3 }}>
-                        <Typography variant="h6" fontWeight="bold">Billed Items</Typography>
-                        <BilledItems items={bill.billingRecords} setBill={setBill} />
-                        <Box sx={{ marginTop: 6, display: "flex", flexDirection: "column" }}>
-                            <Divider />
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                <Typography fontWeight={"bold"}>Total:</Typography>
-                                <Typography fontWeight={"bold"}>Rs. {total}</Typography>
-                            </Box>
-                            <Box sx={{ display: "flex", justifyContent: "end", columnGap: 2 }}>
-                                <Button variant="contained" sx={{ marginTop: 4 }} onClick={updateBill}>
-                                    Update & Print Bill
-                                </Button>
-                            </Box>
+                <Box sx={{ backgroundColor: grey[200], borderRadius: 2, paddingX: 4, paddingY: 3 }}>
+                    {loading.fetch ? (
+                        <Box sx={{ display: "flex", justifyContent: "center" }}>
+                            <CircularProgress />
                         </Box>
-                    </Box>
+                    ) : (
+                        <>
+                            <Typography variant="h6" fontWeight="bold">Billed Items</Typography>
+                            <BilledItems items={bill.billingRecords} setBill={setBill} />
+                            <Box sx={{ marginTop: 6, display: "flex", flexDirection: "column" }}>
+                                <Divider />
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+                                    <Typography fontWeight={"bold"}>Total:</Typography>
+                                    <Typography fontWeight={"bold"}>Rs. {total}</Typography>
+                                </Box>
+                                <Box sx={{ display: "flex", justifyContent: "end", columnGap: 2 }}>
+                                    <Button variant="contained" sx={{ marginTop: 4 }} onClick={updateBill} loading={loading.update}>
+                                        Update & Print Bill
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </>
+                    )}
                 </Box>
             </Box>
         </>

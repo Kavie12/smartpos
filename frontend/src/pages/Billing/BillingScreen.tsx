@@ -4,7 +4,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { Add, OpenInNew } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { Link, useNavigate } from 'react-router';
-import { BillingDataType, BillingRecordDataType } from '../../types/types';
+import { BillingDataType } from '../../types/types';
 import { Dayjs } from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers';
 import BasicAlert from '../../components/BasicAlert';
@@ -58,7 +58,7 @@ export default function BillingScreen() {
             sortable: false,
             flex: 2,
             valueGetter: (_, row) => {
-                return row.loyaltyMember === null ? "-" : row.loyaltyMember.firstName + " " + row.loyaltyMember.lastName;
+                return row.loyaltyMember ? row.loyaltyMember.firstName + " " + row.loyaltyMember.lastName : "-";
             }
         },
         {
@@ -70,11 +70,7 @@ export default function BillingScreen() {
             sortable: false,
             flex: 1,
             valueGetter: (_, row) => {
-                let price = 0;
-                row.billingRecords.forEach((record: BillingRecordDataType) => {
-                    price += record.price ? record.price * record.quantity : 0;
-                });
-                return "Rs. " + price;
+                return "Rs. " + (row.total - row.pointsRedeemed);
             }
         },
         {

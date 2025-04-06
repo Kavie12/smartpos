@@ -1,5 +1,6 @@
 package com.robustedge.smartpos_backend.controllers;
 
+import com.robustedge.smartpos_backend.dto.BillRequest;
 import com.robustedge.smartpos_backend.models.Bill;
 import com.robustedge.smartpos_backend.services.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class BillController {
     private BillService service;
 
     @PostMapping("create")
-    public void createBill(@RequestBody Bill bill) {
-        service.createBill(bill);
+    public void createBill(@RequestBody BillRequest billRequest) {
+        service.createBill(billRequest.getBill(), billRequest.isRedeemPoints());
     }
 
     @GetMapping("/get")

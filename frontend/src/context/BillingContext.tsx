@@ -4,10 +4,8 @@ import { BillingDataType } from "../types/types";
 type BillingContextType = {
     bill: BillingDataType;
     setBill: React.Dispatch<React.SetStateAction<BillingDataType>>;
-    total: number;
-    pointsGranted: number;
-    calculateTotal: () => void;
-    calculatePointsGranted: () => void;
+    redeemPoints: boolean;
+    setRedeemPoints: React.Dispatch<React.SetStateAction<boolean>>;
     clearBill: () => void;
 };
 
@@ -27,37 +25,68 @@ export default function BillingProvider({ children }: { children: ReactNode }) {
 
     const [bill, setBill] = useState<BillingDataType>({
         billingRecords: [],
-        loyaltyMember: null
+        loyaltyMember: null,
+        pointsGranted: 0,
+        pointsRedeemed: 0,
+        total: 0
     });
-    const [total, setTotal] = useState<number>(0);
-    const [pointsGranted, setPointsGranted] = useState<number>(0);
-
-    const calculateTotal = (): void => {
-        setTotal(
-            bill.billingRecords.reduce((totalValue, item) => {
-                return totalValue + item.product.retailPrice * item.quantity;
-            }, 0)
-        );
-    };
-
-    const calculatePointsGranted = (): void => {
-        setPointsGranted(total / 1000);
-    };
+    const [redeemPoints, setRedeemPoints] = useState<boolean>(false);
 
     const clearBill = (): void => {
         setBill({
             billingRecords: [],
-            loyaltyMember: null
+            loyaltyMember: null,
+            pointsGranted: 0,
+            pointsRedeemed: 0,
+            total: 0
         });
     };
 
     useEffect(() => {
-        calculateTotal();
-    }, [bill]);
+        // Calculate total
+        const total = bill.billingRecords.reduce((totalValue, item) => {
+            return totalValue + item.product.retailPrice * item.quantity;
+        }, 0);
+
+        setBill(prev => ({
+            ...prev,
+            total,
+        }));
+    }, [bill.billingRecords]);
 
     useEffect(() => {
-        calculatePointsGranted();
-    }, [total]);
+        // Calculate points granted
+        setBill(prev => ({
+            ...prev,
+            pointsGranted: prev.total / 1000
+        }));
+    }, [bill.total]);
 
-    return <BillingContext.Provider value={{ bill, setBill, total, pointsGranted, calculateTotal, calculatePointsGranted, clearBill }}>{children}</BillingContext.Provider>
+    useEffect(() => {
+        // Calculate points redeemed
+        setBill(prev => {
+            if (redeemPoints) {
+                return {
+                    ...prev,
+                    pointsRedeemed: prev.loyaltyMember?.points || 0
+                };
+            } else {
+                return {
+                    ...prev,
+                    pointsRedeemed: 0
+                };
+            }
+
+        });
+    }, [redeemPoints]);
+
+    return <BillingContext.Provider value={{
+        bill,
+        setBill,
+        redeemPoints,
+        setRedeemPoints,
+        clearBill
+    }}>
+        {children}
+    </BillingContext.Provider>
 }

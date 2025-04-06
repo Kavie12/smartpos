@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AuthApi } from "../../services/Api";
-import { Box, Button, Divider, Grid2, IconButton, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Divider, FormControlLabel, Grid2, IconButton, TextField, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import QuantityCounter from "../../components/QuantityCounter";
 import { Link } from "react-router";
@@ -11,7 +11,7 @@ import BasicAlert from "../../components/BasicAlert";
 
 export default function CreateBillScreen() {
 
-    const { bill, setBill, total, pointsGranted, clearBill } = useBilling();
+    const { bill, setBill, redeemPoints, clearBill } = useBilling();
 
     const [barcode, setBarcode] = useState<string | null>(null);
     const [loyaltyMemberId, setLoyaltyMemberId] = useState<string>("");
@@ -86,13 +86,13 @@ export default function CreateBillScreen() {
             return;
         }
 
-        AuthApi.post("/billing/create", bill)
+        AuthApi.post("/billing/create", { bill, redeemPoints })
             .then(() => {
                 clearBill();
                 setAlert(prev => ({ ...prev, open: true, type: "success", message: "Bill saved successfully." }));
             })
             .catch(err => {
-                setAlert(prev => ({ ...prev, open: true, type: "error", message: "Error saving bill." }));
+                setAlert(prev => ({ ...prev, open: true, type: "error", message: err.response.data.message || "Error saving bill." }));
                 console.log(err);
             })
             .finally(() => {
@@ -191,21 +191,27 @@ export default function CreateBillScreen() {
                             <Box sx={{ marginTop: 6, display: "flex", flexDirection: "column" }}>
                                 <Divider />
 
-                                {/* Total */}
+                                {/* Sub Total */}
                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                    <Typography fontWeight={"bold"}>Total:</Typography>
-                                    <Typography fontWeight={"bold"}>Rs. {total}</Typography>
+                                    <Typography fontWeight={"bold"}>Sub Total:</Typography>
+                                    <Typography fontWeight={"bold"}>Rs. {bill.total}</Typography>
                                 </Box>
 
                                 {
-                                    /* Points Granted */
-                                    bill.loyaltyMember && (
+                                    /* Points Redeemed */
+                                    bill.pointsRedeemed > 0 && (
                                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                            <Typography fontWeight={"bold"}>Points Granted:</Typography>
-                                            <Typography fontWeight={"bold"}>Rs. {pointsGranted}</Typography>
+                                            <Typography fontWeight={"bold"}>Points Redeemed:</Typography>
+                                            <Typography fontWeight={"bold"}>{bill.pointsRedeemed}</Typography>
                                         </Box>
                                     )
                                 }
+
+                                {/* Total */}
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+                                    <Typography fontWeight={"bold"}>Total:</Typography>
+                                    <Typography fontWeight={"bold"}>Rs. {bill.total - bill.pointsRedeemed}</Typography>
+                                </Box>
 
                                 {/* Buttons */}
                                 <Button variant="contained" sx={{ marginTop: 4 }} onClick={saveBill}>
@@ -281,31 +287,54 @@ const BilledItem = ({ item, key }: { item: BillingRecordDataType, key: number })
 
 const LoyaltyMemberDetails = ({ data }: { data: LoyaltyMemberDataType | null }) => {
 
-    const { setBill } = useBilling();
+    const { bill, setBill, redeemPoints, setRedeemPoints } = useBilling();
 
-    if (data !== null) {
-        return (
-            <Box sx={{ backgroundColor: grey[200], borderRadius: 2, paddingX: 4, paddingY: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <Typography variant="h6">Loyalty Member Details</Typography>
-                    <IconButton
-                        onClick={
-                            () => setBill(prev => ({
-                                ...prev,
-                                loyaltyMember: null
-                            }))
-                        }
-                    >
-                        <Cancel />
-                    </IconButton>
-                </Box>
-                <Box sx={{ mt: 2, display: "flex", flexDirection: "column", rowGap: 1 }}>
-                    <Typography>ID: {data.phoneNumber}</Typography>
-                    <Typography>Name: {data.firstName + " " + data.lastName}</Typography>
-                    <Typography>Current Points: {data.points}</Typography>
-                </Box>
-            </Box>
-        );
+    if (data === null) {
+        return <></>;
     }
-    return <></>;
+
+    const closeHandler = () => {
+        setBill(prev => ({
+            ...prev,
+            loyaltyMember: null
+        }));
+        setRedeemPoints(false);
+    };
+
+    return (
+        <Box sx={{ backgroundColor: grey[200], borderRadius: 2, paddingX: 4, paddingY: 3 }}>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <Typography variant="h6">Loyalty Member Details</Typography>
+                <IconButton
+                    onClick={closeHandler}
+                >
+                    <Cancel />
+                </IconButton>
+            </Box>
+            <Box sx={{ mt: 2, display: "flex", flexDirection: "column", rowGap: 1 }}>
+                <Typography>ID: {data.phoneNumber}</Typography>
+                <Typography>Name: {data.firstName + " " + data.lastName}</Typography>
+                <Typography>Current Points: {data.points}</Typography>
+                {
+                    /* Points Granted */
+                    bill.pointsGranted > 0 &&
+                    <Typography fontWeight={"bold"} sx={{ mt: 2 }}>Points Granted: {bill.pointsGranted}</Typography>
+                }
+            </Box>
+            <Box sx={{ mt: 2, display: "flex", alignItems: "center", justifyContent: "end" }}>
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            size="small"
+                            value={redeemPoints}
+                            onChange={e => setRedeemPoints(e.target.checked)}
+                            disabled={data.points == 0}
+                        />
+                    }
+                    label={<Typography variant="body2">Redeem Points</Typography>}
+                    labelPlacement="start"
+                />
+            </Box>
+        </Box>
+    );
 };

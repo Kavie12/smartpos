@@ -60,5 +60,8 @@ export type BillingDataType = {
     id?: number;
     billingRecords: BillingRecordDataType[];
     loyaltyMember: LoyaltyMemberDataType | null;
+    pointsGranted: number;
+    pointsRedeemed: number;
+    total: number;
     createdAt?: String;
 };
