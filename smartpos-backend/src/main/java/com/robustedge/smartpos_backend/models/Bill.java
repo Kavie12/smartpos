@@ -62,11 +62,11 @@ public class Bill {
         this.billingRecords = billingRecords;
     }
 
-    public LoyaltyMember getLoyaltyCustomer() {
+    public LoyaltyMember getLoyaltyMember() {
         return loyaltyMember;
     }
 
-    public void setLoyaltyCustomer(LoyaltyMember loyaltyMember) {
+    public void setLoyaltyMember(LoyaltyMember loyaltyMember) {
         this.loyaltyMember = loyaltyMember;
     }
 
@@ -83,7 +83,7 @@ public class Bill {
         return "Bill{" +
                 "id=" + id +
                 ", billingRecords=" + billingRecords +
-                ", loyaltyCustomer=" + loyaltyMember +
+                ", loyaltyMember=" + loyaltyMember +
                 ", createdAt=" + createdAt +
                 '}';
     }

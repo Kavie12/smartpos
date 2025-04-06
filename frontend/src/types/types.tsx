@@ -3,6 +3,12 @@ export type CredentialsType = {
     password: string;
 };
 
+export type BasicAlertType = {
+    open: boolean,
+    type: "error" | "success" | null,
+    message: string | null
+};
+
 export type SupplierDataType = {
     id?: number;
     name: string;
@@ -53,6 +59,6 @@ export type BillingRecordDataType = {
 export type BillingDataType = {
     id?: number;
     billingRecords: BillingRecordDataType[];
-    loyaltyCustomer?: LoyaltyMemberDataType | null;
+    loyaltyMember: LoyaltyMemberDataType | null;
     createdAt?: String;
 };

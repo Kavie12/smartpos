@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { AuthApi } from "../../services/Api";
-import { Alert, Box, Button, Divider, IconButton, Typography } from "@mui/material";
+import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import QuantityCounter from "../../components/QuantityCounter";
 import { Link, useParams } from "react-router";
 import { BillingDataType, BillingRecordDataType } from "../../types/types";
 import { ArrowBack } from "@mui/icons-material";
+import BasicAlert from "../../components/BasicAlert";
 
 export default function UpdateBillScreen() {
 
@@ -17,7 +18,8 @@ export default function UpdateBillScreen() {
         message: null
     });
     const [bill, setBill] = useState<BillingDataType>({
-        billingRecords: []
+        billingRecords: [],
+        loyaltyMember: null
     });
     const [total, setTotal] = useState<number>(0);
 
@@ -77,12 +79,11 @@ export default function UpdateBillScreen() {
 
             <Box sx={{ px: 5, mt: 2, width: 800 }}>
                 {/* Alerts */}
-                {alert.open && (
-                    <Box sx={{ my: 2 }}>
-                        {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                        {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    </Box>
-                )}
+                <BasicAlert
+                    alert={alert}
+                    onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+                />
+
                 <Box>
                     <Box sx={{ backgroundColor: grey[200], borderRadius: 2, paddingX: 4, paddingY: 3 }}>
                         <Typography variant="h6" fontWeight="bold">Billed Items</Typography>
@@ -94,9 +95,6 @@ export default function UpdateBillScreen() {
                                 <Typography fontWeight={"bold"}>Rs. {total}</Typography>
                             </Box>
                             <Box sx={{ display: "flex", justifyContent: "end", columnGap: 2 }}>
-                                <Button variant="contained" sx={{ marginTop: 4 }} onClick={updateBill}>
-                                    Update Bill
-                                </Button>
                                 <Button variant="contained" sx={{ marginTop: 4 }} onClick={updateBill}>
                                     Update & Print Bill
                                 </Button>
@@ -129,6 +127,7 @@ const BilledItem = ({ item, key, setBill }: { item: BillingRecordDataType, key: 
 
     useEffect(() => {
         setBill(prev => ({
+            ...prev,
             billingRecords: prev.billingRecords.map(record =>
                 record.product.id === item.product.id ? { ...record, quantity: quantity } : record
             )

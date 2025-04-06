@@ -8,10 +8,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface LoyaltyMemberRepository extends JpaRepository<LoyaltyMember, Integer> {
 
     @Query("select lm from LoyaltyMember lm where :searchKey is null or lm.firstName like %:searchKey% or lm.lastName like %:searchKey%")
     Page<LoyaltyMember> findFilteredLoyaltyMembers(@Param("searchKey") String searchKey, Pageable pageable);
 
+
+    Optional<LoyaltyMember> findByPhoneNumber(String phoneNumber);
 }

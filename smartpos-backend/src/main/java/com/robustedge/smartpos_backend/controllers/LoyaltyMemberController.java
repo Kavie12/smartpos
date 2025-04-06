@@ -35,6 +35,11 @@ public class LoyaltyMemberController {
         return service.getOne(id);
     }
 
+    @GetMapping("/get_one_by_phone_number")
+    public LoyaltyMember getOneByPhoneNumber(@RequestParam(name = "phoneNumber") String phoneNumber) {
+        return service.getOneByPhoneNumber(phoneNumber);
+    }
+
     @PostMapping("/add")
     public void addLoyaltyMember(@RequestBody LoyaltyMember loyaltyMember) {
         service.addLoyaltyMember(loyaltyMember);

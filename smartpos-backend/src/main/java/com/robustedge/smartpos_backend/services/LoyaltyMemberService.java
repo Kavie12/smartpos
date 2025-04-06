@@ -18,7 +18,7 @@ public class LoyaltyMemberService {
     private LoyaltyMemberRepository repository;
 
     public void addLoyaltyMember(LoyaltyMember loyaltyMember) {
-        loyaltyMember.setPoints(0);
+        loyaltyMember.setPoints((double) 0);
         try {
             repository.save(loyaltyMember);
         } catch (DataIntegrityViolationException e) {
@@ -46,5 +46,9 @@ public class LoyaltyMemberService {
 
     public LoyaltyMember getOne(Integer id) {
         return repository.findById(id).orElseThrow(() -> new ApiRequestException("Loyalty member not found."));
+    }
+
+    public LoyaltyMember getOneByPhoneNumber(String phoneNumber) {
+        return repository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new ApiRequestException("Loyalty member not found."));
     }
 }

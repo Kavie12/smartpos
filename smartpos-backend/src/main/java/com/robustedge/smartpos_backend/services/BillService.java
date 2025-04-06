@@ -3,10 +3,13 @@ package com.robustedge.smartpos_backend.services;
 import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Bill;
 import com.robustedge.smartpos_backend.models.BillingRecord;
+import com.robustedge.smartpos_backend.models.LoyaltyMember;
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.repositories.BillRepository;
 import com.robustedge.smartpos_backend.repositories.BillingRecordRepository;
+import com.robustedge.smartpos_backend.repositories.LoyaltyMemberRepository;
 import com.robustedge.smartpos_backend.repositories.ProductRepository;
+import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,16 +33,45 @@ public class BillService {
     @Autowired
     private BillingRecordRepository billingRecordRepository;
 
+    @Autowired
+    private LoyaltyMemberRepository loyaltyMemberRepository;
+
+    private final ReceiptGenerator receiptGenerator = new ReceiptGenerator();
+
+    private void generateReceipt(List<BillingRecord> billingRecords) {
+        String systemUser = System.getProperty("user.name");
+        String fileName = "receipt_" + Utils.getDateTimeFileName();
+        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf";
+        receiptGenerator.initialize(filePath);
+        receiptGenerator.addBillingRecords(billingRecords);
+        receiptGenerator.build();
+    }
+
     public void createBill(Bill bill) {
+        double total = (double) 0;
+        double pointsGranted = (double) 0;
         for (BillingRecord record : bill.getBillingRecords()) {
             // Set current selling price
             record.setPrice(record.getProduct().getRetailPrice());
+
+            // Calculate total
+            total += record.getPrice() * record.getQuantity();
 
             // Deduct stock level
             Product product = record.getProduct();
             product.setStockLevel(product.getStockLevel() - record.getQuantity());
             productRepository.save(product);
         }
+
+        // Update loyalty member points
+        LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
+        if (loyaltyMember != null) {
+            pointsGranted = (double) total / 1000;
+            loyaltyMember.setPoints(loyaltyMember.getPoints() + pointsGranted);
+            loyaltyMemberRepository.save(loyaltyMember);
+        }
+
+        generateReceipt(bill.getBillingRecords());
         repository.save(bill);
     }
 
@@ -47,9 +79,9 @@ public class BillService {
         return repository.findAll();
     }
 
-    public PagedModel<Bill> getBills(LocalDate searchDate, int page, int pageSize) {
+    public PagedModel<Bill> getBills(LocalDate searchDate, int page, int size) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        Pageable pageable = PageRequest.of(page, pageSize, sort);
+        Pageable pageable = PageRequest.of(page, size, sort);
         return new PagedModel<>(repository.findFilteredBills(searchDate, pageable));
     }
 
@@ -80,5 +112,12 @@ public class BillService {
 
             billingRecordRepository.save(billingRecord);
         }
+
+        generateReceipt(bill.getBillingRecords());
+    }
+
+    public void printBill(Integer billId) {
+        Bill bill = repository.findById(billId).orElseThrow(() -> new ApiRequestException("Bill not found."));
+        generateReceipt(bill.getBillingRecords());
     }
 }

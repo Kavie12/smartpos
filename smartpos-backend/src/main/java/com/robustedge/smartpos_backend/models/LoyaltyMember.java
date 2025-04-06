@@ -20,12 +20,12 @@ public class LoyaltyMember {
     private String phoneNumber;
 
     @Column(name = "points", nullable = false)
-    private Integer points;
+    private Double points;
 
     public LoyaltyMember() {
     }
 
-    public LoyaltyMember(Integer id, String firstName, String lastName, String phoneNumber, Integer points) {
+    public LoyaltyMember(Integer id, String firstName, String lastName, String phoneNumber, Double points) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -71,17 +71,17 @@ public class LoyaltyMember {
         this.phoneNumber = phoneNumber;
     }
 
-    public Integer getPoints() {
+    public Double getPoints() {
         return points;
     }
 
-    public void setPoints(Integer points) {
+    public void setPoints(Double points) {
         this.points = points;
     }
 
     @Override
     public String toString() {
-        return "LoyaltyCustomer{" +
+        return "LoyaltyMember{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

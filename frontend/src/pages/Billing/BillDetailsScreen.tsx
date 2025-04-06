@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { BillingDataType, BillingRecordDataType } from "../../types/types";
+import { BasicAlertType, BillingDataType, BillingRecordDataType } from "../../types/types";
 import { AuthApi } from "../../services/Api";
-import { Alert, Box, Button, Card, CardActions, CardContent, CircularProgress, Divider, IconButton, Typography } from "@mui/material";
-import { ArrowBack, Delete, Edit } from "@mui/icons-material";
+import { Box, Button, Card, CardActions, CardContent, CircularProgress, Divider, IconButton, Typography } from "@mui/material";
+import { ArrowBack, Delete, Edit, Print } from "@mui/icons-material";
 import DeleteDialog from "../../components/DeleteDialog";
+import BasicAlert from "../../components/BasicAlert";
 
 export default function BillDetailsScreen() {
 
@@ -13,16 +14,18 @@ export default function BillDetailsScreen() {
 
     const [bill, setBill] = useState<BillingDataType | null>(null);
     const [total, setTotal] = useState<number | undefined>(0);
-    const [loading, setLoading] = useState<{ bill: boolean, delete: boolean }>({
+    const [loading, setLoading] = useState<{ bill: boolean, print: boolean, delete: boolean }>({
         bill: false,
+        print: false,
         delete: false
     });
-    const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
+    const [alert, setAlert] = useState<BasicAlertType>({
         open: false,
         type: null,
         message: null
     });
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+    const [buttonDisable, setButtonDisable] = useState<boolean>(false);
 
     const fetchBill = (): void => {
         setLoading(prev => ({ ...prev, bill: true }));
@@ -47,6 +50,32 @@ export default function BillDetailsScreen() {
             });
     };
 
+    const printBill = (): void => {
+        setLoading(prev => ({ ...prev, print: true }));
+        AuthApi.get("/billing/print", {
+            params: {
+                billId: billId
+            }
+        })
+            .then(() => {
+                setAlert({
+                    open: true,
+                    type: "success",
+                    message: "Bill generated successfully."
+                });
+            })
+            .catch(err => {
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: err.response.data.message
+                });
+            })
+            .finally(() => {
+                setLoading(prev => ({ ...prev, print: false }))
+            });
+    };
+
     const deleteBill = (): void => {
         setLoading(prev => ({ ...prev, delete: true }));
         AuthApi.delete("/billing/delete", {
@@ -60,6 +89,7 @@ export default function BillDetailsScreen() {
                     type: "success",
                     message: "Bill deleted successfully."
                 });
+                setButtonDisable(true);
             })
             .catch(err => {
                 setAlert({
@@ -100,12 +130,10 @@ export default function BillDetailsScreen() {
 
             <Box sx={{ mx: 5, mt: 4 }}>
                 {/* Alerts */}
-                {alert.open && (
-                    <Box sx={{ my: 2 }}>
-                        {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                        {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    </Box>
-                )}
+                <BasicAlert
+                    alert={alert}
+                    onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+                />
 
                 <Card sx={{ p: 2, width: 600 }}>
                     <CardContent>
@@ -133,8 +161,33 @@ export default function BillDetailsScreen() {
                         }
                     </CardContent>
                     <CardActions sx={{ marginTop: 4, justifyContent: "end" }}>
-                        <Button startIcon={<Edit />} size="small" onClick={() => navigate(`/billing/update_bill/${billId}`)}>Update</Button>
-                        <Button startIcon={<Delete />} size="small" color="error" onClick={() => setIsDeleteDialogOpen(true)}>Delete</Button>
+                        <Button
+                            startIcon={<Print />}
+                            size="small"
+                            onClick={printBill}
+                            loading={loading.print}
+                            disabled={buttonDisable}
+                        >
+                            Print
+                        </Button>
+                        <Button
+                            startIcon={<Edit />}
+                            size="small"
+                            onClick={() => navigate(`/billing/update_bill/${billId}`)}
+                            disabled={buttonDisable}
+                        >
+                            Update
+                        </Button>
+                        <Button
+                            startIcon={<Delete />}
+                            size="small"
+                            color="error"
+                            onClick={() => setIsDeleteDialogOpen(true)}
+                            loading={loading.delete}
+                            disabled={buttonDisable}
+                        >
+                            Delete
+                        </Button>
                     </CardActions>
                 </Card>
             </Box>

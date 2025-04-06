@@ -1,11 +1,12 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
 import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { LoyaltyMemberDataType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
 import DeleteDialog from '../../components/DeleteDialog';
+import BasicAlert from '../../components/BasicAlert';
 
 export default function LoyaltyMembersScreen() {
 
@@ -13,7 +14,7 @@ export default function LoyaltyMembersScreen() {
 
     const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
         page: 0,
-        pageSize: 10,
+        pageSize: 50,
     });
     const [pageData, setPageData] = useState<{ rows: LoyaltyMemberDataType[], rowCount: number }>({
         rows: [],
@@ -184,12 +185,10 @@ export default function LoyaltyMembersScreen() {
             </Box>
 
             {/* Alerts */}
-            {alert.open && (
-                <Box sx={{ my: 2 }}>
-                    {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                </Box>
-            )}
+            <BasicAlert
+                alert={alert}
+                onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+            />
 
             {/* Table */}
             <Box sx={{ height: 500 }}>

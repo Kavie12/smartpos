@@ -25,10 +25,10 @@ public class BillController {
     @GetMapping("/get")
     public PagedModel<Bill> getBills(
             @RequestParam(name = "searchDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "25") int pageSize
+            @RequestParam(defaultValue = "0", value = "page") int page,
+            @RequestParam(defaultValue = "25", value = "size") int size
     ) {
-        return service.getBills(searchDate, page, pageSize);
+        return service.getBills(searchDate, page, size);
     }
 
     @GetMapping("get_all")
@@ -44,6 +44,11 @@ public class BillController {
     @PutMapping("update")
     public void updateBill(@RequestBody Bill bill) {
         service.updateBill(bill);
+    }
+
+    @GetMapping("print")
+    public void printBill(@RequestParam(name = "billId") Integer billId) {
+        service.printBill(billId);
     }
 
     @DeleteMapping("/delete")
