@@ -1,4 +1,4 @@
-package com.robustedge.smartpos_backend.services;
+package com.robustedge.smartpos_backend.report_generators;
 
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFont;
@@ -27,15 +27,24 @@ public class ReceiptGenerator {
     private Style headerStyles;
     private Style textStyle;
 
-    private Bill bill;
+    private final Bill bill;
+    private final String destination;
 
-    public ReceiptGenerator(Bill bill) {
+    public ReceiptGenerator(Bill bill, String destination) {
         this.bill = bill;
+        this.destination = destination;
     }
 
-    public void initialize(String dest) {
+    public void generate() {
+        initialize();
+        addData();
+        addFooter();
+        build();
+    }
+
+    private void initialize() {
         // Create file
-        File file = new File(dest);
+        File file = new File(destination);
         file.getParentFile().mkdirs();
 
         // Init fonts
@@ -45,7 +54,7 @@ public class ReceiptGenerator {
         initStyles();
 
         // Create document
-        createDocument(dest);
+        createDocument(destination);
 
         // Add heading
         addHeading();
@@ -74,15 +83,15 @@ public class ReceiptGenerator {
                 .setTextAlignment(TextAlignment.LEFT);
     }
 
-    private void createDocument(String dest) {
+    private void createDocument(String destination) {
         try {
-            doc = new Document(new PdfDocument(new PdfWriter(dest)));
+            doc = new Document(new PdfDocument(new PdfWriter(destination)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void addHeading() {
+    private void addHeading() {
         addStarDivider();
         doc.add(new Paragraph("SMARTPOS").addStyle(headerStyles));
         addStarDivider();
@@ -95,7 +104,7 @@ public class ReceiptGenerator {
         addDashDivider();
     }
 
-    public void addData() {
+    private void addData() {
         // Billing records
         addSpacing(12);
         for (BillingRecord billingRecord : bill.getBillingRecords()) {
@@ -123,7 +132,7 @@ public class ReceiptGenerator {
         if (bill.getLoyaltyMember() != null) {
             LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
             addBoldField("Loyalty Member ID", loyaltyMember.getPhoneNumber());
-            addBoldField("Points Granted", String.valueOf(bill.getPointsGranted()));
+            addBoldField("Points Earned", String.valueOf(bill.getPointsGranted()));
             addBoldField("Total Points", String.valueOf(loyaltyMember.getPoints()));
         }
     }
@@ -162,10 +171,12 @@ public class ReceiptGenerator {
         doc.add(new Paragraph("------------------------------------------------------").addStyle(dividerStyles));
     }
 
-    public void build() {
+    private void addFooter() {
         addSpacing(48);
-        doc.add(new Paragraph("********************* Thank You! *********************").addStyle(dividerStyles));
+        doc.add(new Paragraph("********************* Thank You *********************").addStyle(dividerStyles));
+    }
 
+    private void build() {
         doc.close();
     }
 }

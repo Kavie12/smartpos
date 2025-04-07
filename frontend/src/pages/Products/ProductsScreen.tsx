@@ -79,6 +79,15 @@ export default function ProductsScreen() {
             flex: 1
         },
         {
+            field: "profitPerUnit",
+            headerName: "Profit Per Unit",
+            sortable: false,
+            flex: 1,
+            valueGetter: (_, row) => {
+                return row.retailPrice - row.wholesalePrice;
+            }
+        },
+        {
             field: "stockLevel",
             headerName: "Stock Level",
             type: "number",

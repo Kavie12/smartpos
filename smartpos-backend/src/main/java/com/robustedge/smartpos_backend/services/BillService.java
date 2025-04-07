@@ -5,6 +5,7 @@ import com.robustedge.smartpos_backend.models.Bill;
 import com.robustedge.smartpos_backend.models.BillingRecord;
 import com.robustedge.smartpos_backend.models.LoyaltyMember;
 import com.robustedge.smartpos_backend.models.Product;
+import com.robustedge.smartpos_backend.report_generators.ReceiptGenerator;
 import com.robustedge.smartpos_backend.repositories.BillRepository;
 import com.robustedge.smartpos_backend.repositories.BillingRecordRepository;
 import com.robustedge.smartpos_backend.repositories.LoyaltyMemberRepository;
@@ -149,10 +150,8 @@ public class BillService {
         String fileName = "receipt_" + Utils.getDateTimeFileName();
         String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf";
 
-        ReceiptGenerator receiptGenerator = new ReceiptGenerator(bill);
-        receiptGenerator.initialize(filePath);
-        receiptGenerator.addData();
-        receiptGenerator.build();
+        ReceiptGenerator receiptGenerator = new ReceiptGenerator(bill, filePath);
+        receiptGenerator.generate();
     }
 
     private double calculatePointsGranted(double total, List<BillingRecord> billingRecords) {
