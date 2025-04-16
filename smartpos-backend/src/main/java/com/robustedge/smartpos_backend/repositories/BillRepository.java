@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Repository
 public interface BillRepository extends JpaRepository<Bill, Integer> {
 
-    @Query("select b from Bill b where (:searchDate is null or date(b.createdAt) = :searchDate)")
+    @Query("SELECT b FROM Bill b WHERE :searchDate IS NULL OR DATE(b.createdAt) = :searchDate")
     Page<Bill> findFilteredBills(@Param("searchDate") LocalDate searchDate, Pageable pageable);
 
 }

@@ -11,7 +11,7 @@ import AuthProvider from './context/AuthContext.tsx';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import AppTheme from './data/AppTheme.tsx';
 import BillingProvider from './context/BillingContext.tsx';
-import AppRoutes from './routes/AppRoutes.tsx';
+import AppRouter from './routes/AppRouter.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -19,7 +19,7 @@ createRoot(document.getElementById('root')!).render(
       <BillingProvider>
         <ThemeProvider theme={AppTheme}>
           <CssBaseline />
-          <RouterProvider router={AppRoutes} />
+          <RouterProvider router={AppRouter} />
         </ThemeProvider>
       </BillingProvider>
     </AuthProvider>

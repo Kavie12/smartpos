@@ -1,7 +1,6 @@
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { Menu } from "@mui/icons-material";
 import { IconButton, styled, Toolbar, Typography } from "@mui/material";
-import { useSidebar } from "../context/SidebarContext";
 import { DRAWER_WIDTH } from '../data/Constants';
 
 interface AppBarProps extends MuiAppBarProps {
@@ -31,15 +30,14 @@ const AppBar = styled(MuiAppBar, {
     ],
 }));
 
-export default function Navbar() {
-    const { open, setOpen } = useSidebar();
+export default function Navbar({ openSidebar, setOpenSidebar }: { openSidebar: boolean, setOpenSidebar: React.Dispatch<React.SetStateAction<boolean>> }) {
 
     const handleDrawerOpen = () => {
-        setOpen(true);
+        setOpenSidebar(true);
     };
 
     return (
-        <AppBar position="fixed" elevation={0} open={open} color="primary">
+        <AppBar position="fixed" elevation={0} open={openSidebar} color="primary">
             <Toolbar>
                 <IconButton
                     color="inherit"
@@ -50,7 +48,7 @@ export default function Navbar() {
                         {
                             marginRight: 5,
                         },
-                        open && { display: 'none' },
+                        openSidebar && { display: 'none' },
                     ]}
                 >
                     <Menu />

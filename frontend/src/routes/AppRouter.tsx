@@ -5,6 +5,7 @@ import { lazy } from "react";
 import RouteLoader from "./RouteLoader";
 
 const LoginScreen = RouteLoader(lazy(() => import("../pages/LoginScreen")));
+const Reports = RouteLoader(lazy(() => import("../pages/Reports")));
 const BillingScreen = RouteLoader(lazy(() => import("../pages/Billing/BillingScreen")));
 const CreateBillScreen = RouteLoader(lazy(() => import("../pages/Billing/CreateBillScreen")));
 const BillDetailsScreen = RouteLoader(lazy(() => import("../pages/Billing/BillDetailsScreen")));
@@ -36,6 +37,10 @@ export default createHashRouter([
     {
         element: <MainLayout />,
         children: [
+            {
+                path: "reports",
+                element: <Reports />
+            },
             {
                 path: "billing",
                 children: [
