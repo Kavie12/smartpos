@@ -1,26 +1,30 @@
 import { createHashRouter } from "react-router";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
-import LoginScreen from "../pages/LoginScreen";
-import LoyaltyMembersScreen from "../pages/LoyaltyMembers/LoyaltyMembersScreen";
-import EmployeesScreen from "../pages/Employees/EmployeesScreen";
-import SuppliersScreen from "../pages/Suppliers/SupplierScreen";
-import ProductsScreen from "../pages/Products/ProductsScreen";
-import CreateBillScreen from "../pages/Billing/CreateBillScreen";
-import BillingScreen from "../pages/Billing/BillingScreen";
-import AddProductScreen from "../pages/Products/AddProductScreen";
-import AddSupplierScreen from "../pages/Suppliers/AddSupplierScreen";
-import AddLoyaltyMemberScreen from "../pages/LoyaltyMembers/AddLoyaltyMemberScreen";
-import AddEmployeeScreen from "../pages/Employees/AddEmployeeScreen";
-import BillDetailsScreen from "../pages/Billing/BillDetailsScreen";
-import AddStockRecordScreen from "../pages/StockRecords/AddStockRecordScreen";
-import UpdateStockRecordScreen from "../pages/StockRecords/UpdateStockRecordScreen";
-import UpdateProductScreen from "../pages/Products/UpdateProductScreen";
-import UpdateSupplierScreen from "../pages/Suppliers/UpdateSupplierScreen";
-import UpdateLoyaltyMemberScreen from "../pages/LoyaltyMembers/UpdateLoyaltyMemberScreen";
-import UpdateEmployeeScreen from "../pages/Employees/UpdateEmployeeScreen";
-import StockRecordsScreen from "../pages/StockRecords/StockRecordsScreen";
-import UpdateBillScreen from "../pages/Billing/UpdateBillScreen";
+import { lazy } from "react";
+import RouteLoader from "./RouteLoader";
+
+const LoginScreen = RouteLoader(lazy(() => import("../pages/LoginScreen")));
+const BillingScreen = RouteLoader(lazy(() => import("../pages/Billing/BillingScreen")));
+const CreateBillScreen = RouteLoader(lazy(() => import("../pages/Billing/CreateBillScreen")));
+const BillDetailsScreen = RouteLoader(lazy(() => import("../pages/Billing/BillDetailsScreen")));
+const UpdateBillScreen = RouteLoader(lazy(() => import("../pages/Billing/UpdateBillScreen")));
+const StockRecordsScreen = RouteLoader(lazy(() => import("../pages/StockRecords/StockRecordsScreen")));
+const AddStockRecordScreen = RouteLoader(lazy(() => import("../pages/StockRecords/AddStockRecordScreen")));
+const UpdateStockRecordScreen = RouteLoader(lazy(() => import("../pages/StockRecords/UpdateStockRecordScreen")));
+const ProductsScreen = RouteLoader(lazy(() => import("../pages/Products/ProductsScreen")));
+const AddProductScreen = RouteLoader(lazy(() => import("../pages/Products/AddProductScreen")));
+const UpdateProductScreen = RouteLoader(lazy(() => import("../pages/Products/UpdateProductScreen")));
+const SuppliersScreen = RouteLoader(lazy(() => import("../pages/Suppliers/SupplierScreen")));
+const AddSupplierScreen = RouteLoader(lazy(() => import("../pages/Suppliers/AddSupplierScreen")));
+const UpdateSupplierScreen = RouteLoader(lazy(() => import("../pages/Suppliers/UpdateSupplierScreen")));
+const LoyaltyMembersScreen = RouteLoader(lazy(() => import("../pages/LoyaltyMembers/LoyaltyMembersScreen")));
+const AddLoyaltyMemberScreen = RouteLoader(lazy(() => import("../pages/LoyaltyMembers/AddLoyaltyMemberScreen")));
+const UpdateLoyaltyMemberScreen = RouteLoader(lazy(() => import("../pages/LoyaltyMembers/UpdateLoyaltyMemberScreen")));
+const EmployeesScreen = RouteLoader(lazy(() => import("../pages/Employees/EmployeesScreen")));
+const AddEmployeeScreen = RouteLoader(lazy(() => import("../pages/Employees/AddEmployeeScreen")));
+const UpdateEmployeeScreen = RouteLoader(lazy(() => import("../pages/Employees/UpdateEmployeeScreen")));
+
 
 export default createHashRouter([
     {

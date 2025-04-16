@@ -2,7 +2,11 @@ package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Employee;
+import com.robustedge.smartpos_backend.models.LoyaltyMember;
+import com.robustedge.smartpos_backend.report_generators.EmployeeReportGenerator;
+import com.robustedge.smartpos_backend.report_generators.LoyaltyMemberReportGenerator;
 import com.robustedge.smartpos_backend.repositories.EmployeeRepository;
+import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
@@ -45,5 +49,16 @@ public class EmployeeService {
         if (employee.getId() != null) {
             repository.save(employee);
         }
+    }
+
+    public void generateReport() {
+        List<Employee> employees = repository.findTop5BySalary();
+
+        String systemUser = System.getProperty("user.name");
+        String fileName = "report_" + Utils.getDateTimeFileName();
+        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\EmployeeReports\\" + fileName + ".jpeg";
+
+        EmployeeReportGenerator reportGenerator = new EmployeeReportGenerator(employees);
+        reportGenerator.buildChart(filePath);
     }
 }

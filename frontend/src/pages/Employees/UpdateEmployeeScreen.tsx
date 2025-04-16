@@ -20,7 +20,8 @@ export default function UpdateEmployeeScreen() {
         firstName: "",
         lastName: "",
         phoneNumber: "",
-        email: ""
+        email: "",
+        salary: 0
     });
 
     const fetchEmployee = (): void => {
@@ -123,6 +124,15 @@ export default function UpdateEmployeeScreen() {
                         value={employee.email}
                         sx={{ width: 400, mt: 2 }}
                         onChange={(e) => setEmployee(prev => ({ ...prev, email: e.target.value }))}
+                    />
+                    <TextField
+                        margin="dense"
+                        id="salary"
+                        name="salary"
+                        label="Salary"
+                        value={employee.salary}
+                        sx={{ width: 400, mt: 2 }}
+                        onChange={(e) => setEmployee(prev => ({ ...prev, salary: parseFloat(e.target.value) }))}
                     />
                     <Button
                         variant="contained"

@@ -55,4 +55,9 @@ public class ProductController {
         service.deleteProduct(productId);
     }
 
+    @GetMapping("/generate_report")
+    public void generateReport() {
+        service.generateReport();
+    }
+
 }

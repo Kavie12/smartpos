@@ -1,9 +1,13 @@
 package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "LoyaltyMember")
 @Table(name = "loyalty_members")
+@Data
+@NoArgsConstructor
 public class LoyaltyMember {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,71 +26,10 @@ public class LoyaltyMember {
     @Column(name = "points", nullable = false)
     private Double points;
 
-    public LoyaltyMember() {
-    }
-
-    public LoyaltyMember(Integer id, String firstName, String lastName, String phoneNumber, Double points) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.points = points;
-    }
-
     public LoyaltyMember(String firstName, String lastName, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public Double getPoints() {
-        return points;
-    }
-
-    public void setPoints(Double points) {
-        this.points = points;
-    }
-
-    @Override
-    public String toString() {
-        return "LoyaltyMember{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", points=" + points +
-                '}';
-    }
 }

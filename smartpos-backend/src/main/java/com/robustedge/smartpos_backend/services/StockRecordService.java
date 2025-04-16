@@ -3,7 +3,10 @@ package com.robustedge.smartpos_backend.services;
 import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.models.StockRecord;
+import com.robustedge.smartpos_backend.report_generators.StockRecordReportGenerator;
+import com.robustedge.smartpos_backend.report_generators.SupplierReportGenerator;
 import com.robustedge.smartpos_backend.repositories.StockRecordRepository;
+import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -81,5 +84,16 @@ public class StockRecordService {
 
     public StockRecord getOneRecord(Integer recordId) {
         return repository.findById(recordId).orElseThrow(() -> new ApiRequestException("Invalid Stock Record Id."));
+    }
+
+    public void generateReport() {
+        List<Object[]> products = repository.findTop5ProductsByStockRecordCount();
+
+        String systemUser = System.getProperty("user.name");
+        String fileName = "report_" + Utils.getDateTimeFileName();
+        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\StockRecordReports\\" + fileName + ".jpeg";
+
+        StockRecordReportGenerator reportGenerator = new StockRecordReportGenerator(products);
+        reportGenerator.buildChart(filePath);
     }
 }

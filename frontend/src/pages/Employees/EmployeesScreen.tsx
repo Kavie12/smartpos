@@ -70,6 +70,12 @@ export default function EmployeesScreen() {
             flex: 1
         },
         {
+            field: "salary",
+            headerName: "Salary",
+            sortable: false,
+            flex: 1
+        },
+        {
             field: "actions",
             headerName: "Actions",
             type: "actions",

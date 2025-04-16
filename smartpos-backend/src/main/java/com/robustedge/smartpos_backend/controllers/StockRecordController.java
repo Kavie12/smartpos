@@ -52,4 +52,9 @@ public class StockRecordController {
         service.deleteRecord(id);
     }
 
+    @GetMapping("/generate_report")
+    public void generateReport() {
+        service.generateReport();
+    }
+
 }

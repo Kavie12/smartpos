@@ -148,7 +148,7 @@ public class BillService {
     private void generateReceipt(Bill bill) {
         String systemUser = System.getProperty("user.name");
         String fileName = "receipt_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf";
+        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\Receipts\\" + fileName + ".pdf";
 
         ReceiptGenerator receiptGenerator = new ReceiptGenerator(bill, filePath);
         receiptGenerator.generate();

@@ -1,6 +1,8 @@
 package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -9,6 +11,8 @@ import java.util.List;
 
 @Entity(name = "Bill")
 @Table(name = "bills")
+@Data
+@NoArgsConstructor
 public class Bill {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,19 +40,6 @@ public class Bill {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public Bill() {
-    }
-
-    public Bill(Integer id, List<BillingRecord> billingRecords, LoyaltyMember loyaltyMember, double pointsGranted, double pointsRedeemed, double total, LocalDateTime createdAt) {
-        this.id = id;
-        this.billingRecords = billingRecords;
-        this.loyaltyMember = loyaltyMember;
-        this.pointsGranted = pointsGranted;
-        this.pointsRedeemed = pointsRedeemed;
-        this.total = total;
-        this.createdAt = createdAt;
-    }
-
     public Bill(List<BillingRecord> billingRecords, LoyaltyMember loyaltyMember, double pointsGranted, double pointsRedeemed, double total) {
         this.billingRecords = billingRecords;
         this.loyaltyMember = loyaltyMember;
@@ -57,72 +48,4 @@ public class Bill {
         this.total = total;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public List<BillingRecord> getBillingRecords() {
-        return billingRecords;
-    }
-
-    public void setBillingRecords(List<BillingRecord> billingRecords) {
-        this.billingRecords = billingRecords;
-    }
-
-    public LoyaltyMember getLoyaltyMember() {
-        return loyaltyMember;
-    }
-
-    public void setLoyaltyMember(LoyaltyMember loyaltyMember) {
-        this.loyaltyMember = loyaltyMember;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public double getPointsGranted() {
-        return pointsGranted;
-    }
-
-    public void setPointsGranted(double pointsGranted) {
-        this.pointsGranted = pointsGranted;
-    }
-
-    public double getPointsRedeemed() {
-        return pointsRedeemed;
-    }
-
-    public void setPointsRedeemed(double pointsRedeemed) {
-        this.pointsRedeemed = pointsRedeemed;
-    }
-
-    public double getTotal() {
-        return total;
-    }
-
-    public void setTotal(double total) {
-        this.total = total;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @Override
-    public String toString() {
-        return "Bill{" +
-                "id=" + id +
-                ", billingRecords=" + billingRecords +
-                ", loyaltyMember=" + loyaltyMember +
-                ", pointsGranted=" + pointsGranted +
-                ", pointsRedeemed=" + pointsRedeemed +
-                ", total=" + total +
-                ", createdAt=" + createdAt +
-                '}';
-    }
 }

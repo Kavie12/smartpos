@@ -18,7 +18,8 @@ export default function AddEmployeeScreen() {
         firstName: "",
         lastName: "",
         phoneNumber: "",
-        email: ""
+        email: "",
+        salary: 0
     });
 
     const resetFormData = (): void => {
@@ -26,7 +27,8 @@ export default function AddEmployeeScreen() {
             firstName: "",
             lastName: "",
             phoneNumber: "",
-            email: ""
+            email: "",
+            salary: 0
         });
     };
 
@@ -109,6 +111,15 @@ export default function AddEmployeeScreen() {
                         value={formData.email}
                         sx={{ width: 400, mt: 2 }}
                         onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    />
+                    <TextField
+                        margin="dense"
+                        id="salary"
+                        name="salary"
+                        label="Salary"
+                        value={formData.salary}
+                        sx={{ width: 400, mt: 2 }}
+                        onChange={(e) => setFormData(prev => ({ ...prev, salary: parseFloat(e.target.value) }))}
                     />
                     <Button
                         variant="contained"

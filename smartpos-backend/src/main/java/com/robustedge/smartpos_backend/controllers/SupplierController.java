@@ -50,4 +50,9 @@ public class SupplierController {
         service.deleteSupplier(supplierId);
     }
 
+    @GetMapping("/generate_report")
+    public void generateReport() {
+        service.generateReport();
+    }
+
 }

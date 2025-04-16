@@ -49,4 +49,9 @@ public class EmployeeController {
     public void deleteEmployee(@RequestParam(name = "employeeId") Integer employeeId) {
         service.deleteEmployee(employeeId);
     }
+
+    @GetMapping("/generate_report")
+    public void generateReport() {
+        service.generateReport();
+    }
 }

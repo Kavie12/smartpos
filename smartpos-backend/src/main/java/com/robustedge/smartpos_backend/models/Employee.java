@@ -1,9 +1,12 @@
 package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity(name = "Employee")
 @Table(name = "employees")
+@Data
+@NoArgsConstructor
 public class Employee {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,72 +25,15 @@ public class Employee {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    public Employee() {
-    }
+    @Column(name = "salary", nullable = false)
+    private double salary;
 
-    public Employee(Integer id, String firstName, String lastName, String phoneNumber, String email) {
-        this.id = id;
+    public Employee(String firstName, String lastName, String phoneNumber, String email, int salary) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        this.salary = salary;
     }
 
-    public Employee(String firstName, String lastName, String phoneNumber, String email) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
 }

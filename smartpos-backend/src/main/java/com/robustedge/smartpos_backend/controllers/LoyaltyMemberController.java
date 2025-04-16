@@ -55,4 +55,9 @@ public class LoyaltyMemberController {
         service.deleteLoyaltyMember(id);
     }
 
+    @GetMapping("/generate_report")
+    public void generateReport() {
+        service.generateReport();
+    }
+
 }
