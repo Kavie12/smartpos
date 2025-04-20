@@ -91,7 +91,7 @@ public class StockRecordService {
 
         String systemUser = System.getProperty("user.name");
         String fileName = "report_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\StockRecordReports\\" + fileName + ".jpeg";
+        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\StockRecordReports\\" + fileName + ".pdf";
 
         StockRecordReportGenerator reportGenerator = new StockRecordReportGenerator(products);
         reportGenerator.buildChart(filePath);

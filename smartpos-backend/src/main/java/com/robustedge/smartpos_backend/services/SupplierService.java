@@ -56,7 +56,7 @@ public class SupplierService {
 
         String systemUser = System.getProperty("user.name");
         String fileName = "report_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\SupplierReports\\" + fileName + ".jpeg";
+        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\SupplierReports\\" + fileName + ".pdf";
 
         SupplierReportGenerator reportGenerator = new SupplierReportGenerator(suppliers);
         reportGenerator.buildChart(filePath);

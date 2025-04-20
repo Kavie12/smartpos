@@ -59,7 +59,7 @@ public class LoyaltyMemberService {
 
         String systemUser = System.getProperty("user.name");
         String fileName = "report_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\LoyaltyMemberReports\\" + fileName + ".jpeg";
+        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\LoyaltyMemberReports\\" + fileName + ".pdf";
 
         LoyaltyMemberReportGenerator reportGenerator = new LoyaltyMemberReportGenerator(loyaltyMembers);
         reportGenerator.buildChart(filePath);

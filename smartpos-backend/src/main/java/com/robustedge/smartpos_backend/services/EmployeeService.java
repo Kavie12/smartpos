@@ -56,7 +56,7 @@ public class EmployeeService {
 
         String systemUser = System.getProperty("user.name");
         String fileName = "report_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\EmployeeReports\\" + fileName + ".jpeg";
+        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\EmployeeReports\\" + fileName + ".pdf";
 
         EmployeeReportGenerator reportGenerator = new EmployeeReportGenerator(employees);
         reportGenerator.buildChart(filePath);
