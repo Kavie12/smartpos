@@ -54,11 +54,8 @@ public class LoyaltyMemberReportGenerator {
         renderer.setMaximumBarWidth(0.1);
         plot.setRenderer(renderer);
 
-        File barChartFile = new File(filePath);
-        barChartFile.getParentFile().mkdirs();
-
         try {
-            ChartUtils.saveChartAsJPEG(barChartFile, chart, 1080, 480);
+            JFreeChartPDFGenerator.writeChartToPDF(chart, 1080, 480, filePath);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

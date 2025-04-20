@@ -66,7 +66,7 @@ public class ProductService {
 
         String systemUser = System.getProperty("user.name");
         String fileName = "report_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\ProductReports\\" + fileName + ".jpeg";
+        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\ProductReports\\" + fileName + ".pdf";
 
         ProductReportGenerator reportGenerator = new ProductReportGenerator(products);
         reportGenerator.buildChart(filePath);

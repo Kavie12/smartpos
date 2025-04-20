@@ -61,11 +61,8 @@ public class ProductReportGenerator {
             plot.setSectionPaint(sections[i], colors[i]);
         }
 
-        File pieChartFile = new File(filePath);
-        pieChartFile.getParentFile().mkdirs();
-
         try {
-            ChartUtils.saveChartAsJPEG(pieChartFile, chart, 640, 480);
+            JFreeChartPDFGenerator.writeChartToPDF(chart, 640, 480, filePath);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
