@@ -1,3 +1,14 @@
+export type CredentialsType = {
+    username: string;
+    password: string;
+};
+
+export type BasicAlertType = {
+    open: boolean,
+    type: "error" | "success" | null,
+    message: string | null
+};
+
 export type SupplierDataType = {
     id?: number;
     name: string;
@@ -7,8 +18,7 @@ export type SupplierDataType = {
 
 export type StockRecordType = {
     id?: number;
-    productName: string;
-    product?: ProductDataType;
+    product?: ProductDataType | null;
     stockAmount: number;
     createdAt?: String;
 };
@@ -17,13 +27,13 @@ export type ProductDataType = {
     id?: number;
     barcode: string;
     name: string;
-    supplier?: SupplierDataType;
+    supplier?: SupplierDataType | null;
     wholesalePrice: number;
     retailPrice: number;
     stockLevel: number;
 };
 
-export type CustomerDataType = {
+export type LoyaltyMemberDataType = {
     id?: number;
     firstName: string;
     lastName: string;
@@ -37,9 +47,22 @@ export type EmployeeDataType = {
     lastName: string;
     phoneNumber: string;
     email: string;
+    salary: number;
 };
 
-export type BillingItemType = {
-    item: ProductDataType,
-    quantity: number
-}
+export type BillingRecordDataType = {
+    id?: number,
+    product: ProductDataType;
+    price?: number;
+    quantity: number;
+};
+
+export type BillingDataType = {
+    id?: number;
+    billingRecords: BillingRecordDataType[];
+    loyaltyMember: LoyaltyMemberDataType | null;
+    pointsGranted: number;
+    pointsRedeemed: number;
+    total: number;
+    createdAt?: String;
+};

@@ -7,7 +7,7 @@ public class Utils {
 
     public static String getDateTimeFileName() {
         LocalDateTime myDateObj = LocalDateTime.now();
-        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("ddMMyyyyHHmmss");
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
         return myDateObj.format(myFormatObj);
     }

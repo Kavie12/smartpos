@@ -8,19 +8,20 @@ import '@fontsource/roboto/700.css';
 
 import { RouterProvider } from 'react-router';
 import AuthProvider from './context/AuthContext.tsx';
-import AppRouter from './routes/AppRouter.tsx';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import AppTheme from './data/AppTheme.tsx';
-
-
+import BillingProvider from './context/BillingContext.tsx';
+import AppRouter from './routes/AppRouter.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-      <ThemeProvider theme={AppTheme}>
-        <CssBaseline />
-        <RouterProvider router={AppRouter} />
-      </ThemeProvider>
+      <BillingProvider>
+        <ThemeProvider theme={AppTheme}>
+          <CssBaseline />
+          <RouterProvider router={AppRouter} />
+        </ThemeProvider>
+      </BillingProvider>
     </AuthProvider>
   </StrictMode>
 );

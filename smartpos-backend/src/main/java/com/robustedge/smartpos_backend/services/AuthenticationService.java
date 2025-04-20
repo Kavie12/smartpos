@@ -22,7 +22,6 @@ public class AuthenticationService {
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-
     public void register(User user) {
         user.setPassword(encoder.encode(user.getPassword()));
         repository.save(user);

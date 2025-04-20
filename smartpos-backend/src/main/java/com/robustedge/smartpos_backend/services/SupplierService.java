@@ -1,10 +1,14 @@
 package com.robustedge.smartpos_backend.services;
 
-import com.robustedge.smartpos_backend.PDFGenerators.SupplierPDFGenerator;
+import com.robustedge.smartpos_backend.config.ApiRequestException;
+import com.robustedge.smartpos_backend.models.Employee;
 import com.robustedge.smartpos_backend.models.Supplier;
+import com.robustedge.smartpos_backend.report_generators.EmployeeReportGenerator;
+import com.robustedge.smartpos_backend.report_generators.SupplierReportGenerator;
 import com.robustedge.smartpos_backend.repositories.SupplierRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
@@ -18,19 +22,23 @@ public class SupplierService {
     private SupplierRepository repository;
 
     public void addSupplier(Supplier supplier) {
-        repository.save(supplier);
+        try {
+            repository.save(supplier);
+        } catch (DataIntegrityViolationException e) {
+            throw new ApiRequestException("The phone number or email belongs to a registered supplier.");
+        }
     }
 
     public List<Supplier> getAllSuppliers() {
-        return repository.findAll();
+        return repository.findAllActiveSuppliers();
     }
 
-    public PagedModel<Supplier> getSuppliers(Pageable pageable) {
-        return new PagedModel<>(repository.findAll(pageable));
+    public PagedModel<Supplier> getSuppliers(String searchKey, Pageable pageable) {
+        return new PagedModel<>(repository.findFilteredActiveSuppliers(searchKey, pageable));
     }
 
-    public void deleteSupplier(Integer id) {
-        repository.deleteById(id);
+    public Supplier getOne(Integer supplierId) {
+        return repository.findById(supplierId).orElseThrow(() -> new ApiRequestException("Supplier not found."));
     }
 
     public void updateSupplier(Supplier supplier) {
@@ -39,20 +47,18 @@ public class SupplierService {
         }
     }
 
-    public void generateReport() {
-        List<Supplier> suppliers = getAllSuppliers();
-        String[] fields = {"ID", "Name", "Phone Number", "Email"};
-
-        String systemUser = System.getProperty("user.name");
-        String fileName = Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\" + fileName + ".pdf";
-
-        SupplierPDFGenerator pdfGenerator = new SupplierPDFGenerator(suppliers);
-        pdfGenerator.initialize(filePath);
-        pdfGenerator.addMetaData();
-        pdfGenerator.addHeading("Loyalty Customers");
-        pdfGenerator.addTable(fields);
-        pdfGenerator.build();
+    public void deleteSupplier(Integer supplierId) {
+        repository.deleteById(supplierId);
     }
 
+    public void generateReport() {
+        List<Object[]> suppliers = repository.findTop5SuppliersProductCount();
+
+        String systemUser = System.getProperty("user.name");
+        String fileName = "report_" + Utils.getDateTimeFileName();
+        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\SupplierReports\\" + fileName + ".jpeg";
+
+        SupplierReportGenerator reportGenerator = new SupplierReportGenerator(suppliers);
+        reportGenerator.buildChart(filePath);
+    }
 }

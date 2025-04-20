@@ -1,11 +1,15 @@
 package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
-
-import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity(name = "Supplier")
 @Table(name = "suppliers")
+@SQLDelete(sql = "UPDATE suppliers SET deleted = true WHERE id=?")
+@Data
+@NoArgsConstructor
 public class Supplier {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,19 +25,8 @@ public class Supplier {
     @Column(name = "email", nullable = false, unique = true, length = 50)
     private String email;
 
-    @OneToMany(mappedBy = "supplier")
-    private List<Product> products;
-
-
-    public Supplier() {
-    }
-
-    public Supplier(Integer id, String name, String phoneNumber, String email) {
-        this.id = id;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-    }
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
 
     public Supplier(String name, String phoneNumber, String email) {
         this.name = name;
@@ -41,35 +34,4 @@ public class Supplier {
         this.email = email;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }
