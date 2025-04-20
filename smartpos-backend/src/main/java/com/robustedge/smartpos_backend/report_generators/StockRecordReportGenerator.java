@@ -8,6 +8,7 @@ import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -39,7 +40,24 @@ public class StockRecordReportGenerator {
                 false
         );
 
-        ((PiePlot<?>) chart.getPlot()).setLabelGenerator(new StandardPieSectionLabelGenerator("{0}: {1} ({2})"));
+        // Plot styles
+        PiePlot plot = (PiePlot) chart.getPlot();
+        plot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0}: {1} ({2})"));
+        plot.setBackgroundPaint(new Color(245, 245, 245));
+
+        // Section colors
+        Color[] colors = {
+                new Color(99, 136, 201),
+                new Color(99, 136, 201).brighter(),
+                new Color(99, 136, 201).darker(),
+                new Color(99, 136, 201).darker().darker(),
+                new Color(99, 136, 201).darker().darker().darker(),
+                new Color(99, 136, 201).darker().darker().darker().darker(),
+        };
+        String[] sections = getDataset().getKeys().toArray(new String[0]);
+        for (int i = 0; i < sections.length; i++) {
+            plot.setSectionPaint(sections[i], colors[i]);
+        }
 
         File pieChartFile = new File(filePath);
         pieChartFile.getParentFile().mkdirs();

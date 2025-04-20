@@ -4,9 +4,12 @@ import com.robustedge.smartpos_backend.models.LoyaltyMember;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -23,7 +26,7 @@ public class LoyaltyMemberReportGenerator {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         for (LoyaltyMember loyaltyMember : loyaltyMembers) {
-            dataset.addValue(loyaltyMember.getPoints(), loyaltyMember.getFirstName() + " " + loyaltyMember.getLastName(), loyaltyMember.getFirstName() + " " + loyaltyMember.getLastName());
+            dataset.addValue(loyaltyMember.getPoints(), "Series1", loyaltyMember.getFirstName() + " " + loyaltyMember.getLastName());
         }
 
         return dataset;
@@ -41,11 +44,21 @@ public class LoyaltyMemberReportGenerator {
                 false
         );
 
+        // Plot background color
+        CategoryPlot plot = (CategoryPlot) chart.getPlot();
+        plot.setBackgroundPaint(new Color(245, 245, 245));
+
+        // Columns styles
+        BarRenderer renderer = (BarRenderer) plot.getRenderer();
+        renderer.setSeriesPaint(0, new Color(99, 136, 201));
+        renderer.setMaximumBarWidth(0.1);
+        plot.setRenderer(renderer);
+
         File barChartFile = new File(filePath);
         barChartFile.getParentFile().mkdirs();
 
         try {
-            ChartUtils.saveChartAsJPEG(barChartFile, chart, 640, 480);
+            ChartUtils.saveChartAsJPEG(barChartFile, chart, 1080, 480);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
