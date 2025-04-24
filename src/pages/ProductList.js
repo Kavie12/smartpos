@@ -28,17 +28,21 @@ export default function ProductList() {
 
     }, []);
 
-    // const rows = [
-    //     createData('Frozen yoghurt', 80),
-    //     createData('Ice cream sandwich', 120),
-    //     createData('Eclair', 140),
-    //     createData('Cupcake', 100),
-    //     createData('Gingerbread', 200),
-    //   ];
+    function handleDelete(id) {
 
-    // function createData(name, price) {
-    //     return { name, price };
-    //   }
+        axios.delete("http://localhost:5000/deleteProduct", {data: {id: id}})
+        .then(response => {
+            alert("Deletion is completed!!");
+            setProducts(products.filter(product => product.pid !== id));
+        })
+        .catch(error => {
+            alert("Caught to an error while deleting the product!!");
+        });
+    }
+
+    function handleEdit() {
+        alert("It is aobut to be Edit!");
+    }
 
     return(
     <>
@@ -60,7 +64,7 @@ export default function ProductList() {
                 </TableHead>
                 <TableBody>
                     {products.map((product) => (
-                        <TableRow key={product.pId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                        <TableRow key={product.pid} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                             <TableCell component="th" scope="row">
                                 {product.pid}
                             </TableCell>
@@ -71,12 +75,12 @@ export default function ProductList() {
                                 Rs.{product.price}.00
                             </TableCell>
                             <TableCell align='right' fontSize='large'>
-                                <IconButton aria-label="delete" size="small">
-                                    <EditNoteTwoToneIcon fontSize="inherit" />
+                                <IconButton onClick={handleEdit} size="medium">
+                                    <EditNoteTwoToneIcon fontSize="inherit"/>
                                 </IconButton>
                             </TableCell>
                             <TableCell align='right'>
-                                <IconButton>
+                                <IconButton id={product.pid} onClick={()=> handleDelete(product.pid)}>
                                     <DeleteOutlineIcon/>
                                 </IconButton>
                             </TableCell>

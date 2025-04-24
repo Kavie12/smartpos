@@ -64,6 +64,21 @@ app.get("/getProducts", (req, res)=> {
     }
 });
 
+//delete product
+app.delete("/deleteProduct", (req, res) => {
+    const {id} = req.body;
+
+    const query = "DELETE FROM products WHERE pid = ?";
+
+    db.query(query, [id], (error, result) => {
+        if(error) {
+            return res.status(403).json({message: "Product deletion unsuccessfully!"});
+        }
+
+        return res.status(200).json({message: "Product deletion successfully!"}); 
+    });
+});
+
 
 app.listen(PORT, () => {
     console.log(`Server running on and listening http://localhost:${PORT}`);
