@@ -4,7 +4,6 @@ import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.models.StockRecord;
 import com.robustedge.smartpos_backend.report_generators.StockRecordReportGenerator;
-import com.robustedge.smartpos_backend.report_generators.SupplierReportGenerator;
 import com.robustedge.smartpos_backend.repositories.StockRecordRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,12 +27,23 @@ public class StockRecordService {
     private ProductService productService;
 
     public void addRecord(StockRecord record) {
+        validateData(record);
+
         // Change stock level of the product
         Product product = record.getProduct();
         product.setStockLevel(product.getStockLevel() + record.getStockAmount());
         productService.updateProduct(product);
 
         repository.save(record);
+    }
+
+    private void validateData(StockRecord stockRecord) {
+        if (stockRecord.getProduct() == null) {
+            throw new ApiRequestException("Please select a product.");
+        }
+        if (stockRecord.getStockAmount() == null || stockRecord.getStockAmount() <= 0) {
+            throw new ApiRequestException("Please enter a valid stock amount.");
+        }
     }
 
     public List<StockRecord> getAllRecords() {

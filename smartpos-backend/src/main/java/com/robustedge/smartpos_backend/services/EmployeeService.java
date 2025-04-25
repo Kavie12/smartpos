@@ -2,9 +2,7 @@ package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Employee;
-import com.robustedge.smartpos_backend.models.LoyaltyMember;
 import com.robustedge.smartpos_backend.report_generators.EmployeeReportGenerator;
-import com.robustedge.smartpos_backend.report_generators.LoyaltyMemberReportGenerator;
 import com.robustedge.smartpos_backend.repositories.EmployeeRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +20,30 @@ public class EmployeeService {
     private EmployeeRepository repository;
 
     public void addEmployee(Employee employee) {
+        validateData(employee);
         try {
             repository.save(employee);
         } catch (DataIntegrityViolationException e) {
             throw new ApiRequestException("The phone number or email belongs to a registered employee.");
+        }
+    }
+
+    private void validateData(Employee employee) {
+        if (employee.getFirstName().isEmpty()
+                || employee.getLastName().isEmpty()
+                || employee.getPhoneNumber().isEmpty()
+                || employee.getEmail().isEmpty()
+        ) {
+            throw new ApiRequestException("Please complete all the fields.");
+        }
+        if (employee.getSalary() <= 0) {
+            throw new ApiRequestException("Please enter a valid salary.");
+        }
+        if (!employee.getPhoneNumber().matches("^\\+?[0-9\\s-]{7,20}$")) {
+            throw new ApiRequestException("Please enter a valid phone number.");
+        }
+        if (!employee.getEmail().matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+            throw new ApiRequestException("Please enter a valid email address.");
         }
     }
 
@@ -46,9 +64,11 @@ public class EmployeeService {
     }
 
     public void updateEmployee(Employee employee) {
-        if (employee.getId() != null) {
-            repository.save(employee);
+        validateData(employee);
+        if (employee.getId() == null) {
+            return;
         }
+        repository.save(employee);
     }
 
     public void generateReport() {

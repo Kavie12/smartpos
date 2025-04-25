@@ -45,15 +45,15 @@ export default function AddStockRecordScreen() {
     const addStockRecord = (): void => {
         setLoading(prev => ({ ...prev, add: true }));
 
-        if (!formData.product) {
-            setAlert({
-                open: true,
-                type: "error",
-                message: "A product must be selected to add a stock record."
-            });
-            setLoading(prev => ({ ...prev, add: false }));
-            return;
-        }
+        // if (!formData.product) {
+        //     setAlert({
+        //         open: true,
+        //         type: "error",
+        //         message: "A product must be selected to add a stock record."
+        //     });
+        //     setLoading(prev => ({ ...prev, add: false }));
+        //     return;
+        // }
 
         if (formData.stockAmount <= 0) {
             setAlert({
@@ -78,7 +78,7 @@ export default function AddStockRecordScreen() {
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Adding stock record failed."
+                    message: err.response.data.message
                 });
                 console.error("Error adding data:", err);
             })

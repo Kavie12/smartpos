@@ -1,9 +1,7 @@
 package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
-import com.robustedge.smartpos_backend.models.Employee;
 import com.robustedge.smartpos_backend.models.Supplier;
-import com.robustedge.smartpos_backend.report_generators.EmployeeReportGenerator;
 import com.robustedge.smartpos_backend.report_generators.SupplierReportGenerator;
 import com.robustedge.smartpos_backend.repositories.SupplierRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
@@ -22,10 +20,26 @@ public class SupplierService {
     private SupplierRepository repository;
 
     public void addSupplier(Supplier supplier) {
+        validateData(supplier);
         try {
             repository.save(supplier);
         } catch (DataIntegrityViolationException e) {
             throw new ApiRequestException("The phone number or email belongs to a registered supplier.");
+        }
+    }
+
+    private void validateData(Supplier supplier) {
+        if (supplier.getName().isEmpty()
+                || supplier.getPhoneNumber().isEmpty()
+                || supplier.getEmail().isEmpty()
+        ) {
+            throw new ApiRequestException("Please complete all the fields.");
+        }
+        if (!supplier.getPhoneNumber().matches("^\\+?[0-9\\s-]{7,20}$")) {
+            throw new ApiRequestException("Please enter a valid phone number.");
+        }
+        if (!supplier.getEmail().matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+            throw new ApiRequestException("Please enter a valid email address.");
         }
     }
 
@@ -42,9 +56,11 @@ public class SupplierService {
     }
 
     public void updateSupplier(Supplier supplier) {
-        if (supplier.getId() != null) {
-            repository.save(supplier);
+        validateData(supplier);
+        if (supplier.getId() == null) {
+            return;
         }
+        repository.save(supplier);
     }
 
     public void deleteSupplier(Integer supplierId) {

@@ -20,11 +20,24 @@ public class LoyaltyMemberService {
     private LoyaltyMemberRepository repository;
 
     public void addLoyaltyMember(LoyaltyMember loyaltyMember) {
+        validateData(loyaltyMember);
         loyaltyMember.setPoints((double) 0);
         try {
             repository.save(loyaltyMember);
         } catch (DataIntegrityViolationException e) {
             throw new ApiRequestException("The phone number belongs to a registered supplier.");
+        }
+    }
+
+    private void validateData(LoyaltyMember loyaltyMember) {
+        if (loyaltyMember.getFirstName().isEmpty()
+                || loyaltyMember.getLastName().isEmpty()
+                || loyaltyMember.getPhoneNumber().isEmpty()
+        ) {
+            throw new ApiRequestException("Please complete all the fields.");
+        }
+        if (!loyaltyMember.getPhoneNumber().matches("^\\+?[0-9\\s-]{7,20}$")) {
+            throw new ApiRequestException("Please enter a valid phone number.");
         }
     }
 
@@ -37,9 +50,11 @@ public class LoyaltyMemberService {
     }
 
     public void updateLoyaltyMember(LoyaltyMember loyaltyMember) {
-        if (loyaltyMember != null) {
-            repository.save(loyaltyMember);
+        validateData(loyaltyMember);
+        if (loyaltyMember.getId() == null) {
+            return;
         }
+        repository.save(loyaltyMember);
     }
 
     public void deleteLoyaltyMember(Integer id) {

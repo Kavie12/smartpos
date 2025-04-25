@@ -117,6 +117,7 @@ export default function AddEmployeeScreen() {
                         id="salary"
                         name="salary"
                         label="Salary"
+                        type="number"
                         value={formData.salary}
                         sx={{ width: 400, mt: 2 }}
                         onChange={(e) => setFormData(prev => ({ ...prev, salary: parseFloat(e.target.value) }))}

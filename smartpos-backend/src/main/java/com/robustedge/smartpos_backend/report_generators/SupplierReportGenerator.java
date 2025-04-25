@@ -1,7 +1,6 @@
 package com.robustedge.smartpos_backend.report_generators;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
@@ -9,7 +8,6 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 

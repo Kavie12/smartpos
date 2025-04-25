@@ -15,7 +15,7 @@ export default function CreateBillScreen() {
 
     const [barcode, setBarcode] = useState<string | null>(null);
     const [loyaltyMemberId, setLoyaltyMemberId] = useState<string>("");
-    const [error, setError] = useState<{ barcode: string | null, loyaltyMember: null }>({
+    const [error, setError] = useState<{ barcode: string | null, loyaltyMember: string | null }>({
         barcode: null,
         loyaltyMember: null
     });
@@ -28,7 +28,7 @@ export default function CreateBillScreen() {
 
     const addProduct = (): void => {
         if (!barcode) {
-            setError(prev => ({ ...prev, barcode: "Enter barcode" }));
+            setError(prev => ({ ...prev, barcode: "Enter barcode." }));
             return;
         }
         setError(prev => ({ ...prev, barcode: null }));
@@ -102,6 +102,12 @@ export default function CreateBillScreen() {
 
     const setLoyaltyMember = (): void => {
         setError(prev => ({ ...prev, loyaltyMember: null }));
+
+        if (!loyaltyMemberId) {
+            setError(prev => ({ ...prev, loyaltyMember: "Enter loyalty member ID." }));
+            return;
+        }
+
         AuthApi.get("/loyalty_members/get_one_by_phone_number", {
             params: {
                 phoneNumber: loyaltyMemberId

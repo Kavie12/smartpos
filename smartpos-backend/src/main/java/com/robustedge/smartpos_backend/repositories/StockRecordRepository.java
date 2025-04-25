@@ -23,6 +23,6 @@ public interface StockRecordRepository extends JpaRepository<StockRecord, Intege
     @Query("select sr from StockRecord sr where (:searchKey is null or sr.product.name like %:searchKey%) and (:searchDate is null or date(sr.createdAt) = :searchDate)")
     Page<StockRecord> findFilteredStockRecords(@Param("searchKey") String searchKey, @Param("searchDate") LocalDate searchDate, Pageable pageable);
 
-    @Query("select sr.product.name, count(sr) from StockRecord sr group by sr.product.id order by count(sr) desc limit 5")
+    @Query("select sr.product.name, count(sr) as count from StockRecord sr group by sr.product.id order by count desc limit 5")
     List<Object[]> findTop5ProductsByStockRecordCount();
 }

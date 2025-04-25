@@ -3,7 +3,6 @@ package com.robustedge.smartpos_backend.services;
 import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.report_generators.ProductReportGenerator;
-import com.robustedge.smartpos_backend.report_generators.SupplierReportGenerator;
 import com.robustedge.smartpos_backend.repositories.ProductRepository;
 import com.robustedge.smartpos_backend.repositories.StockRecordRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
@@ -26,10 +25,26 @@ public class ProductService {
     private StockRecordRepository stockRecordRepository;
 
     public void addProduct(Product product) {
+        validateData(product);
         try {
             repository.save(product);
         } catch (DataIntegrityViolationException e) {
             throw new ApiRequestException("A product with the same barcode is already registered.");
+        }
+    }
+
+    private void validateData(Product product) {
+        if (product.getBarcode().isEmpty()
+                || product.getSupplier() == null
+                || product.getName().isEmpty()
+        ) {
+            throw new ApiRequestException("Please complete all the fields.");
+        }
+        if (product.getWholesalePrice() <= 0) {
+            throw new ApiRequestException("Please enter a valid wholesale price.");
+        }
+        if (product.getRetailPrice() <= 0) {
+            throw new ApiRequestException("Please enter a valid retail price.");
         }
     }
 
@@ -46,9 +61,11 @@ public class ProductService {
     }
 
     public void updateProduct(Product product) {
-        if (product.getId() != null) {
-            repository.save(product);
+        validateData(product);
+        if (product.getId() == null) {
+            return;
         }
+        repository.save(product);
     }
 
     public Product findProductByBarcode(String barcode) {
@@ -62,7 +79,7 @@ public class ProductService {
     }
 
     public void generateReport() {
-        List<Product> products = repository.findTop5ProductsByStockLevel();
+        List<Object[]> products = repository.findTop5ProductsByProfit();
 
         String systemUser = System.getProperty("user.name");
         String fileName = "report_" + Utils.getDateTimeFileName();
