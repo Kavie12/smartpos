@@ -36,16 +36,20 @@ public class Bill {
     @Column(name = "total")
     private double total;
 
+    @Column(name = "paidAmount")
+    private double paidAmount;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public Bill(List<BillingRecord> billingRecords, LoyaltyMember loyaltyMember, double pointsGranted, double pointsRedeemed, double total) {
+    public Bill(List<BillingRecord> billingRecords, LoyaltyMember loyaltyMember, double pointsGranted, double pointsRedeemed, double total, double paidAmount) {
         this.billingRecords = billingRecords;
         this.loyaltyMember = loyaltyMember;
         this.pointsGranted = pointsGranted;
         this.pointsRedeemed = pointsRedeemed;
         this.total = total;
+        this.paidAmount = paidAmount;
     }
 
 }

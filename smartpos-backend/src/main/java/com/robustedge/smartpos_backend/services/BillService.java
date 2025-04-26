@@ -39,6 +39,13 @@ public class BillService {
     public void createBill(Bill bill, boolean redeemPoints) {
         checkForSufficientStockLevel(bill.getBillingRecords());
 
+        // Validate paid amount
+        if (bill.getPaidAmount() == 0.0) {
+            throw new ApiRequestException("Please enter paid amount to proceed.");
+        } else if (bill.getPaidAmount() < bill.getTotal()) {
+            throw new ApiRequestException("Cannot proceed. Paid amount is less than the total price.");
+        }
+
         double total = 0;
         for (BillingRecord billingRecord: bill.getBillingRecords()) {
             // Set current selling price

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AuthApi } from "../../services/Api";
-import { Box, Button, Checkbox, Divider, FormControlLabel, Grid2, IconButton, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Divider, FormControlLabel, Grid2, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import QuantityCounter from "../../components/QuantityCounter";
 import { Link } from "react-router";
@@ -219,6 +219,41 @@ export default function CreateBillScreen() {
                                     <Typography fontWeight={"bold"}>Rs. {bill.total - bill.pointsRedeemed}</Typography>
                                 </Box>
 
+                                {
+                                    /* Paid Amount */
+                                    bill.billingRecords.length > 0 &&
+                                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+                                        <Typography fontWeight={"bold"}>Paid Amount:</Typography>
+                                        <Box>
+                                            <TextField
+                                                id="paidAmount"
+                                                variant="standard"
+                                                size="small"
+                                                type="number"
+                                                slotProps={{
+                                                    input: {
+                                                        startAdornment: <InputAdornment position="start">Rs.</InputAdornment>,
+                                                    },
+                                                }}
+                                                value={bill.paidAmount}
+                                                onChange={e => setBill(prev => ({ ...prev, paidAmount: parseFloat(e.target.value) }))}
+                                                sx={{
+                                                    width: 140
+                                                }}
+                                            />
+                                        </Box>
+                                    </Box>
+                                }
+
+                                {
+                                    /* Balance */
+                                    bill.billingRecords.length > 0 && bill.paidAmount != undefined && bill.paidAmount > 0 &&
+                                    < Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+                                        <Typography fontWeight={"bold"}>Balance:</Typography>
+                                        <Typography fontWeight={"bold"}>Rs. {bill.paidAmount - bill.total}</Typography>
+                                    </Box>
+                                }
+
                                 {/* Buttons */}
                                 <Button variant="contained" sx={{ marginTop: 4 }} onClick={saveBill}>
                                     Print Bill
@@ -235,7 +270,7 @@ export default function CreateBillScreen() {
                         </Box>
                     </Grid2>
                 </Grid2>
-            </Box>
+            </Box >
         </>
     );
 }

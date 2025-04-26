@@ -126,7 +126,18 @@ public class ReceiptGenerator {
         // Total
         addBoldField("Total", "Rs. " + String.valueOf(bill.getTotal() - bill.getPointsRedeemed()));
 
-        addSpacing(48);
+        addSpacing(24);
+
+        // Paid amount
+        addBoldField("Paid Amount", "Rs. " + String.valueOf(bill.getPaidAmount()));
+
+        // Balance
+        double balance = bill.getPaidAmount() - bill.getTotal();
+        if (balance > 0) {
+            addBoldField("Balance", "Rs. " + String.valueOf(balance));
+        }
+
+        addSpacing(24);
 
         // Loyalty member details
         if (bill.getLoyaltyMember() != null) {

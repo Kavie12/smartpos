@@ -18,7 +18,8 @@ export default function BillDetailsScreen() {
         loyaltyMember: null,
         pointsGranted: 0,
         pointsRedeemed: 0,
-        total: 0
+        total: 0,
+        paidAmount: undefined
     });
     const [loading, setLoading] = useState<{ bill: boolean, print: boolean, delete: boolean }>({
         bill: false,
@@ -239,7 +240,7 @@ const BillDetails = ({ bill }: { bill: BillingDataType }) => {
             {
                 /* Points Redeemed */
                 bill.pointsRedeemed > 0 && (
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 1 }}>
                         <Typography fontWeight={"bold"}>Points Redeemed:</Typography>
                         <Typography fontWeight={"bold"}>{bill.pointsRedeemed}</Typography>
                     </Box>
@@ -247,10 +248,28 @@ const BillDetails = ({ bill }: { bill: BillingDataType }) => {
             }
 
             {/* Total */}
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 1 }}>
                 <Typography fontWeight={"bold"}>Total:</Typography>
                 <Typography fontWeight={"bold"}>Rs. {bill.total - bill.pointsRedeemed}</Typography>
             </Box>
+
+            {
+                /* Paid Amount */
+                bill.paidAmount != undefined &&
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+                    <Typography fontWeight={"bold"}>Paid Amount:</Typography>
+                    <Typography fontWeight={"bold"}>Rs. {bill.paidAmount}</Typography>
+                </Box>
+            }
+
+            {
+                /* Balance */
+                bill.paidAmount != undefined &&
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 1 }}>
+                    <Typography fontWeight={"bold"}>Balance:</Typography>
+                    <Typography fontWeight={"bold"}>Rs. {bill.paidAmount - bill.total}</Typography>
+                </Box>
+            }
         </>
     );
 };

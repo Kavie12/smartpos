@@ -26,7 +26,8 @@ export default function UpdateBillScreen() {
         loyaltyMember: null,
         pointsGranted: 0,
         pointsRedeemed: 0,
-        total: 0
+        total: 0,
+        paidAmount: undefined
     });
     const [total, setTotal] = useState<number>(0);
 
