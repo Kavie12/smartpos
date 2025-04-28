@@ -7,7 +7,6 @@ import com.robustedge.smartpos_backend.repositories.ProductRepository;
 import com.robustedge.smartpos_backend.repositories.StockRecordRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
@@ -25,10 +24,14 @@ public class ProductService {
     private StockRecordRepository stockRecordRepository;
 
     public void addProduct(Product product) {
+        checkUnique(product.getBarcode());
         validateData(product);
-        try {
-            repository.save(product);
-        } catch (DataIntegrityViolationException e) {
+        repository.save(product);
+    }
+
+    private void checkUnique(String barcode) {
+        int noOfExistingRecords = repository.NoOfExistingRecords(barcode);
+        if (noOfExistingRecords > 0) {
             throw new ApiRequestException("A product with the same barcode is already registered.");
         }
     }

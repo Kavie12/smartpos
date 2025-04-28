@@ -6,7 +6,6 @@ import com.robustedge.smartpos_backend.report_generators.EmployeeReportGenerator
 import com.robustedge.smartpos_backend.repositories.EmployeeRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
@@ -20,10 +19,14 @@ public class EmployeeService {
     private EmployeeRepository repository;
 
     public void addEmployee(Employee employee) {
+        checkUnique(employee.getPhoneNumber(), employee.getEmail());
         validateData(employee);
-        try {
-            repository.save(employee);
-        } catch (DataIntegrityViolationException e) {
+        repository.save(employee);
+    }
+
+    private void checkUnique(String phoneNumber, String email) {
+        int noOfExistingRecords = repository.NoOfExistingRecords(phoneNumber, email);
+        if (noOfExistingRecords > 0) {
             throw new ApiRequestException("The phone number or email belongs to a registered employee.");
         }
     }

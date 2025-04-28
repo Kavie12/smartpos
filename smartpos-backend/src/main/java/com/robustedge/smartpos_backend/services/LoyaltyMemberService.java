@@ -6,7 +6,6 @@ import com.robustedge.smartpos_backend.report_generators.LoyaltyMemberReportGene
 import com.robustedge.smartpos_backend.repositories.LoyaltyMemberRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
@@ -20,12 +19,16 @@ public class LoyaltyMemberService {
     private LoyaltyMemberRepository repository;
 
     public void addLoyaltyMember(LoyaltyMember loyaltyMember) {
+        checkUnique(loyaltyMember.getPhoneNumber());
         validateData(loyaltyMember);
         loyaltyMember.setPoints((double) 0);
-        try {
-            repository.save(loyaltyMember);
-        } catch (DataIntegrityViolationException e) {
-            throw new ApiRequestException("The phone number belongs to a registered supplier.");
+        repository.save(loyaltyMember);
+    }
+
+    private void checkUnique(String phoneNumber) {
+        int noOfExistingRecords = repository.NoOfExistingRecords(phoneNumber);
+        if (noOfExistingRecords > 0) {
+            throw new ApiRequestException("The phone number belongs to a registered loyalty member.");
         }
     }
 
@@ -42,7 +45,7 @@ public class LoyaltyMemberService {
     }
 
     public List<LoyaltyMember> getAllLoyaltyMembers() {
-        return repository.findAll();
+        return repository.findAllActiveLoyaltyMembers();
     }
 
     public PagedModel<LoyaltyMember> getLoyaltyMembers(String searchKey, Pageable pageable) {

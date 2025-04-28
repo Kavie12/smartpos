@@ -6,7 +6,6 @@ import com.robustedge.smartpos_backend.report_generators.SupplierReportGenerator
 import com.robustedge.smartpos_backend.repositories.SupplierRepository;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
@@ -20,10 +19,14 @@ public class SupplierService {
     private SupplierRepository repository;
 
     public void addSupplier(Supplier supplier) {
+        checkUnique(supplier.getPhoneNumber(), supplier.getEmail());
         validateData(supplier);
-        try {
-            repository.save(supplier);
-        } catch (DataIntegrityViolationException e) {
+        repository.save(supplier);
+    }
+
+    private void checkUnique(String phoneNumber, String email) {
+        int noOfExistingRecords = repository.NoOfExistingRecords(phoneNumber, email);
+        if (noOfExistingRecords > 0) {
             throw new ApiRequestException("The phone number or email belongs to a registered supplier.");
         }
     }

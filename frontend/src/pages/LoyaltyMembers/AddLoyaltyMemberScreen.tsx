@@ -37,7 +37,7 @@ export default function AddLoyaltyMemberScreen() {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Loyalty member registererd successfully."
+                    message: "Loyalty member registered successfully."
                 });
                 resetFormData();
             })

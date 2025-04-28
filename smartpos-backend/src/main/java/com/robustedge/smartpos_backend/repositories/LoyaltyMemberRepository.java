@@ -14,11 +14,17 @@ import java.util.Optional;
 @Repository
 public interface LoyaltyMemberRepository extends JpaRepository<LoyaltyMember, Integer> {
 
-    @Query("select lm from LoyaltyMember lm where :searchKey is null or lm.firstName like %:searchKey% or lm.lastName like %:searchKey%")
+    @Query("SELECT lm FROM LoyaltyMember lm WHERE lm.deleted = false")
+    List<LoyaltyMember> findAllActiveLoyaltyMembers();
+
+    @Query("SELECT lm FROM LoyaltyMember lm WHERE lm.deleted = false AND (:searchKey IS NULL OR lm.firstName LIKE %:searchKey% OR lm.lastName Like %:searchKey% OR CONCAT(lm.firstName, ' ', lm.lastName) LIKE %:searchKey%)")
     Page<LoyaltyMember> findFilteredLoyaltyMembers(@Param("searchKey") String searchKey, Pageable pageable);
 
     Optional<LoyaltyMember> findByPhoneNumber(String phoneNumber);
 
-    @Query("select lm from LoyaltyMember lm where lm.points > 0 order by lm.points desc limit 5")
+    @Query("SELECT lm FROM LoyaltyMember lm WHERE lm.deleted = false AND lm.points > 0 ORDER BY lm.points DESC LIMIT 5")
     List<LoyaltyMember> findTop5ByPoints();
+
+    @Query("SELECT COUNT(*) FROM LoyaltyMember lm WHERE lm.deleted = false AND lm.phoneNumber = :phoneNumber")
+    int NoOfExistingRecords(@Param("phoneNumber") String phoneNumber);
 }

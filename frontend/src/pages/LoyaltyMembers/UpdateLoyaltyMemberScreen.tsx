@@ -49,7 +49,7 @@ export default function UpdateLoyaltyMemberScreen() {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Loyalty member registererd successfully."
+                    message: "Loyalty member updated successfully."
                 });
             })
             .catch(err => {
@@ -77,7 +77,7 @@ export default function UpdateLoyaltyMemberScreen() {
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Add Loyalty Member</Typography>
+                <Typography variant="h6" fontWeight="bold">Update Loyalty Member</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>
