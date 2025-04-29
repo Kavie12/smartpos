@@ -1,4 +1,4 @@
-    import { Button, Checkbox, FormControlLabel, InputAdornment, Stack, TextField, Toolbar, Typography } from "@mui/material";
+    import { Alert, Button, Checkbox, FormControlLabel, InputAdornment, Stack, TextField, Toolbar, Typography } from "@mui/material";
     import Divider from '@mui/material/Divider';
     import { useState } from "react";
     import axios from "axios";
@@ -9,6 +9,9 @@
             pName: "",
             price: ""
         });
+
+        const [isSuccess, setSuccessState] = useState("");
+        const [message, setMessage] = useState("");
 
         function handleInputs (e) {
             const {id, value} = e.target;
@@ -33,10 +36,13 @@
             
             axios.post("http://localhost:5000/add", productDetails)
             .then(response => {
-                alert("Product added Successfully!");
+                setSuccessState("success");
+                setMessage("The product added successfully mate!");
                 console.log("Resonse from server: ", response.data);
             })
             .catch(error => {
+                setSuccessState("error");
+                setMessage("The product was not added successfully mate!");
                 console.log("Error message from server: ", error);
             });
 
@@ -51,7 +57,7 @@
         return(<>
             <Typography variant="h4">Add Product</Typography>
             <Divider style={{margin: "10px 0px 0px 0px"}}/>
-            <Toolbar style={{width: "100%", display: "flex", justifyContent: "center", margin: "30px 0px 0px 0px"}}>
+            <Toolbar style={{width: "100%", display: "flex", flexDirection: "column", justifyContent: "center", margin: "30px 0px 0px 0px"}}>
                 <form onSubmit={handleSubmit}>
                     <Stack direction="column" alignItems="center">
 
@@ -79,7 +85,9 @@
                         <FormControlLabel control={<Checkbox onChange={handleCheck} color="warning"/>} label="It's time to Add Product, double check before doing it!" />
                     </Stack>
                     <Button disabled={!isChecked} type="submit" variant="contained" color="success" style={{margin: "20px 0px 0px 0px", height: "45px", width: "100%"}}>Add the Product</Button>
+                    <Alert severity={isSuccess} style={{marginTop: "10px", width: "95%"}}>{message}</Alert>
                 </form>
+                
             </Toolbar>
         </>);
     }
