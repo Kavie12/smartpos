@@ -107,7 +107,9 @@ public class BillService {
 
         // Update loyalty member points
         LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
-        loyaltyMember.setPoints(loyaltyMember.getPoints() + bill.getPointsRedeemed() - bill.getPointsGranted());
+        if (loyaltyMember != null) {
+            loyaltyMember.setPoints(loyaltyMember.getPoints() + bill.getPointsRedeemed() - bill.getPointsGranted());
+        }
 
         repository.deleteById(billId);
     }

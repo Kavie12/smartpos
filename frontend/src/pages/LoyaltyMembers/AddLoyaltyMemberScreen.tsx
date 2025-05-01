@@ -106,6 +106,7 @@ export default function AddLoyaltyMemberScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading}
+                        id="addBtn"
                     >
                         Add
                     </Button>

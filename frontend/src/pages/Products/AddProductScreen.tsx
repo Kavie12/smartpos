@@ -117,6 +117,7 @@ export default function AddProductScreen() {
                         onChange={(_, value) => setFormData(prev => ({ ...prev, supplier: value }))}
                         value={formData.supplier}
                         sx={{ width: 400, mt: 2 }}
+                        id="supplier"
                     />
                     <TextField
                         margin="dense"
@@ -153,6 +154,7 @@ export default function AddProductScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading.add}
+                        id="addBtn"
                     >
                         Add
                     </Button>

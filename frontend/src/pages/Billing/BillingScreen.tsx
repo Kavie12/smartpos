@@ -85,6 +85,7 @@ export default function BillingScreen() {
                         label="View"
                         color="inherit"
                         onClick={() => navigate(`./bill_details/${id}`)}
+                        id={`view_bill_${id}`}
                     />
                 ];
             }
@@ -142,7 +143,7 @@ export default function BillingScreen() {
                     />
                 </Box>
                 <Link to="./create_bill">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="createBillBtn">
                         Create Bill
                     </Button>
                 </Link>

@@ -84,12 +84,14 @@ export default function LoyaltyMembersScreen() {
                         label="Edit"
                         color="inherit"
                         onClick={() => navigate(`./update_loyalty_member/${id}`)}
+                        id={`update_${id}`}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
+                        id={`delete_${id}`}
                     />
                 ];
             }
@@ -164,6 +166,7 @@ export default function LoyaltyMembersScreen() {
                     <TextField
                         size="small"
                         placeholder="Search"
+                        id="searchField"
                         value={searchKey}
                         onChange={e => setSearchKey(e.target.value)}
                         slotProps={{
@@ -178,7 +181,7 @@ export default function LoyaltyMembersScreen() {
                     />
                 </Box>
                 <Link to="./add_loyalty_member">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="addLoyaltyMemberBtn">
                         Add Loyalty Member
                     </Button>
                 </Link>

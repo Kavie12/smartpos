@@ -132,13 +132,14 @@ export default function UpdateEmployeeScreen() {
                         label="Salary"
                         value={employee.salary}
                         sx={{ width: 400, mt: 2 }}
-                        onChange={(e) => setEmployee(prev => ({ ...prev, salary: parseFloat(e.target.value) }))}
+                        onChange={(e) => setEmployee(prev => ({ ...prev, salary: (e.target.value ? parseFloat(e.target.value) : 0) }))}
                     />
                     <Button
                         variant="contained"
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading}
+                        id="updateBtn"
                     >
                         Update
                     </Button>

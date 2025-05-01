@@ -118,6 +118,7 @@ export default function AddStockRecordScreen() {
                         onChange={(_, value) => setFormData(prev => ({ ...prev, product: value }))}
                         value={formData.product}
                         sx={{ marginY: 1, width: 400 }}
+                        id="product"
                     />
                     <TextField
                         margin="dense"
@@ -135,6 +136,7 @@ export default function AddStockRecordScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading.add}
+                        id="addBtn"
                     >
                         Add
                     </Button>

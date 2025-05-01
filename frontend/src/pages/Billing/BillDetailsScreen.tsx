@@ -160,6 +160,7 @@ export default function BillDetailsScreen() {
                             onClick={printBill}
                             loading={loading.print}
                             disabled={buttonDisable}
+                            id="printBtn"
                         >
                             Print
                         </Button>
@@ -168,6 +169,7 @@ export default function BillDetailsScreen() {
                             size="small"
                             onClick={() => navigate(`/billing/update_bill/${billId}`)}
                             disabled={buttonDisable}
+                            id="updateBtn"
                         >
                             Update
                         </Button>
@@ -178,6 +180,7 @@ export default function BillDetailsScreen() {
                             onClick={() => setIsDeleteDialogOpen(true)}
                             loading={loading.delete}
                             disabled={buttonDisable}
+                            id="deleteBtn"
                         >
                             Delete
                         </Button>

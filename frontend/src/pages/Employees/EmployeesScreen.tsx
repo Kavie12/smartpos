@@ -87,12 +87,14 @@ export default function EmployeesScreen() {
                         label="Edit"
                         color="inherit"
                         onClick={() => navigate(`./update_employee/${id}`)}
+                        id={`update_${id}`}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
+                        id={`delete_${id}`}
                     />
                 ];
             }
@@ -166,6 +168,7 @@ export default function EmployeesScreen() {
                     <TextField
                         size="small"
                         placeholder="Search"
+                        id="searchField"
                         value={searchKey}
                         onChange={e => setSearchKey(e.target.value)}
                         slotProps={{
@@ -180,7 +183,7 @@ export default function EmployeesScreen() {
                     />
                 </Box>
                 <Link to="./add_employee">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="addEmployeeBtn">
                         Add Employee
                     </Button>
                 </Link>

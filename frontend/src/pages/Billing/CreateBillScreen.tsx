@@ -162,7 +162,7 @@ export default function CreateBillScreen() {
                                 />
                                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
                                     <QuantityCounter quantity={quantity} setQuantity={setQuantity} color="grey" />
-                                    <Button variant="contained" type="submit">Add</Button>
+                                    <Button variant="contained" type="submit" id="addBarcodeBtn">Add</Button>
                                 </Box>
                             </Box>
                         </Box>
@@ -181,7 +181,7 @@ export default function CreateBillScreen() {
                                     helperText={error.loyaltyMember ? `*${error.loyaltyMember}` : null}
                                 />
                                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
-                                    <Button variant="contained" type="submit">Add</Button>
+                                    <Button variant="contained" type="submit" id="addLoyaltyMemberBtn">Add</Button>
                                 </Box>
                             </Box>
                         </Box>
@@ -255,7 +255,7 @@ export default function CreateBillScreen() {
                                 }
 
                                 {/* Buttons */}
-                                <Button variant="contained" sx={{ marginTop: 4 }} onClick={saveBill}>
+                                <Button variant="contained" sx={{ marginTop: 4 }} onClick={saveBill} id="printBillBtn">
                                     Print Bill
                                 </Button>
                                 <Button

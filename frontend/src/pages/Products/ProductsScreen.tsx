@@ -108,12 +108,14 @@ export default function ProductsScreen() {
                         label="Edit"
                         color="inherit"
                         onClick={() => navigate(`./update_product/${id}`)}
+                        id={`update_${id}`}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
+                        id={`delete_${id}`}
                     />
                 ];
             }
@@ -188,6 +190,7 @@ export default function ProductsScreen() {
                     <TextField
                         size="small"
                         placeholder="Search"
+                        id="searchField"
                         value={searchKey}
                         onChange={e => setSearchKey(e.target.value)}
                         slotProps={{
@@ -202,7 +205,7 @@ export default function ProductsScreen() {
                     />
                 </Box>
                 <Link to="./add_product">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="addProductBtn">
                         Add Product
                     </Button>
                 </Link>

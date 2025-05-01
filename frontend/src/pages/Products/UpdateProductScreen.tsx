@@ -173,6 +173,7 @@ export default function UpdateProductScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading.update}
+                        id="updateBtn"
                     >
                         Update
                     </Button>

@@ -87,12 +87,14 @@ export default function StockRecordsScreen() {
                         label="Edit"
                         color="inherit"
                         onClick={() => navigate(`./update_stock_record/${id}`)}
+                        id={`update_${id}`}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
+                        id={`delete_${id}`}
                     />
                 ];
             }
@@ -168,6 +170,7 @@ export default function StockRecordsScreen() {
                     <TextField
                         size="small"
                         placeholder="Search"
+                        id="searchField"
                         value={searchKey}
                         onChange={e => setSearchKey(e.target.value)}
                         slotProps={{
@@ -183,8 +186,8 @@ export default function StockRecordsScreen() {
                     <DatePicker
                         label="Filter by date"
                         slotProps={{
-                            textField: { size: 'small' },
-                            field: { clearable: true }
+                            textField: { size: "small" },
+                            field: { clearable: true },
                         }}
                         sx={{
                             "& .MuiOutlinedInput-input": {
@@ -196,7 +199,7 @@ export default function StockRecordsScreen() {
                     />
                 </Box>
                 <Link to="./add_stock_record">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="addStockRecordBtn">
                         Add Stock
                     </Button>
                 </Link>

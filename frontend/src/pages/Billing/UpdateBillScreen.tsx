@@ -114,8 +114,8 @@ export default function UpdateBillScreen() {
                                     <Typography fontWeight={"bold"}>Rs. {total}</Typography>
                                 </Box>
                                 <Box sx={{ display: "flex", justifyContent: "end", columnGap: 2 }}>
-                                    <Button variant="contained" sx={{ marginTop: 4 }} onClick={updateBill} loading={loading.update}>
-                                        Update & Print Bill
+                                    <Button variant="contained" sx={{ marginTop: 4 }} onClick={updateBill} loading={loading.update} id="updateBtn">
+                                        Update
                                     </Button>
                                 </Box>
                             </Box>

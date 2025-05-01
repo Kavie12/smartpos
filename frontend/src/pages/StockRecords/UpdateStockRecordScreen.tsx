@@ -152,6 +152,7 @@ export default function UpdateStockRecordScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading.update}
+                        id="updateBtn"
                     >
                         Update
                     </Button>

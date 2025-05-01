@@ -120,6 +120,7 @@ export default function UpdateLoyaltyMemberScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading}
+                        id="updateBtn"
                     >
                         Update
                     </Button>
