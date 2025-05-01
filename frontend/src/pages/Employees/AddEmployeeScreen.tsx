@@ -1,9 +1,10 @@
 import { ArrowBack } from "@mui/icons-material";
-import { Alert, Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router";
 import { AuthApi } from "../../services/Api";
 import { EmployeeDataType } from "../../types/types";
+import BasicAlert from "../../components/BasicAlert";
 
 export default function AddEmployeeScreen() {
 
@@ -17,7 +18,8 @@ export default function AddEmployeeScreen() {
         firstName: "",
         lastName: "",
         phoneNumber: "",
-        email: ""
+        email: "",
+        salary: 0
     });
 
     const resetFormData = (): void => {
@@ -25,7 +27,8 @@ export default function AddEmployeeScreen() {
             firstName: "",
             lastName: "",
             phoneNumber: "",
-            email: ""
+            email: "",
+            salary: 0
         });
     };
 
@@ -66,12 +69,10 @@ export default function AddEmployeeScreen() {
 
             <Box sx={{ px: 5 }}>
                 {/* Alerts */}
-                {alert.open && (
-                    <Box sx={{ my: 2 }}>
-                        {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                        {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    </Box>
-                )}
+                <BasicAlert
+                    alert={alert}
+                    onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+                />
 
                 <Box component="form" action={addEmployee} sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "start" }}>
                     <TextField
@@ -111,11 +112,22 @@ export default function AddEmployeeScreen() {
                         sx={{ width: 400, mt: 2 }}
                         onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     />
+                    <TextField
+                        margin="dense"
+                        id="salary"
+                        name="salary"
+                        label="Salary"
+                        type="number"
+                        value={formData.salary}
+                        sx={{ width: 400, mt: 2 }}
+                        onChange={(e) => setFormData(prev => ({ ...prev, salary: parseFloat(e.target.value) }))}
+                    />
                     <Button
                         variant="contained"
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading}
+                        id="addBtn"
                     >
                         Add
                     </Button>

@@ -1,11 +1,12 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
+import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { SupplierDataType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
 import DeleteDialog from '../../components/DeleteDialog';
+import BasicAlert from '../../components/BasicAlert';
 
 export default function SuppliersScreen() {
 
@@ -13,7 +14,7 @@ export default function SuppliersScreen() {
 
     const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
         page: 0,
-        pageSize: 10,
+        pageSize: 50,
     });
     const [pageData, setPageData] = useState<{ rows: SupplierDataType[], rowCount: number }>({
         rows: [],
@@ -32,6 +33,7 @@ export default function SuppliersScreen() {
         open: false,
         id: null
     });
+    const [searchKey, setSearchKey] = useState<string>("");
 
     const columns: GridColDef[] = [
         {
@@ -73,12 +75,14 @@ export default function SuppliersScreen() {
                         label="Edit"
                         color="inherit"
                         onClick={() => navigate(`./update_supplier/${id}`)}
+                        id={`update_${id}`}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
+                        id={`delete_${id}`}
                     />
                 ];
             }
@@ -89,6 +93,7 @@ export default function SuppliersScreen() {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/suppliers/get", {
             params: {
+                searchKey: searchKey,
                 page: paginationModel.page,
                 size: paginationModel.pageSize
             }
@@ -141,27 +146,42 @@ export default function SuppliersScreen() {
 
     useEffect(() => {
         fetchSuppliers();
-    }, [paginationModel]);
+    }, [paginationModel, searchKey]);
 
     return (
         <>
-
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
-                <Typography variant="h6" fontWeight="bold">Suppliers</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
+                    <Typography variant="h6" fontWeight="bold">Suppliers</Typography>
+                    <TextField
+                        size="small"
+                        placeholder="Search"
+                        id="searchField"
+                        value={searchKey}
+                        onChange={e => setSearchKey(e.target.value)}
+                        slotProps={{
+                            input: {
+                                startAdornment:
+                                    <InputAdornment position="start">
+                                        <Search fontSize="small" />
+                                    </InputAdornment>,
+                                style: { fontSize: 14 }
+                            }
+                        }}
+                    />
+                </Box>
                 <Link to="./add_supplier">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="addSupplierBtn">
                         Add Supplier
                     </Button>
                 </Link>
             </Box>
 
             {/* Alerts */}
-            {alert.open && (
-                <Box sx={{ my: 2 }}>
-                    {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                </Box>
-            )}
+            <BasicAlert
+                alert={alert}
+                onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+            />
 
             {/* Table */}
             <Box sx={{ height: 500 }}>
@@ -188,7 +208,6 @@ export default function SuppliersScreen() {
                 loading={loading.delete}
                 message="Are you sure you want to delete this supplier?"
             />
-
         </>
     );
 }

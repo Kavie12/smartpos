@@ -23,8 +23,11 @@ public class EmployeeController {
     }
 
     @GetMapping("/get")
-    public PagedModel<Employee> getEmployees(@PageableDefault(value = 50, page = 0) Pageable pageable) {
-        return service.getEmployees(pageable);
+    public PagedModel<Employee> getEmployees(
+            @RequestParam(name = "searchKey") String searchKey,
+            @PageableDefault(value = 50, page = 0) Pageable pageable
+    ) {
+        return service.getEmployees(searchKey, pageable);
     }
 
     @GetMapping("/get_one")
@@ -45,5 +48,10 @@ public class EmployeeController {
     @DeleteMapping("/delete")
     public void deleteEmployee(@RequestParam(name = "employeeId") Integer employeeId) {
         service.deleteEmployee(employeeId);
+    }
+
+    @GetMapping("/generate_report")
+    public void generateReport() {
+        service.generateReport();
     }
 }

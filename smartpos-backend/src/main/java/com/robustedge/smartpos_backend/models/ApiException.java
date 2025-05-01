@@ -2,21 +2,6 @@ package com.robustedge.smartpos_backend.models;
 
 import org.springframework.http.HttpStatus;
 
-public class ApiException {
+public record ApiException(String message, HttpStatus httpStatus) {
 
-    private final String message;
-    private final HttpStatus httpStatus;
-
-    public ApiException(String message, HttpStatus httpStatus) {
-        this.message = message;
-        this.httpStatus = httpStatus;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
 }

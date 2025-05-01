@@ -1,9 +1,10 @@
 import { ArrowBack } from "@mui/icons-material";
-import { Alert, Autocomplete, Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { AuthApi } from "../../services/Api";
 import { ProductDataType, StockRecordType } from "../../types/types";
+import BasicAlert from "../../components/BasicAlert";
 
 export default function AddStockRecordScreen() {
 
@@ -44,15 +45,15 @@ export default function AddStockRecordScreen() {
     const addStockRecord = (): void => {
         setLoading(prev => ({ ...prev, add: true }));
 
-        if (!formData.product) {
-            setAlert({
-                open: true,
-                type: "error",
-                message: "A product must be selected to add a stock record."
-            });
-            setLoading(prev => ({ ...prev, add: false }));
-            return;
-        }
+        // if (!formData.product) {
+        //     setAlert({
+        //         open: true,
+        //         type: "error",
+        //         message: "A product must be selected to add a stock record."
+        //     });
+        //     setLoading(prev => ({ ...prev, add: false }));
+        //     return;
+        // }
 
         if (formData.stockAmount <= 0) {
             setAlert({
@@ -77,7 +78,7 @@ export default function AddStockRecordScreen() {
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Adding stock record failed."
+                    message: err.response.data.message
                 });
                 console.error("Error adding data:", err);
             })
@@ -103,12 +104,10 @@ export default function AddStockRecordScreen() {
 
             <Box component="form" action={addStockRecord} sx={{ px: 5 }}>
                 {/* Alerts */}
-                {alert.open && (
-                    <Box sx={{ my: 2 }}>
-                        {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                        {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    </Box>
-                )}
+                <BasicAlert
+                    alert={alert}
+                    onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+                />
 
                 <Box sx={{ marginTop: 2, display: "flex", flexDirection: "column", alignItems: "start" }}>
                     <Autocomplete
@@ -119,6 +118,7 @@ export default function AddStockRecordScreen() {
                         onChange={(_, value) => setFormData(prev => ({ ...prev, product: value }))}
                         value={formData.product}
                         sx={{ marginY: 1, width: 400 }}
+                        id="product"
                     />
                     <TextField
                         margin="dense"
@@ -136,6 +136,7 @@ export default function AddStockRecordScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading.add}
+                        id="addBtn"
                     >
                         Add
                     </Button>

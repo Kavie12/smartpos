@@ -1,11 +1,12 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
+import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { EmployeeDataType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
 import DeleteDialog from '../../components/DeleteDialog';
+import BasicAlert from '../../components/BasicAlert';
 
 export default function EmployeesScreen() {
 
@@ -13,7 +14,7 @@ export default function EmployeesScreen() {
 
     const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
         page: 0,
-        pageSize: 10,
+        pageSize: 50,
     });
     const [pageData, setPageData] = useState<{ rows: EmployeeDataType[], rowCount: number }>({
         rows: [],
@@ -32,6 +33,7 @@ export default function EmployeesScreen() {
         open: false,
         id: null
     });
+    const [searchKey, setSearchKey] = useState<string>("");
 
     const columns: GridColDef[] = [
         {
@@ -68,6 +70,12 @@ export default function EmployeesScreen() {
             flex: 1
         },
         {
+            field: "salary",
+            headerName: "Salary",
+            sortable: false,
+            flex: 1
+        },
+        {
             field: "actions",
             headerName: "Actions",
             type: "actions",
@@ -79,12 +87,14 @@ export default function EmployeesScreen() {
                         label="Edit"
                         color="inherit"
                         onClick={() => navigate(`./update_employee/${id}`)}
+                        id={`update_${id}`}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
+                        id={`delete_${id}`}
                     />
                 ];
             }
@@ -95,6 +105,7 @@ export default function EmployeesScreen() {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/employees/get", {
             params: {
+                searchKey: searchKey,
                 page: paginationModel.page,
                 size: paginationModel.pageSize
             }
@@ -147,27 +158,42 @@ export default function EmployeesScreen() {
 
     useEffect(() => {
         fetchEmployees();
-    }, [paginationModel]);
+    }, [paginationModel, searchKey]);
 
     return (
         <>
-
-            <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
-                <Typography variant="h6" fontWeight="bold">Employee</Typography>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginY: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
+                    <Typography variant="h6" fontWeight="bold">Employee</Typography>
+                    <TextField
+                        size="small"
+                        placeholder="Search"
+                        id="searchField"
+                        value={searchKey}
+                        onChange={e => setSearchKey(e.target.value)}
+                        slotProps={{
+                            input: {
+                                startAdornment:
+                                    <InputAdornment position="start">
+                                        <Search fontSize="small" />
+                                    </InputAdornment>,
+                                style: { fontSize: 14 }
+                            }
+                        }}
+                    />
+                </Box>
                 <Link to="./add_employee">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="addEmployeeBtn">
                         Add Employee
                     </Button>
                 </Link>
             </Box>
 
             {/* Alerts */}
-            {alert.open && (
-                <Box sx={{ my: 2 }}>
-                    {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                </Box>
-            )}
+            <BasicAlert
+                alert={alert}
+                onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+            />
 
             {/* Table */}
             <Box sx={{ height: 500 }}>
@@ -194,7 +220,6 @@ export default function EmployeesScreen() {
                 loading={loading.delete}
                 message="Are you sure you want to delete this employee?"
             />
-
         </>
     );
 }

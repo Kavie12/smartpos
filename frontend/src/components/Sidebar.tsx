@@ -11,8 +11,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { Link, useLocation } from 'react-router';
-import { AddBox, Inventory, LocalShipping, Logout, Money, People, Work } from '@mui/icons-material';
-import { useSidebar } from '../context/SidebarContext';
+import { AddBox, BarChart, Inventory, LocalShipping, Logout, Money, People, Work } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { DRAWER_WIDTH } from '../data/Constants';
 
@@ -49,11 +48,11 @@ interface DrawerLinkProps {
   icon?: React.ReactElement<unknown>;
   text: string;
   to: string;
+  openSidebar: boolean;
 }
 
-const DrawerLink = ({ icon, text, to }: DrawerLinkProps) => {
+const DrawerLink = ({ icon, text, to, openSidebar }: DrawerLinkProps) => {
   const location = useLocation();
-  const { open } = useSidebar();
 
   return (
     <ListItem disablePadding sx={{ display: 'block' }}>
@@ -66,7 +65,7 @@ const DrawerLink = ({ icon, text, to }: DrawerLinkProps) => {
             minHeight: 48,
             px: 2.5,
           },
-          open
+          openSidebar
             ? {
               justifyContent: 'initial',
             }
@@ -83,7 +82,7 @@ const DrawerLink = ({ icon, text, to }: DrawerLinkProps) => {
                   minWidth: 0,
                   justifyContent: 'center',
                 },
-                open
+                openSidebar
                   ? {
                     mr: 3,
                   }
@@ -100,7 +99,7 @@ const DrawerLink = ({ icon, text, to }: DrawerLinkProps) => {
         <ListItemText
           primary={text}
           sx={[
-            open
+            openSidebar
               ? {
                 opacity: 1,
               }
@@ -118,10 +117,10 @@ interface DrawerButtonProps {
   icon?: React.ReactElement<unknown>;
   text: string;
   fn: () => void;
+  openSidebar: boolean;
 }
 
-const DrawerButton = ({ icon, text, fn }: DrawerButtonProps) => {
-  const { open } = useSidebar();
+const DrawerButton = ({ icon, text, fn, openSidebar }: DrawerButtonProps) => {
 
   return (
     <ListItem disablePadding sx={{ display: 'block' }}>
@@ -132,7 +131,7 @@ const DrawerButton = ({ icon, text, fn }: DrawerButtonProps) => {
             minHeight: 48,
             px: 2.5,
           },
-          open
+          openSidebar
             ? {
               justifyContent: 'initial',
             }
@@ -149,7 +148,7 @@ const DrawerButton = ({ icon, text, fn }: DrawerButtonProps) => {
                   minWidth: 0,
                   justifyContent: 'center',
                 },
-                open
+                openSidebar
                   ? {
                     mr: 3,
                   }
@@ -166,7 +165,7 @@ const DrawerButton = ({ icon, text, fn }: DrawerButtonProps) => {
         <ListItemText
           primary={text}
           sx={[
-            open
+            openSidebar
               ? {
                 opacity: 1,
               }
@@ -205,18 +204,17 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-export default function Sidebar() {
+export default function Sidebar({ openSidebar, setOpenSidebar }: { openSidebar: boolean, setOpenSidebar: React.Dispatch<React.SetStateAction<boolean>> }) {
   const theme = useTheme();
 
-  const { open, setOpen } = useSidebar();
   const { logout } = useAuth();
 
   const handleDrawerClose = () => {
-    setOpen(false);
+    setOpenSidebar(false);
   };
 
   return (
-    <Drawer variant="permanent" open={open}>
+    <Drawer variant="permanent" open={openSidebar}>
       <DrawerHeader>
         <IconButton onClick={handleDrawerClose}>
           {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
@@ -228,31 +226,43 @@ export default function Sidebar() {
           text="Billing"
           to="/billing"
           icon={<Money />}
+          openSidebar={openSidebar}
         />
         <DrawerLink
           text="Stock"
           to="/stock_records"
           icon={<AddBox />}
+          openSidebar={openSidebar}
         />
         <DrawerLink
           text="Products"
           to="/products"
           icon={<Inventory />}
+          openSidebar={openSidebar}
         />
         <DrawerLink
           text="Suppliers"
           to="/suppliers"
           icon={<LocalShipping />}
+          openSidebar={openSidebar}
         />
         <DrawerLink
           text="Loyalty Members"
           to="/loyalty_members"
           icon={<People />}
+          openSidebar={openSidebar}
         />
         <DrawerLink
           text="Employees"
           to="/employees"
           icon={<Work />}
+          openSidebar={openSidebar}
+        />
+        <DrawerLink
+          text="Reports"
+          to="/reports"
+          icon={<BarChart />}
+          openSidebar={openSidebar}
         />
       </List>
       <Divider />
@@ -261,6 +271,7 @@ export default function Sidebar() {
           text="Logout"
           fn={logout}
           icon={<Logout />}
+          openSidebar={openSidebar}
         />
       </List>
     </Drawer>

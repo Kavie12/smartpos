@@ -1,18 +1,21 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
+import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { StockRecordType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
 import DeleteDialog from '../../components/DeleteDialog';
+import { DatePicker } from '@mui/x-date-pickers';
+import { Dayjs } from 'dayjs';
+import BasicAlert from '../../components/BasicAlert';
 
 export default function StockRecordsScreen() {
     const navigate = useNavigate();
 
     const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
         page: 0,
-        pageSize: 10,
+        pageSize: 50,
     });
     const [pageData, setPageData] = useState<{ rows: StockRecordType[], rowCount: number }>({
         rows: [],
@@ -31,6 +34,8 @@ export default function StockRecordsScreen() {
         open: false,
         id: null
     });
+    const [searchKey, setSearchKey] = useState<string>("");
+    const [searchDate, setSearchDate] = useState<Dayjs | null>(null);
 
     const columns: GridColDef[] = [
         {
@@ -82,12 +87,14 @@ export default function StockRecordsScreen() {
                         label="Edit"
                         color="inherit"
                         onClick={() => navigate(`./update_stock_record/${id}`)}
+                        id={`update_${id}`}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
+                        id={`delete_${id}`}
                     />
                 ];
             }
@@ -98,6 +105,8 @@ export default function StockRecordsScreen() {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/stock_records/get", {
             params: {
+                searchKey: searchKey,
+                searchDate: searchDate?.format("YYYY-MM-DD"),
                 page: paginationModel.page,
                 size: paginationModel.pageSize
             }
@@ -150,27 +159,57 @@ export default function StockRecordsScreen() {
 
     useEffect(() => {
         fetchStockRecords();
-    }, [paginationModel]);
+    }, [paginationModel, searchKey, searchDate]);
 
     return (
         <>
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
-                <Typography variant="h6" fontWeight="bold">Stock Records</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
+                    <Typography variant="h6" fontWeight="bold">Stock Records</Typography>
+                    <TextField
+                        size="small"
+                        placeholder="Search"
+                        id="searchField"
+                        value={searchKey}
+                        onChange={e => setSearchKey(e.target.value)}
+                        slotProps={{
+                            input: {
+                                startAdornment:
+                                    <InputAdornment position="start">
+                                        <Search fontSize="small" />
+                                    </InputAdornment>,
+                                style: { fontSize: 14 }
+                            }
+                        }}
+                    />
+                    <DatePicker
+                        label="Filter by date"
+                        slotProps={{
+                            textField: { size: "small" },
+                            field: { clearable: true },
+                        }}
+                        sx={{
+                            "& .MuiOutlinedInput-input": {
+                                fontSize: 14
+                            }
+                        }}
+                        value={searchDate}
+                        onChange={value => setSearchDate(value)}
+                    />
+                </Box>
                 <Link to="./add_stock_record">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="addStockRecordBtn">
                         Add Stock
                     </Button>
                 </Link>
             </Box>
 
             {/* Alerts */}
-            {alert.open && (
-                <Box sx={{ my: 2 }}>
-                    {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                </Box>
-            )}
+            <BasicAlert
+                alert={alert}
+                onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+            />
 
             {/* Table */}
             <Box sx={{ height: 500 }}>

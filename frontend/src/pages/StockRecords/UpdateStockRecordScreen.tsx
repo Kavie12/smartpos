@@ -1,9 +1,10 @@
 import { ArrowBack } from "@mui/icons-material";
-import { Alert, Autocomplete, Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { AuthApi } from "../../services/Api";
 import { ProductDataType, StockRecordType } from "../../types/types";
+import BasicAlert from "../../components/BasicAlert";
 
 export default function UpdateStockRecordScreen() {
 
@@ -120,12 +121,10 @@ export default function UpdateStockRecordScreen() {
 
             <Box component="form" action={updateStockRecord} sx={{ px: 5 }}>
                 {/* Alerts */}
-                {alert.open && (
-                    <Box sx={{ my: 2 }}>
-                        {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                        {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    </Box>
-                )}
+                <BasicAlert
+                    alert={alert}
+                    onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+                />
 
                 <Box sx={{ marginTop: 2, display: "flex", flexDirection: "column", alignItems: "start" }}>
                     <Autocomplete
@@ -153,6 +152,7 @@ export default function UpdateStockRecordScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading.update}
+                        id="updateBtn"
                     >
                         Update
                     </Button>

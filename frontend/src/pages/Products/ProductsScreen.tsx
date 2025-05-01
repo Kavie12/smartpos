@@ -1,11 +1,12 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit } from '@mui/icons-material';
+import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { ProductDataType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
 import DeleteDialog from '../../components/DeleteDialog';
+import BasicAlert from '../../components/BasicAlert';
 
 export default function ProductsScreen() {
 
@@ -13,7 +14,7 @@ export default function ProductsScreen() {
 
     const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
         page: 0,
-        pageSize: 10,
+        pageSize: 50,
     });
     const [pageData, setPageData] = useState<{ rows: ProductDataType[], rowCount: number }>({
         rows: [],
@@ -32,6 +33,7 @@ export default function ProductsScreen() {
         open: false,
         id: null
     });
+    const [searchKey, setSearchKey] = useState<string>("");
 
     const columns: GridColDef[] = [
         {
@@ -77,6 +79,15 @@ export default function ProductsScreen() {
             flex: 1
         },
         {
+            field: "profitPerUnit",
+            headerName: "Profit Per Unit",
+            sortable: false,
+            flex: 1,
+            valueGetter: (_, row) => {
+                return row.retailPrice - row.wholesalePrice;
+            }
+        },
+        {
             field: "stockLevel",
             headerName: "Stock Level",
             type: "number",
@@ -97,12 +108,14 @@ export default function ProductsScreen() {
                         label="Edit"
                         color="inherit"
                         onClick={() => navigate(`./update_product/${id}`)}
+                        id={`update_${id}`}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
+                        id={`delete_${id}`}
                     />
                 ];
             }
@@ -113,6 +126,7 @@ export default function ProductsScreen() {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/products/get", {
             params: {
+                searchKey: searchKey,
                 page: paginationModel.page,
                 size: paginationModel.pageSize
             }
@@ -165,27 +179,43 @@ export default function ProductsScreen() {
 
     useEffect(() => {
         fetchProducts();
-    }, [paginationModel]);
+    }, [paginationModel, searchKey]);
 
     return (
         <>
 
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
-                <Typography variant="h6" fontWeight="bold">Products</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
+                    <Typography variant="h6" fontWeight="bold">Products</Typography>
+                    <TextField
+                        size="small"
+                        placeholder="Search"
+                        id="searchField"
+                        value={searchKey}
+                        onChange={e => setSearchKey(e.target.value)}
+                        slotProps={{
+                            input: {
+                                startAdornment:
+                                    <InputAdornment position="start">
+                                        <Search fontSize="small" />
+                                    </InputAdornment>,
+                                style: { fontSize: 14 }
+                            }
+                        }}
+                    />
+                </Box>
                 <Link to="./add_product">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="addProductBtn">
                         Add Product
                     </Button>
                 </Link>
             </Box>
 
             {/* Alerts */}
-            {alert.open && (
-                <Box sx={{ my: 2 }}>
-                    {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                </Box >
-            )}
+            <BasicAlert
+                alert={alert}
+                onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+            />
 
             {/* Table */}
             <Box sx={{ height: 500 }}>

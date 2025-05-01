@@ -20,6 +20,12 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p WHERE p.deleted = false")
     List<Product> findAllActiveProducts();
 
-    @Query("SELECT p FROM Product p WHERE p.deleted = false")
-    Page<Product> findAllActiveProductPage(Pageable pageable);
+    @Query("SELECT p FROM Product p WHERE p.deleted = false AND (:searchKey IS NULL OR p.barcode LIKE %:searchKey% OR p.name LIKE %:searchKey% OR p.supplier.name LIKE %:searchKey%)")
+    Page<Product> findFilteredActiveProducts(@Param("searchKey") String searchKey, Pageable pageable);
+
+    @Query("SELECT p.name, (p.retailPrice - p.wholesalePrice) AS profit FROM Product p WHERE p.deleted = false ORDER BY profit DESC LIMIT 5")
+    List<Object[]> findTop5ProductsByProfit();
+
+    @Query("SELECT COUNT(*) FROM Product p WHERE p.deleted = false AND p.barcode = :barcode")
+    int NoOfExistingRecords(@Param("barcode") String barcode);
 }

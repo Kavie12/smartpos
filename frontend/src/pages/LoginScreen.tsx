@@ -51,6 +51,7 @@ export default function LoginScreen() {
                         loading={isProcessing}
                         disableElevation
                         size="large"
+                        id="loginBtn"
                     >
                         Sign in
                     </Button>

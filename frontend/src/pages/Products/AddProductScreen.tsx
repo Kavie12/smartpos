@@ -1,9 +1,10 @@
 import { ArrowBack } from "@mui/icons-material";
-import { Alert, Autocomplete, Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { AuthApi } from "../../services/Api";
 import { ProductDataType, SupplierDataType } from "../../types/types";
+import BasicAlert from "../../components/BasicAlert";
 
 export default function AddProductScreen() {
 
@@ -52,16 +53,6 @@ export default function AddProductScreen() {
     const addProduct = (): void => {
         setLoading(prev => ({ ...prev, add: true }));
 
-        if (!formData.supplier) {
-            setAlert({
-                open: true,
-                type: "error",
-                message: "A supplier must be selected to add a product."
-            });
-            setLoading(prev => ({ ...prev, add: false }));
-            return;
-        }
-
         AuthApi.post("/products/add", formData)
             .then(() => {
                 setAlert({
@@ -102,12 +93,10 @@ export default function AddProductScreen() {
 
             <Box sx={{ px: 5 }}>
                 {/* Alerts */}
-                {alert.open && (
-                    <Box sx={{ my: 2 }}>
-                        {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                        {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    </Box>
-                )}
+                <BasicAlert
+                    alert={alert}
+                    onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+                />
 
                 <Box component="form" action={addProduct} sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "start" }}>
                     <TextField
@@ -128,6 +117,7 @@ export default function AddProductScreen() {
                         onChange={(_, value) => setFormData(prev => ({ ...prev, supplier: value }))}
                         value={formData.supplier}
                         sx={{ width: 400, mt: 2 }}
+                        id="supplier"
                     />
                     <TextField
                         margin="dense"
@@ -164,6 +154,7 @@ export default function AddProductScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading.add}
+                        id="addBtn"
                     >
                         Add
                     </Button>

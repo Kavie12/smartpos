@@ -1,12 +1,16 @@
 package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity(name = "StockRecord")
 @Table(name = "stock_records")
+@Data
+@NoArgsConstructor
 public class StockRecord {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,50 +28,9 @@ public class StockRecord {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public StockRecord() {
-    }
-
-    public StockRecord(Integer id, Product product, Integer stockAmount, LocalDateTime createdAt) {
-        this.id = id;
-        this.product = product;
-        this.stockAmount = stockAmount;
-        this.createdAt = createdAt;
-    }
-
     public StockRecord(Product product, Integer stockAmount) {
         this.product = product;
         this.stockAmount = stockAmount;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Integer getStockAmount() {
-        return stockAmount;
-    }
-
-    public void setStockAmount(Integer stockAmount) {
-        this.stockAmount = stockAmount;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }

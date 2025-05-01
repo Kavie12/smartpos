@@ -23,13 +23,21 @@ public class LoyaltyMemberController {
     }
 
     @GetMapping("/get")
-    public PagedModel<LoyaltyMember> getLoyaltyMembers(@PageableDefault(value = 50, page = 0) Pageable pageable) {
-        return service.getLoyaltyMembers(pageable);
+    public PagedModel<LoyaltyMember> getLoyaltyMembers(
+            @RequestParam(name = "searchKey") String searchKey,
+            @PageableDefault(value = 50, page = 0) Pageable pageable
+    ) {
+        return service.getLoyaltyMembers(searchKey, pageable);
     }
 
     @GetMapping("/get_one")
     public LoyaltyMember getOne(@RequestParam(name = "id") Integer id) {
         return service.getOne(id);
+    }
+
+    @GetMapping("/get_one_by_phone_number")
+    public LoyaltyMember getOneByPhoneNumber(@RequestParam(name = "phoneNumber") String phoneNumber) {
+        return service.getOneByPhoneNumber(phoneNumber);
     }
 
     @PostMapping("/add")
@@ -45,6 +53,11 @@ public class LoyaltyMemberController {
     @DeleteMapping("/delete")
     public void deleteLoyaltyMember(@RequestParam(name = "id") Integer id) {
         service.deleteLoyaltyMember(id);
+    }
+
+    @GetMapping("/generate_report")
+    public void generateReport() {
+        service.generateReport();
     }
 
 }

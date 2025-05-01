@@ -1,16 +1,19 @@
 import { Outlet, useNavigate } from "react-router";
-import SidebarProvider from "../context/SidebarContext";
 import { Box, CssBaseline } from "@mui/material";
 import Sidebar, { DrawerHeader } from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { DRAWER_WIDTH } from "../data/Constants";
 import { useAuth } from "../context/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 export default function MainLayout() {
 
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
+
+    const [openSidebar, setOpenSidebar] = useState<boolean>(false);
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -19,11 +22,11 @@ export default function MainLayout() {
     }, [isAuthenticated, navigate]);
 
     return (
-        <SidebarProvider>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Box sx={{ display: "flex", flexGrow: 1 }}>
                 <CssBaseline />
-                <Navbar />
-                <Sidebar />
+                <Navbar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
+                <Sidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
                 <Box
                     component="main"
                     sx={{
@@ -36,7 +39,7 @@ export default function MainLayout() {
                     <Outlet />
                 </Box>
             </Box>
-        </SidebarProvider>
+        </LocalizationProvider>
     );
 
 }

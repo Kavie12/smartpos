@@ -1,9 +1,15 @@
 package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity(name = "LoyaltyMember")
 @Table(name = "loyalty_members")
+@SQLDelete(sql = "UPDATE loyalty_members SET deleted = true WHERE id=?")
+@Data
+@NoArgsConstructor
 public class LoyaltyMember {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,22 +22,14 @@ public class LoyaltyMember {
     @Column(name = "last_name", nullable = false, length = 20)
     private String lastName;
 
-    @Column(name = "phone_number", nullable = false, unique = true, length = 20)
+    @Column(name = "phone_number", nullable = false, length = 20)
     private String phoneNumber;
 
     @Column(name = "points", nullable = false)
-    private Integer points;
+    private Double points;
 
-    public LoyaltyMember() {
-    }
-
-    public LoyaltyMember(Integer id, String firstName, String lastName, String phoneNumber, Integer points) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.points = points;
-    }
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted =  false;
 
     public LoyaltyMember(String firstName, String lastName, String phoneNumber) {
         this.firstName = firstName;
@@ -39,54 +37,4 @@ public class LoyaltyMember {
         this.phoneNumber = phoneNumber;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public Integer getPoints() {
-        return points;
-    }
-
-    public void setPoints(Integer points) {
-        this.points = points;
-    }
-
-    @Override
-    public String toString() {
-        return "LoyaltyCustomer{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", points=" + points +
-                '}';
-    }
 }

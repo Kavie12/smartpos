@@ -1,10 +1,13 @@
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Alert, Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { Add, OpenInNew } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { Link, useNavigate } from 'react-router';
-import { BillingDataType, BillingRecordDataType } from '../../types/types';
+import { BillingDataType } from '../../types/types';
+import { Dayjs } from 'dayjs';
+import { DatePicker } from '@mui/x-date-pickers';
+import BasicAlert from '../../components/BasicAlert';
 
 export default function BillingScreen() {
 
@@ -12,7 +15,7 @@ export default function BillingScreen() {
 
     const [paginationModel, setPaginationModel] = useState<{ page: number, pageSize: number }>({
         page: 0,
-        pageSize: 10,
+        pageSize: 50,
     });
     const [pageData, setPageData] = useState<{ rows: BillingDataType[], rowCount: number }>({
         rows: [],
@@ -27,6 +30,7 @@ export default function BillingScreen() {
         type: null,
         message: null
     });
+    const [searchDate, setSearchDate] = useState<Dayjs | null>(null);
 
     const columns: GridColDef[] = [
         {
@@ -49,12 +53,12 @@ export default function BillingScreen() {
             }
         },
         {
-            field: "customer",
-            headerName: "Customer",
+            field: "loyaltyMember",
+            headerName: "Loyalty Member",
             sortable: false,
             flex: 2,
             valueGetter: (_, row) => {
-                return row.loyaltyCustomer === null ? "-" : row.loyaltyCustomer.firstName + " " + row.loyaltyCustomer.lastName;
+                return row.loyaltyMember ? row.loyaltyMember.firstName + " " + row.loyaltyMember.lastName : "-";
             }
         },
         {
@@ -66,11 +70,7 @@ export default function BillingScreen() {
             sortable: false,
             flex: 1,
             valueGetter: (_, row) => {
-                let price = 0;
-                row.billingRecords.forEach((record: BillingRecordDataType) => {
-                    price += record.price ? record.price * record.quantity : 0;
-                });
-                return "Rs. " + price;
+                return "Rs. " + (row.total - row.pointsRedeemed);
             }
         },
         {
@@ -85,6 +85,7 @@ export default function BillingScreen() {
                         label="View"
                         color="inherit"
                         onClick={() => navigate(`./bill_details/${id}`)}
+                        id={`view_bill_${id}`}
                     />
                 ];
             }
@@ -95,6 +96,7 @@ export default function BillingScreen() {
         setLoading(prev => ({ ...prev, table: true }));
         AuthApi.get("/billing/get", {
             params: {
+                searchDate: searchDate?.format("YYYY-MM-DD"),
                 page: paginationModel.page,
                 size: paginationModel.pageSize
             }
@@ -118,27 +120,40 @@ export default function BillingScreen() {
 
     useEffect(() => {
         fetchBills();
-    }, [paginationModel]);
+    }, [paginationModel, searchDate]);
 
     return (
         <>
-
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
-                <Typography variant="h6" fontWeight="bold">Billing</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
+                    <Typography variant="h6" fontWeight="bold">Billing</Typography>
+                    <DatePicker
+                        label="Filter by date"
+                        slotProps={{
+                            textField: { size: 'small' },
+                            field: { clearable: true }
+                        }}
+                        sx={{
+                            "& .MuiOutlinedInput-input": {
+                                fontSize: 14
+                            }
+                        }}
+                        value={searchDate}
+                        onChange={value => setSearchDate(value)}
+                    />
+                </Box>
                 <Link to="./create_bill">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="createBillBtn">
                         Create Bill
                     </Button>
                 </Link>
             </Box>
 
             {/* Alerts */}
-            {alert.open && (
-                <Box sx={{ my: 2 }}>
-                    {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                </Box>
-            )}
+            <BasicAlert
+                alert={alert}
+                onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+            />
 
             {/* Table */}
             <Box sx={{ height: 500 }}>
@@ -156,7 +171,6 @@ export default function BillingScreen() {
                     disableColumnResize={true}
                 />
             </Box>
-
         </>
     );
 }

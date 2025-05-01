@@ -20,15 +20,3 @@ AuthApi.interceptors.request.use(
         return Promise.reject(error);
     }
 );
-
-AuthApi.interceptors.response.use(
-    response => {
-        if (response.status === 403) {
-            alert("Session expired. Please logout and login again.");
-        }
-        return response;
-    },
-    error => {
-        return Promise.reject(error);
-    }
-);

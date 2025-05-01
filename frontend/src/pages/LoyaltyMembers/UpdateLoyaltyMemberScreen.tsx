@@ -1,9 +1,10 @@
 import { ArrowBack } from "@mui/icons-material";
-import { Alert, Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { AuthApi } from "../../services/Api";
 import { LoyaltyMemberDataType } from "../../types/types";
+import BasicAlert from "../../components/BasicAlert";
 
 export default function UpdateLoyaltyMemberScreen() {
 
@@ -48,7 +49,7 @@ export default function UpdateLoyaltyMemberScreen() {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Loyalty member registererd successfully."
+                    message: "Loyalty member updated successfully."
                 });
             })
             .catch(err => {
@@ -76,17 +77,15 @@ export default function UpdateLoyaltyMemberScreen() {
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Add Loyalty Member</Typography>
+                <Typography variant="h6" fontWeight="bold">Update Loyalty Member</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>
                 {/* Alerts */}
-                {alert.open && (
-                    <Box sx={{ my: 2 }}>
-                        {alert.type == "success" && <Alert severity="success" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                        {alert.type == "error" && <Alert severity="error" onClose={() => setAlert(prev => ({ ...prev, open: false }))}>{alert.message}</Alert>}
-                    </Box>
-                )}
+                <BasicAlert
+                    alert={alert}
+                    onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+                />
 
                 <Box component="form" action={updateLoyaltyMember} sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "start" }}>
                     <TextField
@@ -121,6 +120,7 @@ export default function UpdateLoyaltyMemberScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading}
+                        id="updateBtn"
                     >
                         Update
                     </Button>
