@@ -1,7 +1,9 @@
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import { Menu } from "@mui/icons-material";
-import { IconButton, styled, Toolbar, Typography } from "@mui/material";
+import { AddBox, Home, Menu, PointOfSale } from "@mui/icons-material";
+import { IconButton, Stack, styled, Toolbar, Tooltip, Typography } from "@mui/material";
 import { DRAWER_WIDTH } from '../data/Constants';
+import { Link } from 'react-router';
+import { ReactElement } from 'react';
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -30,6 +32,18 @@ const AppBar = styled(MuiAppBar, {
     ],
 }));
 
+function NavLink({ to, icon, title }: { to: string, icon: ReactElement<any, any>, title: string }) {
+    return (
+        <Link to={to} style={{ textDecoration: "none", color: "inherit" }}>
+            <Tooltip title={title}>
+                <IconButton color="inherit">
+                    {icon}
+                </IconButton>
+            </Tooltip>
+        </Link>
+    );
+}
+
 export default function Navbar({ openSidebar, setOpenSidebar }: { openSidebar: boolean, setOpenSidebar: React.Dispatch<React.SetStateAction<boolean>> }) {
 
     const handleDrawerOpen = () => {
@@ -37,25 +51,34 @@ export default function Navbar({ openSidebar, setOpenSidebar }: { openSidebar: b
     };
 
     return (
-        <AppBar position="fixed" elevation={0} open={openSidebar} color="primary">
+        <AppBar position="fixed" elevation={0} open={openSidebar}>
             <Toolbar>
-                <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    onClick={handleDrawerOpen}
-                    edge="start"
-                    sx={[
-                        {
-                            marginRight: 5,
-                        },
-                        openSidebar && { display: 'none' },
-                    ]}
-                >
-                    <Menu />
-                </IconButton>
-                <Typography variant="h6" noWrap component="div">
-                    SMARTPOS
-                </Typography>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%">
+                    <Stack direction="row" alignItems="center">
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            onClick={handleDrawerOpen}
+                            edge="start"
+                            sx={[
+                                {
+                                    marginRight: 5,
+                                },
+                                openSidebar && { display: 'none' },
+                            ]}
+                        >
+                            <Menu />
+                        </IconButton>
+                        <Typography variant="h6" noWrap component="div">
+                            SMARTPOS
+                        </Typography>
+                    </Stack>
+                    <Stack direction="row" alignItems="center" spacing={2}>
+                        <NavLink to="/billing" icon={<Home />} title="Dashboard" />
+                        <NavLink to="/billing/create_bill" icon={<PointOfSale />} title="Create Bill" />
+                        <NavLink to="/stock_records/add_stock_record" icon={<AddBox />} title="Add Stock Record" />
+                    </Stack>
+                </Stack>
             </Toolbar>
         </AppBar>
     );

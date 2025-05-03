@@ -1,7 +1,6 @@
-package com.robustedge.smartpos_backend.report_generators;
+package com.robustedge.smartpos_backend.chart_pdf_generators;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
-import com.robustedge.smartpos_backend.models.Employee;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
@@ -13,19 +12,19 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
-public class EmployeeReportGenerator {
+public class BillingChartGenerator {
 
-    List<Employee> employees;
+    List<Object[]> bills;
 
-    public EmployeeReportGenerator(List<Employee> employees) {
-        this.employees = employees;
+    public BillingChartGenerator(List<Object[]> bills) {
+        this.bills = bills;
     }
 
     private DefaultCategoryDataset getDataset() {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        for (Employee employee : employees) {
-            dataset.addValue(employee.getSalary(), "Series1", employee.getFirstName() + " " + employee.getLastName());
+        for (Object[] bill : bills) {
+            dataset.addValue((Number) bill[1], "Series1", bill[0].toString());
         }
 
         return dataset;
@@ -33,9 +32,9 @@ public class EmployeeReportGenerator {
 
     public void buildChart(String filePath) {
         JFreeChart chart = ChartFactory.createBarChart(
-                "Employees with Highest Salaries",
-                "Employee",
-                "Salary",
+                "Bills with Highest Amounts",
+                "Bill ID",
+                "Total Amount",
                 getDataset(),
                 PlotOrientation.VERTICAL,
                 false,
@@ -60,4 +59,5 @@ public class EmployeeReportGenerator {
             throw new ApiRequestException("Error generating report.");
         }
     }
+
 }

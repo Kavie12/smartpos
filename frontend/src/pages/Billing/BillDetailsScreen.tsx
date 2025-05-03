@@ -117,13 +117,14 @@ export default function BillDetailsScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/billing">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Bill Details</Typography>
+                <Typography variant="h5" fontWeight="bold">Bill Details</Typography>
             </Box>
 
             <Box sx={{ mx: 5, mt: 4 }}>
@@ -133,7 +134,7 @@ export default function BillDetailsScreen() {
                     onClose={() => setAlert(prev => ({ ...prev, open: false }))}
                 />
 
-                <Card sx={{ p: 2 }}>
+                <Card sx={{ p: 2, width: bill.loyaltyMember ? "100%" : "50%" }}>
                     <CardContent>
                         {loading.bill ? (
                             <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -142,13 +143,15 @@ export default function BillDetailsScreen() {
                         ) :
                             (
                                 <Grid2 container spacing={8}>
-                                    <Grid2 size={6}>
+                                    <Grid2 size={bill.loyaltyMember ? 6 : 12}>
                                         <BillDetails bill={bill} />
                                     </Grid2>
-                                    <Grid2 size={6}>
-                                        {/* Loyalty member details */}
-                                        <LoyaltyMemberDetails bill={bill} />
-                                    </Grid2>
+                                    {/* Loyalty member details */
+                                        bill.loyaltyMember &&
+                                        <Grid2 size={6}>
+                                            <LoyaltyMemberDetails bill={bill} />
+                                        </Grid2>
+                                    }
                                 </Grid2>
                             )
                         }

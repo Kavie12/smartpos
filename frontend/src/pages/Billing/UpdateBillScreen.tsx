@@ -82,13 +82,14 @@ export default function UpdateBillScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to={`/billing/bill_details/${billId}`}>
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Update Bill</Typography>
+                <Typography variant="h5" fontWeight="bold">Update Bill</Typography>
             </Box>
 
             <Box sx={{ px: 5, mt: 2, width: 800 }}>

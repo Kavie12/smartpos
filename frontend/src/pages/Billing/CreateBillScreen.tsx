@@ -127,13 +127,14 @@ export default function CreateBillScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/billing">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Create Bill</Typography>
+                <Typography variant="h5" fontWeight="bold">Create Bill</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>

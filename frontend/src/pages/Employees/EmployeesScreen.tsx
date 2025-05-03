@@ -162,9 +162,10 @@ export default function EmployeesScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginY: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
-                    <Typography variant="h6" fontWeight="bold">Employee</Typography>
+                    <Typography variant="h5" fontWeight="bold">Employee</Typography>
                     <TextField
                         size="small"
                         placeholder="Search"
@@ -196,7 +197,7 @@ export default function EmployeesScreen() {
             />
 
             {/* Table */}
-            <Box sx={{ height: 500 }}>
+            <Box sx={{ height: "70vh" }}>
                 <DataGrid
                     columns={columns}
                     rows={pageData.rows}

@@ -11,7 +11,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { Link, useLocation } from 'react-router';
-import { AddBox, BarChart, Inventory, LocalShipping, Logout, Money, People, Work } from '@mui/icons-material';
+import { AddBox, Analytics, Inventory, LocalShipping, Logout, Money, People, Work } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { DRAWER_WIDTH } from '../data/Constants';
 
@@ -261,7 +261,7 @@ export default function Sidebar({ openSidebar, setOpenSidebar }: { openSidebar: 
         <DrawerLink
           text="Reports"
           to="/reports"
-          icon={<BarChart />}
+          icon={<Analytics />}
           openSidebar={openSidebar}
         />
       </List>

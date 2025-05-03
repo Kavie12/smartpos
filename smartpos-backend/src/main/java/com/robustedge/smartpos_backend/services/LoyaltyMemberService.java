@@ -2,8 +2,9 @@ package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.LoyaltyMember;
-import com.robustedge.smartpos_backend.report_generators.LoyaltyMemberReportGenerator;
+import com.robustedge.smartpos_backend.chart_pdf_generators.LoyaltyMemberChartGenerator;
 import com.robustedge.smartpos_backend.repositories.LoyaltyMemberRepository;
+import com.robustedge.smartpos_backend.table_pdf_generators.LoyaltyMemberTableGenerator;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -72,14 +73,28 @@ public class LoyaltyMemberService {
         return repository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new ApiRequestException("Loyalty member not found."));
     }
 
-    public void generateReport() {
+    public void generateChart() {
+        // Fetch loyalty members
         List<LoyaltyMember> loyaltyMembers = repository.findTop5ByPoints();
 
-        String systemUser = System.getProperty("user.name");
-        String fileName = "report_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\LoyaltyMemberReports\\" + fileName + ".pdf";
+        // Construct the file name
+        String fileName = "chart_" + Utils.getDateTimeFileName() + ".pdf";
 
-        LoyaltyMemberReportGenerator reportGenerator = new LoyaltyMemberReportGenerator(loyaltyMembers);
-        reportGenerator.buildChart(filePath);
+        // Generate report
+        LoyaltyMemberChartGenerator reportGenerator = new LoyaltyMemberChartGenerator(loyaltyMembers);
+        reportGenerator.buildChart(Utils.getReportFolderDirectory("LoyaltyMemberReports", fileName));
+    }
+
+    public void generateTableReport() {
+        List<LoyaltyMember> loyaltyMembers = getAllLoyaltyMembers();
+
+        String fileName = "table_" + Utils.getDateTimeFileName() + ".pdf";
+
+        LoyaltyMemberTableGenerator pdfGenerator = new LoyaltyMemberTableGenerator(loyaltyMembers);
+        pdfGenerator.initialize(Utils.getReportFolderDirectory("LoyaltyMemberReports", fileName));
+        pdfGenerator.addMetaData();
+        pdfGenerator.addHeading("Loyalty Members");
+        pdfGenerator.addTable();
+        pdfGenerator.build();
     }
 }

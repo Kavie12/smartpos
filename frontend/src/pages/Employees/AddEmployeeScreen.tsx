@@ -57,14 +57,14 @@ export default function AddEmployeeScreen() {
 
     return (
         <>
-
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/employees">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Add Employee</Typography>
+                <Typography variant="h5" fontWeight="bold">Add Employee</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>

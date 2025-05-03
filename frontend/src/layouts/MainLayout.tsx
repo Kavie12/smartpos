@@ -31,7 +31,8 @@ export default function MainLayout() {
                     component="main"
                     sx={{
                         flexGrow: 1,
-                        p: 3,
+                        py: 3,
+                        px: 4,
                         width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` }
                     }}
                 >

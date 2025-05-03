@@ -70,13 +70,14 @@ export default function UpdateSupplierScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/suppliers">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Update Supplier</Typography>
+                <Typography variant="h5" fontWeight="bold">Update Supplier</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>

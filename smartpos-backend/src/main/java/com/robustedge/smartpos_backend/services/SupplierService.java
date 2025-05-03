@@ -2,8 +2,9 @@ package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Supplier;
-import com.robustedge.smartpos_backend.report_generators.SupplierReportGenerator;
+import com.robustedge.smartpos_backend.chart_pdf_generators.SupplierChartGenerator;
 import com.robustedge.smartpos_backend.repositories.SupplierRepository;
+import com.robustedge.smartpos_backend.table_pdf_generators.SupplierTableGenerator;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -70,14 +71,28 @@ public class SupplierService {
         repository.deleteById(supplierId);
     }
 
-    public void generateReport() {
+    public void generateChart() {
+        // Get suppliers
         List<Object[]> suppliers = repository.findTop5SuppliersProductCount();
 
-        String systemUser = System.getProperty("user.name");
-        String fileName = "report_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\SupplierReports\\" + fileName + ".pdf";
+        // Construct the file name
+        String fileName = "chart_" + Utils.getDateTimeFileName() + ".pdf";
 
-        SupplierReportGenerator reportGenerator = new SupplierReportGenerator(suppliers);
-        reportGenerator.buildChart(filePath);
+        // Generate report
+        SupplierChartGenerator reportGenerator = new SupplierChartGenerator(suppliers);
+        reportGenerator.buildChart(Utils.getReportFolderDirectory("SupplierReports", fileName));
+    }
+
+    public void generateTableReport() {
+        List<Supplier> suppliers = getAllSuppliers();
+
+        String fileName = "table_" + Utils.getDateTimeFileName() + ".pdf";
+
+        SupplierTableGenerator pdfGenerator = new SupplierTableGenerator(suppliers);
+        pdfGenerator.initialize(Utils.getReportFolderDirectory("SupplierReports", fileName));
+        pdfGenerator.addMetaData();
+        pdfGenerator.addHeading("Suppliers");
+        pdfGenerator.addTable();
+        pdfGenerator.build();
     }
 }

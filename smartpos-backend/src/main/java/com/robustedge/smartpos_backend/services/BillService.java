@@ -1,15 +1,14 @@
 package com.robustedge.smartpos_backend.services;
 
+import com.robustedge.smartpos_backend.chart_pdf_generators.BillingChartGenerator;
 import com.robustedge.smartpos_backend.config.ApiRequestException;
-import com.robustedge.smartpos_backend.models.Bill;
-import com.robustedge.smartpos_backend.models.BillingRecord;
-import com.robustedge.smartpos_backend.models.LoyaltyMember;
-import com.robustedge.smartpos_backend.models.Product;
-import com.robustedge.smartpos_backend.report_generators.ReceiptGenerator;
+import com.robustedge.smartpos_backend.models.*;
+import com.robustedge.smartpos_backend.chart_pdf_generators.ReceiptGenerator;
 import com.robustedge.smartpos_backend.repositories.BillRepository;
 import com.robustedge.smartpos_backend.repositories.BillingRecordRepository;
 import com.robustedge.smartpos_backend.repositories.LoyaltyMemberRepository;
 import com.robustedge.smartpos_backend.repositories.ProductRepository;
+import com.robustedge.smartpos_backend.table_pdf_generators.BillingTableGenerator;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -155,11 +154,11 @@ public class BillService {
     }
 
     private void generateReceipt(Bill bill) {
-        String systemUser = System.getProperty("user.name");
-        String fileName = "receipt_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\Receipts\\" + fileName + ".pdf";
+        // Construct the file path
+        String fileName = "receipt_" + Utils.getDateTimeFileName() + ".pdf";
 
-        ReceiptGenerator receiptGenerator = new ReceiptGenerator(bill, filePath);
+        // Generate the receipt
+        ReceiptGenerator receiptGenerator = new ReceiptGenerator(bill, Utils.getReportFolderDirectory("Receipts", fileName));
         receiptGenerator.generate();
     }
 
@@ -175,5 +174,30 @@ public class BillService {
                 throw new ApiRequestException(product.getName() + " has no sufficient stock level.");
             }
         }
+    }
+
+    public void generateChart() {
+        // Get bills
+        List<Object[]> bills = repository.findTop5BillsByTotalPrice();
+
+        // Construct the file name
+        String fileName = "chart_" + Utils.getDateTimeFileName() + ".pdf";
+
+        // Generate report
+        BillingChartGenerator reportGenerator = new BillingChartGenerator(bills);
+        reportGenerator.buildChart(Utils.getReportFolderDirectory("BillingReports", fileName));
+    }
+
+    public void generateTableReport() {
+        List<Bill> bills = getAllBills();
+
+        String fileName = "table_" + Utils.getDateTimeFileName() + ".pdf";
+
+        BillingTableGenerator pdfGenerator = new BillingTableGenerator(bills);
+        pdfGenerator.initialize(Utils.getReportFolderDirectory("BillingReports", fileName));
+        pdfGenerator.addMetaData();
+        pdfGenerator.addHeading("Bills");
+        pdfGenerator.addTable();
+        pdfGenerator.build();
     }
 }

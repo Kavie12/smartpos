@@ -1,4 +1,4 @@
-package com.robustedge.smartpos_backend.report_generators;
+package com.robustedge.smartpos_backend.chart_pdf_generators;
 
 import com.robustedge.smartpos_backend.models.LoyaltyMember;
 import org.jfree.chart.ChartFactory;
@@ -12,11 +12,11 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
-public class LoyaltyMemberReportGenerator {
+public class LoyaltyMemberChartGenerator {
 
     List<LoyaltyMember> loyaltyMembers;
 
-    public LoyaltyMemberReportGenerator(List<LoyaltyMember> loyaltyMembers) {
+    public LoyaltyMemberChartGenerator(List<LoyaltyMember> loyaltyMembers) {
         this.loyaltyMembers = loyaltyMembers;
     }
 
