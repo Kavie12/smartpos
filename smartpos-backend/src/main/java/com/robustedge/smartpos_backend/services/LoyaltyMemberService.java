@@ -1,8 +1,10 @@
 package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
+import com.robustedge.smartpos_backend.dto.LoyaltyMemberRequest;
 import com.robustedge.smartpos_backend.models.LoyaltyMember;
 import com.robustedge.smartpos_backend.chart_pdf_generators.LoyaltyMemberChartGenerator;
+import com.robustedge.smartpos_backend.other_pdf_generators.LoyaltyCardGenerator;
 import com.robustedge.smartpos_backend.repositories.LoyaltyMemberRepository;
 import com.robustedge.smartpos_backend.table_pdf_generators.LoyaltyMemberTableGenerator;
 import com.robustedge.smartpos_backend.utils.Utils;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -19,11 +22,17 @@ public class LoyaltyMemberService {
     @Autowired
     private LoyaltyMemberRepository repository;
 
-    public void addLoyaltyMember(LoyaltyMember loyaltyMember) {
+    public void addLoyaltyMember(LoyaltyMemberRequest loyaltyMemberRequest) {
+        LoyaltyMember loyaltyMember = loyaltyMemberRequest.getLoyaltyMember();
         checkUnique(loyaltyMember.getPhoneNumber());
         validateData(loyaltyMember);
         loyaltyMember.setPoints((double) 0);
-        repository.save(loyaltyMember);
+        LoyaltyMember savedLoyaltyMember = repository.save(loyaltyMember);
+
+        // Generate loyalty card
+        if (loyaltyMemberRequest.isGenerateCard()) {
+            generateCard(savedLoyaltyMember.getId());
+        }
     }
 
     private void checkUnique(String phoneNumber) {
@@ -96,5 +105,21 @@ public class LoyaltyMemberService {
         pdfGenerator.addHeading("Loyalty Members");
         pdfGenerator.addTable();
         pdfGenerator.build();
+    }
+
+    public void generateCard(Integer id) {
+        LoyaltyMember loyaltyMember = getOne(id);
+        String fileName = "card_" + loyaltyMember.getPhoneNumber() + ".pdf";
+        LoyaltyCardGenerator cardGenerator = new LoyaltyCardGenerator(loyaltyMember, Utils.getReportFolderDirectory("LoyaltyCards", fileName));
+
+        try {
+            cardGenerator.initialize()
+                    .designCard()
+                    .generateCard();
+
+        } catch (IOException e) {
+            throw new ApiRequestException("Error generating loyalty card.");
+        }
+
     }
 }

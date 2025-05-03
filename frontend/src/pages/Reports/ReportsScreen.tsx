@@ -1,5 +1,5 @@
 import { Download, ExpandMore, OpenInNew } from "@mui/icons-material";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActionArea, CardContent, Grid2, LinearProgress, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardActionArea, CardContent, Grid2, LinearProgress, Stack, Typography } from "@mui/material";
 import BasicAlert from "../../components/BasicAlert";
 import { ReactNode, useState } from "react";
 import { AuthApi } from "../../services/Api";
@@ -214,12 +214,12 @@ const ReportButton = ({ title, description, generator, apiEndpoint }:
                 {loading ? <LinearProgress /> : null}
                 <CardActionArea onClick={generateReport} sx={{ height: "100%" }}>
                     <CardContent sx={{ padding: 3 }}>
-                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={4}>
                             <Typography variant="h6">
                                 {title}
                             </Typography>
                             <Download />
-                        </Box>
+                        </Stack>
                         <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
                             {description}
                         </Typography>

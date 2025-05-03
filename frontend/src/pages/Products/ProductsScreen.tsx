@@ -70,13 +70,19 @@ export default function ProductsScreen() {
             field: "wholesalePrice",
             headerName: "Wholesale Price",
             sortable: false,
-            flex: 1
+            flex: 1,
+            valueGetter: (value) => {
+                return "Rs." + value;
+            }
         },
         {
             field: "retailPrice",
             headerName: "Retail Price",
             sortable: false,
-            flex: 1
+            flex: 1,
+            valueGetter: (value) => {
+                return "Rs." + value;
+            }
         },
         {
             field: "profitPerUnit",
@@ -84,7 +90,7 @@ export default function ProductsScreen() {
             sortable: false,
             flex: 1,
             valueGetter: (_, row) => {
-                return row.retailPrice - row.wholesalePrice;
+                return "Rs. " + (row.retailPrice - row.wholesalePrice);
             }
         },
         {

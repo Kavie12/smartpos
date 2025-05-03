@@ -165,7 +165,7 @@ export default function BillDetailsScreen() {
                             disabled={buttonDisable}
                             id="printBtn"
                         >
-                            Print
+                            Generate Receipt
                         </Button>
                         <Button
                             startIcon={<Edit />}

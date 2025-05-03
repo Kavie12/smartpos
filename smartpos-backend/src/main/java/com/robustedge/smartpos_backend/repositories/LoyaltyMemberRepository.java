@@ -17,7 +17,7 @@ public interface LoyaltyMemberRepository extends JpaRepository<LoyaltyMember, In
     @Query("SELECT lm FROM LoyaltyMember lm WHERE lm.deleted = false")
     List<LoyaltyMember> findAllActiveLoyaltyMembers();
 
-    @Query("SELECT lm FROM LoyaltyMember lm WHERE lm.deleted = false AND (:searchKey IS NULL OR lm.firstName LIKE %:searchKey% OR lm.lastName Like %:searchKey% OR CONCAT(lm.firstName, ' ', lm.lastName) LIKE %:searchKey%)")
+    @Query("SELECT lm FROM LoyaltyMember lm WHERE lm.deleted = false AND (:searchKey IS NULL OR CONCAT(lm.firstName, ' ', lm.lastName) LIKE %:searchKey% OR lm.phoneNumber LIKE %:searchKey%)")
     Page<LoyaltyMember> findFilteredLoyaltyMembers(@Param("searchKey") String searchKey, Pageable pageable);
 
     Optional<LoyaltyMember> findByPhoneNumber(String phoneNumber);

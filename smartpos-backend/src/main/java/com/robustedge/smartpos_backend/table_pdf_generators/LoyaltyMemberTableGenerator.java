@@ -15,7 +15,7 @@ public class LoyaltyMemberTableGenerator extends SimplePDFTableGenerator {
 
     @Override
     String[] getTableHeaders() {
-        return new String[]{"ID", "First Name", "Phone Number", "Points"};
+        return new String[]{"ID", "Name", "Phone Number", "Points"};
     }
 
     @Override

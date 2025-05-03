@@ -23,7 +23,7 @@ export default function LoginScreen() {
     };
 
     return (
-        <Container maxWidth="sm" sx={{ mt: 20 }}>
+        <Container maxWidth="sm" sx={{ mt: "12%" }}>
             <Typography textAlign="center" variant="h4" sx={{ fontWeight: "bold" }}>Welcome to SmartPOS</Typography>
             <Typography textAlign="center" variant="body1" sx={{ mt: 1 }}>Sign in with your credentials</Typography>
             <Container component="form" action={loginHandler} maxWidth="xs">

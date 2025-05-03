@@ -257,7 +257,7 @@ export default function CreateBillScreen() {
 
                                 {/* Buttons */}
                                 <Button variant="contained" sx={{ marginTop: 4 }} onClick={saveBill} id="printBillBtn">
-                                    Print Bill
+                                    Save Bill
                                 </Button>
                                 <Button
                                     variant="text"

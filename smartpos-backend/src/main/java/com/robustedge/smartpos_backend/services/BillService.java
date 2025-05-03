@@ -3,7 +3,7 @@ package com.robustedge.smartpos_backend.services;
 import com.robustedge.smartpos_backend.chart_pdf_generators.BillingChartGenerator;
 import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.*;
-import com.robustedge.smartpos_backend.chart_pdf_generators.ReceiptGenerator;
+import com.robustedge.smartpos_backend.other_pdf_generators.ReceiptGenerator;
 import com.robustedge.smartpos_backend.repositories.BillRepository;
 import com.robustedge.smartpos_backend.repositories.BillingRecordRepository;
 import com.robustedge.smartpos_backend.repositories.LoyaltyMemberRepository;
@@ -17,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -64,7 +66,8 @@ public class BillService {
 
         LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
         if (loyaltyMember != null) {
-            double pointsGranted = calculatePointsGranted(total, bill.getBillingRecords());
+            // Calculate points granted
+            double pointsGranted = calculatePointsGranted(total);
 
             // Set points granted
             bill.setPointsGranted(pointsGranted);
@@ -74,11 +77,16 @@ public class BillService {
 
             // Update loyalty member points
             loyaltyMember.setPoints(redeemPoints ? pointsGranted : loyaltyMember.getPoints() + pointsGranted);
+            System.out.println(loyaltyMember.getPoints() + pointsGranted);
+            System.out.println(loyaltyMember.getPoints());
             loyaltyMemberRepository.save(loyaltyMember);
         }
 
         Bill savedBill = repository.save(bill);
         generateReceipt(savedBill);
+        assert loyaltyMember != null;
+        System.out.println(loyaltyMember.getPoints());
+
     }
 
     public List<Bill> getAllBills() {
@@ -136,7 +144,7 @@ public class BillService {
         bill.setTotal(total);
 
         // Set points granted
-        double pointsGranted = calculatePointsGranted(total, bill.getBillingRecords());
+        double pointsGranted = calculatePointsGranted(total);
         bill.setPointsGranted(pointsGranted);
 
         // Update loyalty member points
@@ -162,8 +170,12 @@ public class BillService {
         receiptGenerator.generate();
     }
 
-    private double calculatePointsGranted(double total, List<BillingRecord> billingRecords) {
-        return (double) Math.round(total / 1000 * 100) / 100;
+    private double calculatePointsGranted(double total) {
+        BigDecimal totalBD = BigDecimal.valueOf(total);
+        BigDecimal result = totalBD.divide(BigDecimal.valueOf(1000), 10, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(2, RoundingMode.HALF_UP);
+        return result.doubleValue();
     }
 
     private void checkForSufficientStockLevel(List<BillingRecord> billingRecords) {

@@ -1,5 +1,5 @@
 import { ArrowBack } from "@mui/icons-material";
-import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, FormControlLabel, IconButton, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router";
 import { AuthApi } from "../../services/Api";
@@ -20,6 +20,7 @@ export default function AddLoyaltyMemberScreen() {
         phoneNumber: "",
         points: 0
     });
+    const [generateCard, setGenerateCard] = useState<boolean>(false);
 
     const resetFormData = (): void => {
         setFormData({
@@ -32,7 +33,7 @@ export default function AddLoyaltyMemberScreen() {
 
     const addLoyaltyMember = (): void => {
         setLoading(true);
-        AuthApi.post("/loyalty_members/add", formData)
+        AuthApi.post("/loyalty_members/add", { loyaltyMember: formData, generateCard: generateCard })
             .then(() => {
                 setAlert({
                     open: true,
@@ -100,6 +101,17 @@ export default function AddLoyaltyMemberScreen() {
                         value={formData.phoneNumber}
                         sx={{ width: 400, mt: 2 }}
                         onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                size="small"
+                                value={generateCard}
+                                onChange={e => setGenerateCard(e.target.checked)}
+                            />
+                        }
+                        label={<Typography>Generate Loyalty Card</Typography>}
+                        sx={{ mt: 2 }}
                     />
                     <Button
                         variant="contained"

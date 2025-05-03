@@ -73,7 +73,10 @@ export default function EmployeesScreen() {
             field: "salary",
             headerName: "Salary",
             sortable: false,
-            flex: 1
+            flex: 1,
+            valueGetter: (value) => {
+                return "Rs. " + value;
+            }
         },
         {
             field: "actions",
