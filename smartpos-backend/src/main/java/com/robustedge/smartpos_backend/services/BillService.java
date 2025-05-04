@@ -38,14 +38,11 @@ public class BillService {
     private LoyaltyMemberRepository loyaltyMemberRepository;
 
     public void createBill(Bill bill, boolean redeemPoints) {
+        // Check if stock is available for each product in the bill
         checkForSufficientStockLevel(bill.getBillingRecords());
 
         // Validate paid amount
-        if (bill.getPaidAmount() == 0.0) {
-            throw new ApiRequestException("Please enter paid amount to proceed.");
-        } else if (bill.getPaidAmount() < bill.getTotal()) {
-            throw new ApiRequestException("Cannot proceed. Paid amount is less than the total price.");
-        }
+        validatePaidAmount(bill.getPaidAmount(), bill.getTotal());
 
         double total = 0;
         for (BillingRecord billingRecord: bill.getBillingRecords()) {
@@ -77,16 +74,12 @@ public class BillService {
 
             // Update loyalty member points
             loyaltyMember.setPoints(redeemPoints ? pointsGranted : loyaltyMember.getPoints() + pointsGranted);
-            System.out.println(loyaltyMember.getPoints() + pointsGranted);
-            System.out.println(loyaltyMember.getPoints());
             loyaltyMemberRepository.save(loyaltyMember);
         }
 
+        // Save bill and generate receipt
         Bill savedBill = repository.save(bill);
         generateReceipt(savedBill);
-        assert loyaltyMember != null;
-        System.out.println(loyaltyMember.getPoints());
-
     }
 
     public List<Bill> getAllBills() {
@@ -126,7 +119,14 @@ public class BillService {
             return;
         }
 
+        // Check if stock is available for each product in the bill
         checkForSufficientStockLevel(bill.getBillingRecords());
+
+        // Validate paid amount
+        validatePaidAmount(bill.getPaidAmount(), bill.getTotal());
+
+        // Get old bill
+        Bill oldBill = repository.findById(bill.getId()).orElseThrow();
 
         double total = 0;
         for (BillingRecord billingRecord : bill.getBillingRecords()) {
@@ -136,7 +136,7 @@ public class BillService {
             // Update product quantity
             BillingRecord oldBillingRecord = billingRecordRepository.findById(billingRecord.getId()).orElseThrow();
             Product product = billingRecord.getProduct();
-            product.setStockLevel(product.getStockLevel() - billingRecord.getQuantity() + oldBillingRecord.getQuantity());
+            product.setStockLevel(product.getStockLevel() + oldBillingRecord.getQuantity() - billingRecord.getQuantity());
             productRepository.save(product);
         }
 
@@ -149,11 +149,22 @@ public class BillService {
 
         // Update loyalty member points
         LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
-        loyaltyMember.setPoints(bill.getPointsRedeemed() > 0 ? pointsGranted : loyaltyMember.getPoints() + pointsGranted);
-        loyaltyMemberRepository.save(loyaltyMember);
+        if (loyaltyMember != null) {
+            loyaltyMember.setPoints(bill.getPointsRedeemed() > 0 ? pointsGranted : loyaltyMember.getPoints() - oldBill.getPointsGranted() + pointsGranted);
+            loyaltyMemberRepository.save(loyaltyMember);
+        }
 
+        // Save bill and generate receipt
         repository.save(bill);
         generateReceipt(bill);
+    }
+
+    private void validatePaidAmount(double paidAmount, double total) {
+        if (paidAmount == 0.0) {
+            throw new ApiRequestException("Please enter paid amount to proceed.");
+        } else if (paidAmount < total) {
+            throw new ApiRequestException("Cannot proceed. Paid amount is less than the total price.");
+        }
     }
 
     public void printBill(Integer billId) {
@@ -172,10 +183,9 @@ public class BillService {
 
     private double calculatePointsGranted(double total) {
         BigDecimal totalBD = BigDecimal.valueOf(total);
-        BigDecimal result = totalBD.divide(BigDecimal.valueOf(1000), 10, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100))
-                .setScale(2, RoundingMode.HALF_UP);
-        return result.doubleValue();
+        return totalBD
+                .divide(BigDecimal.valueOf(1000), 2, RoundingMode.HALF_UP)
+                .doubleValue();
     }
 
     private void checkForSufficientStockLevel(List<BillingRecord> billingRecords) {

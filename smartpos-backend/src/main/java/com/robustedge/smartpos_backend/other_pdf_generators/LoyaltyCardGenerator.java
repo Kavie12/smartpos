@@ -1,7 +1,7 @@
 package com.robustedge.smartpos_backend.other_pdf_generators;
 
+import com.itextpdf.barcodes.Barcode128;
 import com.itextpdf.io.font.constants.StandardFonts;
-import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -10,10 +10,12 @@ import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.xobject.PdfFormXObject;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.properties.BorderRadius;
+import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.robustedge.smartpos_backend.models.LoyaltyMember;
 
@@ -81,7 +83,7 @@ public class LoyaltyCardGenerator {
                 .setFontSize(18)
                 .setFontColor(ColorConstants.BLACK)
                 .setTextAlignment(TextAlignment.CENTER)
-                .setMarginTop(20)
+                .setMarginTop(16)
                 .setMarginBottom(5);
 
         // Phone number / ID
@@ -94,6 +96,9 @@ public class LoyaltyCardGenerator {
         document.add(storeName);
         document.add(name);
         document.add(id);
+
+        // Add barcode
+        addBarcode(member.getPhoneNumber());
 
         return this;
     }
@@ -109,6 +114,19 @@ public class LoyaltyCardGenerator {
 
             document.add(bgImage);
         }
+    }
+
+    private void addBarcode(String id) {
+        // Create barcode and set code
+        Barcode128 barcode = new Barcode128(pdf);
+        barcode.setCode(id);
+
+        // Add barcode to the document
+        PdfFormXObject barcodeObject = barcode.createFormXObject(null, null, pdf);
+        Image barcodeImage = new Image(barcodeObject)
+                .setHorizontalAlignment(HorizontalAlignment.CENTER)
+                .setMarginTop(12);
+        document.add(barcodeImage);
     }
 
     public void generateCard() {

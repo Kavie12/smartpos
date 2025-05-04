@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { BasicAlertType, BillingDataType, BillingRecordDataType } from "../../types/types";
 import { AuthApi } from "../../services/Api";
-import { Box, Button, Card, CardActions, CardContent, CircularProgress, Divider, Grid2, IconButton, Typography } from "@mui/material";
+import { Box, Button, Card, CardActions, CardContent, CircularProgress, Divider, Grid2, IconButton, Paper, Typography } from "@mui/material";
 import { ArrowBack, Delete, Edit, Print } from "@mui/icons-material";
 import DeleteDialog from "../../components/DeleteDialog";
 import BasicAlert from "../../components/BasicAlert";
@@ -284,7 +284,7 @@ const LoyaltyMemberDetails = ({ bill }: { bill: BillingDataType }) => {
     return (
         bill.loyaltyMember &&
         (
-            <Box sx={{ backgroundColor: grey[200], borderRadius: 2, paddingX: 4, paddingY: 3 }}>
+            <Paper sx={{ backgroundColor: grey[200], paddingX: 4, paddingY: 3 }}>
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <Typography variant="h6">Loyalty Member Details</Typography>
                 </Box>
@@ -294,7 +294,7 @@ const LoyaltyMemberDetails = ({ bill }: { bill: BillingDataType }) => {
                     <Typography>Points Granted: {bill.pointsGranted}</Typography>
                     <Typography>Total Points: {bill.loyaltyMember.points}</Typography>
                 </Box>
-            </Box>
+            </Paper>
         )
     );
 };

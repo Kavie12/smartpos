@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AuthApi } from "../../services/Api";
-import { Box, Button, CircularProgress, Divider, IconButton, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import QuantityCounter from "../../components/QuantityCounter";
 import { Link, useParams } from "react-router";
@@ -29,7 +29,6 @@ export default function UpdateBillScreen() {
         total: 0,
         paidAmount: undefined
     });
-    const [total, setTotal] = useState<number>(0);
 
     const updateBill = (): void => {
         setLoading(prev => ({ ...prev, update: true }))
@@ -39,7 +38,7 @@ export default function UpdateBillScreen() {
                 fetchBill();
             })
             .catch(err => {
-                setAlert(prev => ({ ...prev, open: true, type: "success", message: "Error updating bill" }));
+                setAlert(prev => ({ ...prev, open: true, type: "error", message: err.response.data.message }));
                 console.log(err);
             }).finally(() => {
                 setLoading(prev => ({ ...prev, update: false }));
@@ -73,12 +72,14 @@ export default function UpdateBillScreen() {
     }, []);
 
     useEffect(() => {
-        setTotal(
-            bill.billingRecords.reduce((total, item) => {
+        // Calculate total
+        setBill(prev => ({
+            ...prev,
+            total: bill.billingRecords.reduce((total, item) => {
                 return total + item.product.retailPrice * item.quantity;
             }, 0)
-        );
-    }, [bill]);
+        }));
+    }, [bill.billingRecords]);
 
     return (
         <>
@@ -107,13 +108,52 @@ export default function UpdateBillScreen() {
                     ) : (
                         <>
                             <Typography variant="h6" fontWeight="bold">Billed Items</Typography>
+
+                            {/* Billed Items */}
                             <BilledItems items={bill.billingRecords} setBill={setBill} />
+
                             <Box sx={{ marginTop: 6, display: "flex", flexDirection: "column" }}>
                                 <Divider />
+
+                                {/* Total */}
                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
                                     <Typography fontWeight={"bold"}>Total:</Typography>
-                                    <Typography fontWeight={"bold"}>Rs. {total}</Typography>
+                                    <Typography fontWeight={"bold"}>Rs. {bill.total}</Typography>
                                 </Box>
+
+                                {/* Paid Amount */}
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+                                    <Typography fontWeight={"bold"}>Paid Amount:</Typography>
+                                    <Box>
+                                        <TextField
+                                            id="paidAmount"
+                                            variant="standard"
+                                            size="small"
+                                            type="number"
+                                            slotProps={{
+                                                input: {
+                                                    startAdornment: <InputAdornment position="start">Rs.</InputAdornment>,
+                                                },
+                                            }}
+                                            value={bill.paidAmount}
+                                            onChange={e => setBill(prev => ({ ...prev, paidAmount: parseFloat(e.target.value) }))}
+                                            sx={{
+                                                width: 140
+                                            }}
+                                        />
+                                    </Box>
+                                </Box>
+
+                                {
+                                    /* Balance */
+                                    bill.paidAmount != undefined &&
+                                    < Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+                                        <Typography fontWeight={"bold"}>Balance:</Typography>
+                                        <Typography fontWeight={"bold"}>Rs. {bill.paidAmount - bill.total}</Typography>
+                                    </Box>
+                                }
+
+                                {/* Update button */}
                                 <Box sx={{ display: "flex", justifyContent: "end", columnGap: 2 }}>
                                     <Button variant="contained" sx={{ marginTop: 4 }} onClick={updateBill} loading={loading.update} id="updateBtn">
                                         Update
@@ -130,15 +170,13 @@ export default function UpdateBillScreen() {
 
 const BilledItems = ({ items, setBill }: { items: BillingRecordDataType[], setBill: React.Dispatch<React.SetStateAction<BillingDataType>> }) => {
     return (
-        <>
-            <Box sx={{ marginTop: 4, display: "flex", flexDirection: "column", rowGap: 2 }}>
-                {
-                    items.map((item, key) => {
-                        return <BilledItem item={item} key={key} setBill={setBill} />;
-                    })
-                }
-            </Box>
-        </>
+        <Box sx={{ marginTop: 4, display: "flex", flexDirection: "column", rowGap: 2 }}>
+            {
+                items.map((item, key) => {
+                    return <BilledItem item={item} key={key} setBill={setBill} />;
+                })
+            }
+        </Box>
     );
 };
 
