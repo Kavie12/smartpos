@@ -1,7 +1,7 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
+import { Box, Button, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
+import { Add, DeleteOutlined, Edit, PersonAddAlt1, PersonRemove, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { EmployeeDataType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
@@ -20,9 +20,10 @@ export default function EmployeesScreen() {
         rows: [],
         rowCount: 0
     });
-    const [loading, setLoading] = useState<{ table: boolean, delete: boolean }>({
+    const [loading, setLoading] = useState<{ table: boolean, delete: boolean, removeSystemUser: boolean }>({
         table: false,
-        delete: false
+        delete: false,
+        removeSystemUser: false
     });
     const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
         open: false,
@@ -30,6 +31,10 @@ export default function EmployeesScreen() {
         message: null
     });
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean, id: GridRowId | null }>({
+        open: false,
+        id: null
+    });
+    const [removeSystemUserDialog, setRemoveSystemUserDialog] = useState<{ open: boolean, id: GridRowId | null }>({
         open: false,
         id: null
     });
@@ -49,34 +54,57 @@ export default function EmployeesScreen() {
             field: "firstName",
             headerName: "First Name",
             sortable: false,
-            flex: 1
+            flex: 0.75
         },
         {
             field: "lastName",
             headerName: "Last Name",
             sortable: false,
-            flex: 1
+            flex: 0.75
         },
         {
             field: "phoneNumber",
             headerName: "Phone Number",
             sortable: false,
-            flex: 1
+            flex: 0.75
         },
         {
             field: "email",
             headerName: "Email",
             sortable: false,
-            flex: 1
+            flex: 1.25
         },
         {
             field: "salary",
             headerName: "Salary",
             sortable: false,
-            flex: 1,
+            flex: 0.75,
             valueGetter: (value) => {
                 return "Rs. " + value;
             }
+        },
+        {
+            field: "user",
+            headerName: "System User",
+            sortable: false,
+            flex: 0.5,
+            renderCell: (params) => {
+                if (params.value === null) {
+                    return (
+                        <Link to={`./create_credentials/${params.row.id}`}>
+                            <IconButton size="small">
+                                <PersonAddAlt1 fontSize="small" />
+                            </IconButton>
+                        </Link>
+                    );
+                } else {
+                    return (
+                        <IconButton size="small" onClick={() => setRemoveSystemUserDialog({ id: params.row.id, open: true })}>
+                            <PersonRemove fontSize="small" />
+                        </IconButton>
+                    );
+                }
+            },
         },
         {
             field: "actions",
@@ -159,6 +187,35 @@ export default function EmployeesScreen() {
             });
     };
 
+    const removeSystemUser = (): void => {
+        setLoading(prev => ({ ...prev, removeSystemUser: true }));
+        AuthApi.put("/employees/delete_credentials", null, {
+            params: {
+                employeeId: removeSystemUserDialog.id
+            }
+        })
+            .then(() => {
+                setAlert({
+                    open: true,
+                    type: "success",
+                    message: "Employee removed from system users."
+                });
+                fetchEmployees();
+            })
+            .catch(err => {
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Failed to remove employee from system users."
+                });
+                console.error("Error removing employee from system users:", err);
+            })
+            .finally(() => {
+                setLoading(prev => ({ ...prev, removeSystemUser: false }));
+                setRemoveSystemUserDialog(prev => ({ ...prev, open: false }));
+            });
+    };
+
     useEffect(() => {
         fetchEmployees();
     }, [paginationModel, searchKey]);
@@ -223,6 +280,15 @@ export default function EmployeesScreen() {
                 onDelete={() => deleteEmployee()}
                 loading={loading.delete}
                 message="Are you sure you want to delete this employee?"
+            />
+
+            {/* Delete Credentials Alert */}
+            <DeleteDialog
+                open={removeSystemUserDialog.open}
+                onClose={() => setRemoveSystemUserDialog(prev => ({ ...prev, open: false }))}
+                onDelete={() => removeSystemUser()}
+                loading={loading.removeSystemUser}
+                message="Are you sure you want to remove this employee from system users?"
             />
         </>
     );

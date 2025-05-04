@@ -28,6 +28,10 @@ public class Employee {
     @Column(name = "salary", nullable = false)
     private double salary;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Employee(String firstName, String lastName, String phoneNumber, String email, int salary) {
         this.firstName = firstName;
         this.lastName = lastName;

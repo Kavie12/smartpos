@@ -48,6 +48,7 @@ export type EmployeeDataType = {
     phoneNumber: string;
     email: string;
     salary: number;
+    user?: any | null;
 };
 
 export type BillingRecordDataType = {

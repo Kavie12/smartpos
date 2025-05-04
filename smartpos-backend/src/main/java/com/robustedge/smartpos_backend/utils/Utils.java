@@ -2,7 +2,6 @@ package com.robustedge.smartpos_backend.utils;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;

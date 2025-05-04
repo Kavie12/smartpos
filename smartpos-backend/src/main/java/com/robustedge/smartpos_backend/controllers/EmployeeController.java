@@ -1,5 +1,6 @@
 package com.robustedge.smartpos_backend.controllers;
 
+import com.robustedge.smartpos_backend.dto.EmployeeRequest;
 import com.robustedge.smartpos_backend.models.Employee;
 import com.robustedge.smartpos_backend.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +37,23 @@ public class EmployeeController {
     }
 
     @PostMapping("/add")
-    public void addEmployee(@RequestBody Employee employee) {
-        service.addEmployee(employee);
+    public void addEmployee(@RequestBody EmployeeRequest employeeRequest) {
+        service.addEmployee(employeeRequest);
     }
 
     @PutMapping("/update")
     public void updateEmployee(@RequestBody Employee employee) {
         service.updateEmployee(employee);
+    }
+
+    @PutMapping("/create_credentials")
+    public void createCredentials(@RequestBody EmployeeRequest employeeRequest) {
+        service.createCredentials(employeeRequest);
+    }
+
+    @PutMapping("/delete_credentials")
+    public void deleteCredentials(@RequestParam(name = "employeeId") Integer employeeId) {
+        service.deleteCredentials(employeeId);
     }
 
     @DeleteMapping("/delete")
