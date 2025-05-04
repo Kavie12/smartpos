@@ -1,7 +1,7 @@
-import { Box, Button, Container, Stack, TextField, Typography } from "@mui/material";
+import { Button, Container, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { CredentialsType } from "../types/types";
+import { useAuth } from "../../context/AuthContext";
+import { CredentialsType } from "../../types/types";
 
 export default function LoginScreen() {
 
@@ -23,10 +23,10 @@ export default function LoginScreen() {
     };
 
     return (
-        <Container maxWidth="xs" sx={{ mt: 20 }}>
+        <Container maxWidth="sm" sx={{ mt: "12%" }}>
             <Typography textAlign="center" variant="h4" sx={{ fontWeight: "bold" }}>Welcome to SmartPOS</Typography>
             <Typography textAlign="center" variant="body1" sx={{ mt: 1 }}>Sign in with your credentials</Typography>
-            <Box component="form" action={loginHandler}>
+            <Container component="form" action={loginHandler} maxWidth="xs">
                 <Stack spacing={2} useFlexGap sx={{ mt: 4 }}>
 
                     <TextField
@@ -51,12 +51,13 @@ export default function LoginScreen() {
                         loading={isProcessing}
                         disableElevation
                         size="large"
+                        id="loginBtn"
                     >
                         Sign in
                     </Button>
                     {error && <Typography textAlign="center" variant="subtitle1" color="error">{error}</Typography>}
                 </Stack>
-            </Box>
+            </Container>
         </Container >
     );
 }

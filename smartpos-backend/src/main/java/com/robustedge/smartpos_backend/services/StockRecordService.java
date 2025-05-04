@@ -3,9 +3,9 @@ package com.robustedge.smartpos_backend.services;
 import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.models.StockRecord;
-import com.robustedge.smartpos_backend.report_generators.StockRecordReportGenerator;
-import com.robustedge.smartpos_backend.report_generators.SupplierReportGenerator;
+import com.robustedge.smartpos_backend.chart_pdf_generators.StockRecordChartGenerator;
 import com.robustedge.smartpos_backend.repositories.StockRecordRepository;
+import com.robustedge.smartpos_backend.table_pdf_generators.StockRecordTableGenerator;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +15,6 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,12 +28,23 @@ public class StockRecordService {
     private ProductService productService;
 
     public void addRecord(StockRecord record) {
+        validateData(record);
+
         // Change stock level of the product
         Product product = record.getProduct();
         product.setStockLevel(product.getStockLevel() + record.getStockAmount());
         productService.updateProduct(product);
 
         repository.save(record);
+    }
+
+    private void validateData(StockRecord stockRecord) {
+        if (stockRecord.getProduct() == null) {
+            throw new ApiRequestException("Please select a product.");
+        }
+        if (stockRecord.getStockAmount() == null || stockRecord.getStockAmount() <= 0) {
+            throw new ApiRequestException("Please enter a valid stock amount.");
+        }
     }
 
     public List<StockRecord> getAllRecords() {
@@ -86,14 +96,28 @@ public class StockRecordService {
         return repository.findById(recordId).orElseThrow(() -> new ApiRequestException("Invalid Stock Record Id."));
     }
 
-    public void generateReport() {
+    public void generateChart() {
+        // Fetch stock records
         List<Object[]> products = repository.findTop5ProductsByStockRecordCount();
 
-        String systemUser = System.getProperty("user.name");
-        String fileName = "report_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\StockRecordReports\\" + fileName + ".pdf";
+        // Construct the file name
+        String fileName = "chart_" + Utils.getDateTimeFileName() + ".pdf";
 
-        StockRecordReportGenerator reportGenerator = new StockRecordReportGenerator(products);
-        reportGenerator.buildChart(filePath);
+        // Generate report
+        StockRecordChartGenerator reportGenerator = new StockRecordChartGenerator(products);
+        reportGenerator.buildChart(Utils.getReportFolderDirectory("StockRecordReports", fileName));
+    }
+
+    public void generateTableReport() {
+        List<StockRecord> records = getAllRecords();
+
+        String fileName = "table_" + Utils.getDateTimeFileName() + ".pdf";
+
+        StockRecordTableGenerator pdfGenerator = new StockRecordTableGenerator(records);
+        pdfGenerator.initialize(Utils.getReportFolderDirectory("StockRecordReports", fileName));
+        pdfGenerator.addMetaData();
+        pdfGenerator.addHeading("Stock Records");
+        pdfGenerator.addTable();
+        pdfGenerator.build();
     }
 }

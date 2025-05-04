@@ -57,14 +57,14 @@ export default function AddEmployeeScreen() {
 
     return (
         <>
-
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/employees">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Add Employee</Typography>
+                <Typography variant="h5" fontWeight="bold">Add Employee</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>
@@ -117,6 +117,7 @@ export default function AddEmployeeScreen() {
                         id="salary"
                         name="salary"
                         label="Salary"
+                        type="number"
                         value={formData.salary}
                         sx={{ width: 400, mt: 2 }}
                         onChange={(e) => setFormData(prev => ({ ...prev, salary: parseFloat(e.target.value) }))}
@@ -126,6 +127,7 @@ export default function AddEmployeeScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading}
+                        id="addBtn"
                     >
                         Add
                     </Button>

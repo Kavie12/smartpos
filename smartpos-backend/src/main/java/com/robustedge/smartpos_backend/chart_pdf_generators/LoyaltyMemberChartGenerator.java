@@ -1,34 +1,30 @@
-package com.robustedge.smartpos_backend.report_generators;
+package com.robustedge.smartpos_backend.chart_pdf_generators;
 
-import com.robustedge.smartpos_backend.config.ApiRequestException;
-import com.robustedge.smartpos_backend.models.Employee;
+import com.robustedge.smartpos_backend.models.LoyaltyMember;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class EmployeeReportGenerator {
+public class LoyaltyMemberChartGenerator {
 
-    List<Employee> employees;
+    List<LoyaltyMember> loyaltyMembers;
 
-    public EmployeeReportGenerator(List<Employee> employees) {
-        this.employees = employees;
+    public LoyaltyMemberChartGenerator(List<LoyaltyMember> loyaltyMembers) {
+        this.loyaltyMembers = loyaltyMembers;
     }
 
     private DefaultCategoryDataset getDataset() {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        for (Employee employee : employees) {
-            dataset.addValue(employee.getSalary(), "Series1", employee.getFirstName() + " " + employee.getLastName());
+        for (LoyaltyMember loyaltyMember : loyaltyMembers) {
+            dataset.addValue(loyaltyMember.getPoints(), "Series1", loyaltyMember.getFirstName() + " " + loyaltyMember.getLastName());
         }
 
         return dataset;
@@ -36,9 +32,9 @@ public class EmployeeReportGenerator {
 
     public void buildChart(String filePath) {
         JFreeChart chart = ChartFactory.createBarChart(
-                "Employees with Highest Salaries",
-                "Employee",
-                "Salary",
+                "Top Loyalty Members",
+                "Loyalty Member",
+                "Points",
                 getDataset(),
                 PlotOrientation.VERTICAL,
                 false,
@@ -60,7 +56,7 @@ public class EmployeeReportGenerator {
             JFreeChartPDFGenerator.writeChartToPDF(chart, 1080, 480, filePath);
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            throw new ApiRequestException("Error generating report.");
         }
     }
+
 }

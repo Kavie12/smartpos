@@ -73,7 +73,10 @@ export default function EmployeesScreen() {
             field: "salary",
             headerName: "Salary",
             sortable: false,
-            flex: 1
+            flex: 1,
+            valueGetter: (value) => {
+                return "Rs. " + value;
+            }
         },
         {
             field: "actions",
@@ -87,12 +90,14 @@ export default function EmployeesScreen() {
                         label="Edit"
                         color="inherit"
                         onClick={() => navigate(`./update_employee/${id}`)}
+                        id={`update_${id}`}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
+                        id={`delete_${id}`}
                     />
                 ];
             }
@@ -160,12 +165,14 @@ export default function EmployeesScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginY: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
-                    <Typography variant="h6" fontWeight="bold">Employee</Typography>
+                    <Typography variant="h5" fontWeight="bold">Employee</Typography>
                     <TextField
                         size="small"
                         placeholder="Search"
+                        id="searchField"
                         value={searchKey}
                         onChange={e => setSearchKey(e.target.value)}
                         slotProps={{
@@ -180,7 +187,7 @@ export default function EmployeesScreen() {
                     />
                 </Box>
                 <Link to="./add_employee">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="addEmployeeBtn">
                         Add Employee
                     </Button>
                 </Link>
@@ -193,7 +200,7 @@ export default function EmployeesScreen() {
             />
 
             {/* Table */}
-            <Box sx={{ height: 500 }}>
+            <Box sx={{ height: "70vh" }}>
                 <DataGrid
                     columns={columns}
                     rows={pageData.rows}

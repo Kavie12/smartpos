@@ -45,16 +45,6 @@ export default function AddStockRecordScreen() {
     const addStockRecord = (): void => {
         setLoading(prev => ({ ...prev, add: true }));
 
-        if (!formData.product) {
-            setAlert({
-                open: true,
-                type: "error",
-                message: "A product must be selected to add a stock record."
-            });
-            setLoading(prev => ({ ...prev, add: false }));
-            return;
-        }
-
         if (formData.stockAmount <= 0) {
             setAlert({
                 open: true,
@@ -70,7 +60,7 @@ export default function AddStockRecordScreen() {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Stock Record added successfully."
+                    message: "Stock record added successfully."
                 });
                 resetFormData();
             })
@@ -78,7 +68,7 @@ export default function AddStockRecordScreen() {
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Adding stock record failed."
+                    message: err.response.data.message
                 });
                 console.error("Error adding data:", err);
             })
@@ -93,13 +83,14 @@ export default function AddStockRecordScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/stock_records">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Add Stock</Typography>
+                <Typography variant="h5" fontWeight="bold">Add Stock</Typography>
             </Box>
 
             <Box component="form" action={addStockRecord} sx={{ px: 5 }}>
@@ -118,6 +109,7 @@ export default function AddStockRecordScreen() {
                         onChange={(_, value) => setFormData(prev => ({ ...prev, product: value }))}
                         value={formData.product}
                         sx={{ marginY: 1, width: 400 }}
+                        id="product"
                     />
                     <TextField
                         margin="dense"
@@ -135,6 +127,7 @@ export default function AddStockRecordScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading.add}
+                        id="addBtn"
                     >
                         Add
                     </Button>

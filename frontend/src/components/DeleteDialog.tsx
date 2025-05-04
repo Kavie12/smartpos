@@ -25,8 +25,8 @@ export default function DeleteDialog({ open, onClose, onDelete, loading, message
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>Cancel</Button>
-                <Button onClick={onDelete} color="error" loading={loading}>
+                <Button onClick={onClose} id="deleteDialogCancelBtn">Cancel</Button>
+                <Button onClick={onDelete} color="error" loading={loading} id="deleteDialogConfirmBtn">
                     Delete
                 </Button>
             </DialogActions>

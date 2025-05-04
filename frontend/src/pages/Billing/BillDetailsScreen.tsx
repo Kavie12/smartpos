@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { BasicAlertType, BillingDataType, BillingRecordDataType } from "../../types/types";
 import { AuthApi } from "../../services/Api";
-import { Box, Button, Card, CardActions, CardContent, CircularProgress, Divider, Grid2, IconButton, Typography } from "@mui/material";
+import { Box, Button, Card, CardActions, CardContent, CircularProgress, Divider, Grid2, IconButton, Paper, Typography } from "@mui/material";
 import { ArrowBack, Delete, Edit, Print } from "@mui/icons-material";
 import DeleteDialog from "../../components/DeleteDialog";
 import BasicAlert from "../../components/BasicAlert";
@@ -18,7 +18,8 @@ export default function BillDetailsScreen() {
         loyaltyMember: null,
         pointsGranted: 0,
         pointsRedeemed: 0,
-        total: 0
+        total: 0,
+        paidAmount: undefined
     });
     const [loading, setLoading] = useState<{ bill: boolean, print: boolean, delete: boolean }>({
         bill: false,
@@ -116,13 +117,14 @@ export default function BillDetailsScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/billing">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Bill Details</Typography>
+                <Typography variant="h5" fontWeight="bold">Bill Details</Typography>
             </Box>
 
             <Box sx={{ mx: 5, mt: 4 }}>
@@ -132,7 +134,7 @@ export default function BillDetailsScreen() {
                     onClose={() => setAlert(prev => ({ ...prev, open: false }))}
                 />
 
-                <Card sx={{ p: 2 }}>
+                <Card sx={{ p: 2, width: bill.loyaltyMember ? "100%" : "50%" }}>
                     <CardContent>
                         {loading.bill ? (
                             <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -141,13 +143,15 @@ export default function BillDetailsScreen() {
                         ) :
                             (
                                 <Grid2 container spacing={8}>
-                                    <Grid2 size={6}>
+                                    <Grid2 size={bill.loyaltyMember ? 6 : 12}>
                                         <BillDetails bill={bill} />
                                     </Grid2>
-                                    <Grid2 size={6}>
-                                        {/* Loyalty member details */}
-                                        <LoyaltyMemberDetails bill={bill} />
-                                    </Grid2>
+                                    {/* Loyalty member details */
+                                        bill.loyaltyMember &&
+                                        <Grid2 size={6}>
+                                            <LoyaltyMemberDetails bill={bill} />
+                                        </Grid2>
+                                    }
                                 </Grid2>
                             )
                         }
@@ -159,14 +163,16 @@ export default function BillDetailsScreen() {
                             onClick={printBill}
                             loading={loading.print}
                             disabled={buttonDisable}
+                            id="printBtn"
                         >
-                            Print
+                            Generate Receipt
                         </Button>
                         <Button
                             startIcon={<Edit />}
                             size="small"
                             onClick={() => navigate(`/billing/update_bill/${billId}`)}
                             disabled={buttonDisable}
+                            id="updateBtn"
                         >
                             Update
                         </Button>
@@ -177,6 +183,7 @@ export default function BillDetailsScreen() {
                             onClick={() => setIsDeleteDialogOpen(true)}
                             loading={loading.delete}
                             disabled={buttonDisable}
+                            id="deleteBtn"
                         >
                             Delete
                         </Button>
@@ -239,7 +246,7 @@ const BillDetails = ({ bill }: { bill: BillingDataType }) => {
             {
                 /* Points Redeemed */
                 bill.pointsRedeemed > 0 && (
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 1 }}>
                         <Typography fontWeight={"bold"}>Points Redeemed:</Typography>
                         <Typography fontWeight={"bold"}>{bill.pointsRedeemed}</Typography>
                     </Box>
@@ -247,10 +254,28 @@ const BillDetails = ({ bill }: { bill: BillingDataType }) => {
             }
 
             {/* Total */}
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 1 }}>
                 <Typography fontWeight={"bold"}>Total:</Typography>
                 <Typography fontWeight={"bold"}>Rs. {bill.total - bill.pointsRedeemed}</Typography>
             </Box>
+
+            {
+                /* Paid Amount */
+                bill.paidAmount != undefined &&
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+                    <Typography fontWeight={"bold"}>Paid Amount:</Typography>
+                    <Typography fontWeight={"bold"}>Rs. {bill.paidAmount}</Typography>
+                </Box>
+            }
+
+            {
+                /* Balance */
+                bill.paidAmount != undefined &&
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 1 }}>
+                    <Typography fontWeight={"bold"}>Balance:</Typography>
+                    <Typography fontWeight={"bold"}>Rs. {bill.paidAmount - bill.total}</Typography>
+                </Box>
+            }
         </>
     );
 };
@@ -259,7 +284,7 @@ const LoyaltyMemberDetails = ({ bill }: { bill: BillingDataType }) => {
     return (
         bill.loyaltyMember &&
         (
-            <Box sx={{ backgroundColor: grey[200], borderRadius: 2, paddingX: 4, paddingY: 3 }}>
+            <Paper sx={{ backgroundColor: grey[200], paddingX: 4, paddingY: 3 }}>
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <Typography variant="h6">Loyalty Member Details</Typography>
                 </Box>
@@ -269,7 +294,7 @@ const LoyaltyMemberDetails = ({ bill }: { bill: BillingDataType }) => {
                     <Typography>Points Granted: {bill.pointsGranted}</Typography>
                     <Typography>Total Points: {bill.loyaltyMember.points}</Typography>
                 </Box>
-            </Box>
+            </Paper>
         )
     );
 };

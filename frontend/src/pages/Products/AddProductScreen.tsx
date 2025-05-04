@@ -53,16 +53,6 @@ export default function AddProductScreen() {
     const addProduct = (): void => {
         setLoading(prev => ({ ...prev, add: true }));
 
-        if (!formData.supplier) {
-            setAlert({
-                open: true,
-                type: "error",
-                message: "A supplier must be selected to add a product."
-            });
-            setLoading(prev => ({ ...prev, add: false }));
-            return;
-        }
-
         AuthApi.post("/products/add", formData)
             .then(() => {
                 setAlert({
@@ -91,14 +81,14 @@ export default function AddProductScreen() {
 
     return (
         <>
-
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/products">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Add Product</Typography>
+                <Typography variant="h5" fontWeight="bold">Add Product</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>
@@ -127,6 +117,7 @@ export default function AddProductScreen() {
                         onChange={(_, value) => setFormData(prev => ({ ...prev, supplier: value }))}
                         value={formData.supplier}
                         sx={{ width: 400, mt: 2 }}
+                        id="supplier"
                     />
                     <TextField
                         margin="dense"
@@ -163,6 +154,7 @@ export default function AddProductScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading.add}
+                        id="addBtn"
                     >
                         Add
                     </Button>

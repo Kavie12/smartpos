@@ -102,14 +102,14 @@ export default function UpdateProductScreen() {
 
     return (
         <>
-
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/products">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Update Product</Typography>
+                <Typography variant="h5" fontWeight="bold">Update Product</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>
@@ -173,6 +173,7 @@ export default function UpdateProductScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading.update}
+                        id="updateBtn"
                     >
                         Update
                     </Button>

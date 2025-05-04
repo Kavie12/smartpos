@@ -64,5 +64,6 @@ export type BillingDataType = {
     pointsGranted: number;
     pointsRedeemed: number;
     total: number;
+    paidAmount: number | undefined;
     createdAt?: String;
 };

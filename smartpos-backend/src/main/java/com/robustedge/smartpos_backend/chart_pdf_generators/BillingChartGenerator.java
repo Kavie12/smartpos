@@ -1,8 +1,7 @@
-package com.robustedge.smartpos_backend.report_generators;
+package com.robustedge.smartpos_backend.chart_pdf_generators;
 
-import com.robustedge.smartpos_backend.models.LoyaltyMember;
+import com.robustedge.smartpos_backend.config.ApiRequestException;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
@@ -10,23 +9,22 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class LoyaltyMemberReportGenerator {
+public class BillingChartGenerator {
 
-    List<LoyaltyMember> loyaltyMembers;
+    List<Object[]> bills;
 
-    public LoyaltyMemberReportGenerator(List<LoyaltyMember> loyaltyMembers) {
-        this.loyaltyMembers = loyaltyMembers;
+    public BillingChartGenerator(List<Object[]> bills) {
+        this.bills = bills;
     }
 
     private DefaultCategoryDataset getDataset() {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        for (LoyaltyMember loyaltyMember : loyaltyMembers) {
-            dataset.addValue(loyaltyMember.getPoints(), "Series1", loyaltyMember.getFirstName() + " " + loyaltyMember.getLastName());
+        for (Object[] bill : bills) {
+            dataset.addValue((Number) bill[1], "Series1", bill[0].toString());
         }
 
         return dataset;
@@ -34,9 +32,9 @@ public class LoyaltyMemberReportGenerator {
 
     public void buildChart(String filePath) {
         JFreeChart chart = ChartFactory.createBarChart(
-                "Top Loyalty Members",
-                "Loyalty Member",
-                "Points",
+                "Bills with Highest Amounts",
+                "Bill ID",
+                "Total Amount",
                 getDataset(),
                 PlotOrientation.VERTICAL,
                 false,
@@ -58,6 +56,7 @@ public class LoyaltyMemberReportGenerator {
             JFreeChartPDFGenerator.writeChartToPDF(chart, 1080, 480, filePath);
         } catch (IOException e) {
             System.out.println(e.getMessage());
+            throw new ApiRequestException("Error generating report.");
         }
     }
 

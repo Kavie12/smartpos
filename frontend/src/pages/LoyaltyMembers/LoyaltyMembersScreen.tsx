@@ -1,7 +1,7 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
+import { Add, CreditCard, DeleteOutlined, Edit, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { LoyaltyMemberDataType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
@@ -84,12 +84,21 @@ export default function LoyaltyMembersScreen() {
                         label="Edit"
                         color="inherit"
                         onClick={() => navigate(`./update_loyalty_member/${id}`)}
+                        id={`update_${id}`}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
+                        id={`delete_${id}`}
+                    />,
+                    <GridActionsCellItem
+                        icon={<CreditCard />}
+                        label="Generate Loyalty Card"
+                        color="inherit"
+                        onClick={() => generateLoyaltyCard(id)}
+                        id={`delete_${id}`}
                     />
                 ];
             }
@@ -151,19 +160,43 @@ export default function LoyaltyMembersScreen() {
             });
     };
 
+    const generateLoyaltyCard = (id: GridRowId): void => {
+        AuthApi.get("/loyalty_members/generate_card", {
+            params: {
+                id: id
+            }
+        })
+            .then(() => {
+                setAlert({
+                    open: true,
+                    type: "success",
+                    message: "Loyalty card generated successfully."
+                });
+            })
+            .catch(err => {
+                console.error("Error generating loyalty card.", err);
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Error generating loyalty card."
+                });
+            });
+    };
+
     useEffect(() => {
         fetchLoyaltyMembers();
     }, [paginationModel, searchKey]);
 
     return (
         <>
-
+            {/* Title Bar */}
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
-                    <Typography variant="h6" fontWeight="bold">Loyalty Members</Typography>
+                    <Typography variant="h5" fontWeight="bold">Loyalty Members</Typography>
                     <TextField
                         size="small"
                         placeholder="Search"
+                        id="searchField"
                         value={searchKey}
                         onChange={e => setSearchKey(e.target.value)}
                         slotProps={{
@@ -178,7 +211,7 @@ export default function LoyaltyMembersScreen() {
                     />
                 </Box>
                 <Link to="./add_loyalty_member">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="addLoyaltyMemberBtn">
                         Add Loyalty Member
                     </Button>
                 </Link>
@@ -191,7 +224,7 @@ export default function LoyaltyMembersScreen() {
             />
 
             {/* Table */}
-            <Box sx={{ height: 500 }}>
+            <Box sx={{ height: "70vh" }}>
                 <DataGrid
                     columns={columns}
                     rows={pageData.rows}

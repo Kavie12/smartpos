@@ -1,5 +1,5 @@
 import { ArrowBack } from "@mui/icons-material";
-import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, FormControlLabel, IconButton, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router";
 import { AuthApi } from "../../services/Api";
@@ -20,6 +20,7 @@ export default function AddLoyaltyMemberScreen() {
         phoneNumber: "",
         points: 0
     });
+    const [generateCard, setGenerateCard] = useState<boolean>(false);
 
     const resetFormData = (): void => {
         setFormData({
@@ -32,12 +33,12 @@ export default function AddLoyaltyMemberScreen() {
 
     const addLoyaltyMember = (): void => {
         setLoading(true);
-        AuthApi.post("/loyalty_members/add", formData)
+        AuthApi.post("/loyalty_members/add", { loyaltyMember: formData, generateCard: generateCard })
             .then(() => {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Loyalty member registererd successfully."
+                    message: "Loyalty member registered successfully."
                 });
                 resetFormData();
             })
@@ -55,14 +56,14 @@ export default function AddLoyaltyMemberScreen() {
 
     return (
         <>
-
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/loyalty_members">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Add Loyalty Member</Typography>
+                <Typography variant="h5" fontWeight="bold">Add Loyalty Member</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>
@@ -101,11 +102,23 @@ export default function AddLoyaltyMemberScreen() {
                         sx={{ width: 400, mt: 2 }}
                         onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
                     />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                size="small"
+                                value={generateCard}
+                                onChange={e => setGenerateCard(e.target.checked)}
+                            />
+                        }
+                        label={<Typography>Generate Loyalty Card</Typography>}
+                        sx={{ mt: 2 }}
+                    />
                     <Button
                         variant="contained"
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading}
+                        id="addBtn"
                     >
                         Add
                     </Button>

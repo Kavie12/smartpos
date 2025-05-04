@@ -85,7 +85,7 @@ export default function UpdateStockRecordScreen() {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Stock Record updated successfully."
+                    message: "Stock record updated successfully."
                 });
                 fetchStockRecord();
                 fetchProducts();
@@ -110,13 +110,14 @@ export default function UpdateStockRecordScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/stock_records">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Update Stock Record</Typography>
+                <Typography variant="h5" fontWeight="bold">Update Stock Record</Typography>
             </Box>
 
             <Box component="form" action={updateStockRecord} sx={{ px: 5 }}>
@@ -152,6 +153,7 @@ export default function UpdateStockRecordScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading.update}
+                        id="updateBtn"
                     >
                         Update
                     </Button>

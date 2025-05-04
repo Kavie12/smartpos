@@ -71,14 +71,14 @@ export default function UpdateEmployeeScreen() {
 
     return (
         <>
-
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/employees">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Update Employee</Typography>
+                <Typography variant="h5" fontWeight="bold">Update Employee</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>
@@ -132,13 +132,14 @@ export default function UpdateEmployeeScreen() {
                         label="Salary"
                         value={employee.salary}
                         sx={{ width: 400, mt: 2 }}
-                        onChange={(e) => setEmployee(prev => ({ ...prev, salary: parseFloat(e.target.value) }))}
+                        onChange={(e) => setEmployee(prev => ({ ...prev, salary: (e.target.value ? parseFloat(e.target.value) : 0) }))}
                     />
                     <Button
                         variant="contained"
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading}
+                        id="updateBtn"
                     >
                         Update
                     </Button>

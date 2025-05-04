@@ -28,7 +28,8 @@ export default function BillingProvider({ children }: { children: ReactNode }) {
         loyaltyMember: null,
         pointsGranted: 0,
         pointsRedeemed: 0,
-        total: 0
+        total: 0,
+        paidAmount: undefined
     });
     const [redeemPoints, setRedeemPoints] = useState<boolean>(false);
 
@@ -38,7 +39,8 @@ export default function BillingProvider({ children }: { children: ReactNode }) {
             loyaltyMember: null,
             pointsGranted: 0,
             pointsRedeemed: 0,
-            total: 0
+            total: 0,
+            paidAmount: undefined
         });
     };
 
@@ -78,7 +80,7 @@ export default function BillingProvider({ children }: { children: ReactNode }) {
             }
 
         });
-    }, [redeemPoints]);
+    }, [redeemPoints, bill.loyaltyMember]);
 
     return <BillingContext.Provider value={{
         bill,

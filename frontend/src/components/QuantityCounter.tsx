@@ -26,7 +26,7 @@ export default function QuantityCounter({ quantity, setQuantity, color }: Quanti
     };
 
     return (
-        <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, backgroundColor: color == "grey" ? grey[200] : "whitesmoke", borderRadius: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, backgroundColor: color == "grey" ? grey[300] : "whitesmoke", borderRadius: 1 }}>
             <Button variant="text" sx={{ minWidth: "auto" }} onClick={handleQuantityDecrement}>-</Button>
             <TextField
                 id="quantity"

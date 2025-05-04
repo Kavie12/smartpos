@@ -1,5 +1,6 @@
 package com.robustedge.smartpos_backend.controllers;
 
+import com.robustedge.smartpos_backend.dto.LoyaltyMemberRequest;
 import com.robustedge.smartpos_backend.services.LoyaltyMemberService;
 import com.robustedge.smartpos_backend.models.LoyaltyMember;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +42,8 @@ public class LoyaltyMemberController {
     }
 
     @PostMapping("/add")
-    public void addLoyaltyMember(@RequestBody LoyaltyMember loyaltyMember) {
-        service.addLoyaltyMember(loyaltyMember);
+    public void addLoyaltyMember(@RequestBody LoyaltyMemberRequest loyaltyMemberRequest) {
+        service.addLoyaltyMember(loyaltyMemberRequest);
     }
 
     @PutMapping("/update")
@@ -55,9 +56,19 @@ public class LoyaltyMemberController {
         service.deleteLoyaltyMember(id);
     }
 
-    @GetMapping("/generate_report")
-    public void generateReport() {
-        service.generateReport();
+    @GetMapping("/generate_chart")
+    public void generateChart() {
+        service.generateChart();
+    }
+
+    @GetMapping("/generate_table_report")
+    public void generateTableReport() {
+        service.generateTableReport();
+    }
+
+    @GetMapping("/generate_card")
+    public void generateCard(@RequestParam(name = "id") Integer id) {
+        service.generateCard(id);
     }
 
 }

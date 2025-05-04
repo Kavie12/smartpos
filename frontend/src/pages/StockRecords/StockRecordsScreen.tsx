@@ -87,12 +87,14 @@ export default function StockRecordsScreen() {
                         label="Edit"
                         color="inherit"
                         onClick={() => navigate(`./update_stock_record/${id}`)}
+                        id={`update_${id}`}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
+                        id={`delete_${id}`}
                     />
                 ];
             }
@@ -137,7 +139,7 @@ export default function StockRecordsScreen() {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Stock Record deleted successfully."
+                    message: "Stock record deleted successfully."
                 });
                 fetchStockRecords();
             })
@@ -161,13 +163,14 @@ export default function StockRecordsScreen() {
 
     return (
         <>
-
+            {/* Title Bar */}
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
-                    <Typography variant="h6" fontWeight="bold">Stock Records</Typography>
+                    <Typography variant="h5" fontWeight="bold">Stock Records</Typography>
                     <TextField
                         size="small"
                         placeholder="Search"
+                        id="searchField"
                         value={searchKey}
                         onChange={e => setSearchKey(e.target.value)}
                         slotProps={{
@@ -183,8 +186,8 @@ export default function StockRecordsScreen() {
                     <DatePicker
                         label="Filter by date"
                         slotProps={{
-                            textField: { size: 'small' },
-                            field: { clearable: true }
+                            textField: { size: "small" },
+                            field: { clearable: true },
                         }}
                         sx={{
                             "& .MuiOutlinedInput-input": {
@@ -196,7 +199,7 @@ export default function StockRecordsScreen() {
                     />
                 </Box>
                 <Link to="./add_stock_record">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="addStockRecordBtn">
                         Add Stock
                     </Button>
                 </Link>
@@ -209,7 +212,7 @@ export default function StockRecordsScreen() {
             />
 
             {/* Table */}
-            <Box sx={{ height: 500 }}>
+            <Box sx={{ height: "70vh" }}>
                 <DataGrid
                     columns={columns}
                     rows={pageData.rows}

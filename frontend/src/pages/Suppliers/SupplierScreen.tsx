@@ -75,12 +75,14 @@ export default function SuppliersScreen() {
                         label="Edit"
                         color="inherit"
                         onClick={() => navigate(`./update_supplier/${id}`)}
+                        id={`update_${id}`}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteOutlined />}
                         label="Delete"
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
+                        id={`delete_${id}`}
                     />
                 ];
             }
@@ -148,12 +150,14 @@ export default function SuppliersScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
-                    <Typography variant="h6" fontWeight="bold">Suppliers</Typography>
+                    <Typography variant="h5" fontWeight="bold">Suppliers</Typography>
                     <TextField
                         size="small"
                         placeholder="Search"
+                        id="searchField"
                         value={searchKey}
                         onChange={e => setSearchKey(e.target.value)}
                         slotProps={{
@@ -168,7 +172,7 @@ export default function SuppliersScreen() {
                     />
                 </Box>
                 <Link to="./add_supplier">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="addSupplierBtn">
                         Add Supplier
                     </Button>
                 </Link>
@@ -181,7 +185,7 @@ export default function SuppliersScreen() {
             />
 
             {/* Table */}
-            <Box sx={{ height: 500 }}>
+            <Box sx={{ height: "70vh" }}>
                 <DataGrid
                     columns={columns}
                     rows={pageData.rows}

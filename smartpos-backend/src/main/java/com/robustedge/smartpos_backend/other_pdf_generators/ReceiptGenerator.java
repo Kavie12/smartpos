@@ -1,4 +1,4 @@
-package com.robustedge.smartpos_backend.report_generators;
+package com.robustedge.smartpos_backend.other_pdf_generators;
 
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFont;
@@ -96,8 +96,7 @@ public class ReceiptGenerator {
         doc.add(new Paragraph("SMARTPOS").addStyle(headerStyles));
         addStarDivider();
 
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String date = bill.getCreatedAt().format(dateTimeFormatter);
+        String date = bill.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         addNormalField("Receipt ID: " + bill.getId(), date);
 
@@ -126,7 +125,18 @@ public class ReceiptGenerator {
         // Total
         addBoldField("Total", "Rs. " + String.valueOf(bill.getTotal() - bill.getPointsRedeemed()));
 
-        addSpacing(48);
+        addSpacing(24);
+
+        // Paid amount
+        addBoldField("Paid Amount", "Rs. " + String.valueOf(bill.getPaidAmount()));
+
+        // Balance
+        double balance = bill.getPaidAmount() - bill.getTotal();
+        if (balance > 0) {
+            addBoldField("Balance", "Rs. " + String.valueOf(balance));
+        }
+
+        addSpacing(24);
 
         // Loyalty member details
         if (bill.getLoyaltyMember() != null) {

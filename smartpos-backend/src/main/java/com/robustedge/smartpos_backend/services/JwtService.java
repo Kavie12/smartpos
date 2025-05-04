@@ -1,8 +1,6 @@
 package com.robustedge.smartpos_backend.services;
 
-import com.robustedge.smartpos_backend.config.ApiRequestException;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

@@ -35,7 +35,7 @@ export default function AddSupplierScreen() {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Supplier registererd successfully."
+                    message: "Supplier registered successfully."
                 });
                 resetFormData();
             })
@@ -54,13 +54,14 @@ export default function AddSupplierScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/suppliers">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Add Supplier</Typography>
+                <Typography variant="h5" fontWeight="bold">Add Supplier</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>
@@ -104,6 +105,7 @@ export default function AddSupplierScreen() {
                         type="submit"
                         sx={{ mt: 2 }}
                         loading={loading}
+                        id="addBtn"
                     >
                         Add
                     </Button>

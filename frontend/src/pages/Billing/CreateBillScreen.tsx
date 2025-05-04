@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AuthApi } from "../../services/Api";
-import { Box, Button, Checkbox, Divider, FormControlLabel, Grid2, IconButton, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Divider, FormControlLabel, Grid2, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import QuantityCounter from "../../components/QuantityCounter";
 import { Link } from "react-router";
@@ -15,7 +15,7 @@ export default function CreateBillScreen() {
 
     const [barcode, setBarcode] = useState<string | null>(null);
     const [loyaltyMemberId, setLoyaltyMemberId] = useState<string>("");
-    const [error, setError] = useState<{ barcode: string | null, loyaltyMember: null }>({
+    const [error, setError] = useState<{ barcode: string | null, loyaltyMember: string | null }>({
         barcode: null,
         loyaltyMember: null
     });
@@ -28,7 +28,7 @@ export default function CreateBillScreen() {
 
     const addProduct = (): void => {
         if (!barcode) {
-            setError(prev => ({ ...prev, barcode: "Enter barcode" }));
+            setError(prev => ({ ...prev, barcode: "Enter barcode." }));
             return;
         }
         setError(prev => ({ ...prev, barcode: null }));
@@ -102,6 +102,12 @@ export default function CreateBillScreen() {
 
     const setLoyaltyMember = (): void => {
         setError(prev => ({ ...prev, loyaltyMember: null }));
+
+        if (!loyaltyMemberId) {
+            setError(prev => ({ ...prev, loyaltyMember: "Enter loyalty member ID." }));
+            return;
+        }
+
         AuthApi.get("/loyalty_members/get_one_by_phone_number", {
             params: {
                 phoneNumber: loyaltyMemberId
@@ -121,13 +127,14 @@ export default function CreateBillScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/billing">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Create Bill</Typography>
+                <Typography variant="h5" fontWeight="bold">Create Bill</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>
@@ -156,7 +163,7 @@ export default function CreateBillScreen() {
                                 />
                                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
                                     <QuantityCounter quantity={quantity} setQuantity={setQuantity} color="grey" />
-                                    <Button variant="contained" type="submit">Add</Button>
+                                    <Button variant="contained" type="submit" id="addBarcodeBtn">Add</Button>
                                 </Box>
                             </Box>
                         </Box>
@@ -175,7 +182,7 @@ export default function CreateBillScreen() {
                                     helperText={error.loyaltyMember ? `*${error.loyaltyMember}` : null}
                                 />
                                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
-                                    <Button variant="contained" type="submit">Add</Button>
+                                    <Button variant="contained" type="submit" id="addLoyaltyMemberBtn">Add</Button>
                                 </Box>
                             </Box>
                         </Box>
@@ -213,9 +220,44 @@ export default function CreateBillScreen() {
                                     <Typography fontWeight={"bold"}>Rs. {bill.total - bill.pointsRedeemed}</Typography>
                                 </Box>
 
+                                {
+                                    /* Paid Amount */
+                                    bill.billingRecords.length > 0 &&
+                                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+                                        <Typography fontWeight={"bold"}>Paid Amount:</Typography>
+                                        <Box>
+                                            <TextField
+                                                id="paidAmount"
+                                                variant="standard"
+                                                size="small"
+                                                type="number"
+                                                slotProps={{
+                                                    input: {
+                                                        startAdornment: <InputAdornment position="start">Rs.</InputAdornment>,
+                                                    },
+                                                }}
+                                                value={bill.paidAmount}
+                                                onChange={e => setBill(prev => ({ ...prev, paidAmount: parseFloat(e.target.value) }))}
+                                                sx={{
+                                                    width: 140
+                                                }}
+                                            />
+                                        </Box>
+                                    </Box>
+                                }
+
+                                {
+                                    /* Balance */
+                                    bill.billingRecords.length > 0 && bill.paidAmount != undefined && bill.paidAmount > 0 &&
+                                    < Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
+                                        <Typography fontWeight={"bold"}>Balance:</Typography>
+                                        <Typography fontWeight={"bold"}>Rs. {bill.paidAmount - bill.total}</Typography>
+                                    </Box>
+                                }
+
                                 {/* Buttons */}
-                                <Button variant="contained" sx={{ marginTop: 4 }} onClick={saveBill}>
-                                    Print Bill
+                                <Button variant="contained" sx={{ marginTop: 4 }} onClick={saveBill} id="printBillBtn">
+                                    Save Bill
                                 </Button>
                                 <Button
                                     variant="text"
@@ -229,7 +271,7 @@ export default function CreateBillScreen() {
                         </Box>
                     </Grid2>
                 </Grid2>
-            </Box>
+            </Box >
         </>
     );
 }

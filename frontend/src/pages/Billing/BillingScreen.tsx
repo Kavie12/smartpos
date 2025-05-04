@@ -85,6 +85,7 @@ export default function BillingScreen() {
                         label="View"
                         color="inherit"
                         onClick={() => navigate(`./bill_details/${id}`)}
+                        id={`view_bill_${id}`}
                     />
                 ];
             }
@@ -123,9 +124,10 @@ export default function BillingScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
-                    <Typography variant="h6" fontWeight="bold">Billing</Typography>
+                    <Typography variant="h5" fontWeight="bold">Billing</Typography>
                     <DatePicker
                         label="Filter by date"
                         slotProps={{
@@ -142,20 +144,21 @@ export default function BillingScreen() {
                     />
                 </Box>
                 <Link to="./create_bill">
-                    <Button startIcon={<Add />}>
+                    <Button startIcon={<Add />} id="createBillBtn">
                         Create Bill
                     </Button>
                 </Link>
-            </Box>
+            </Box >
 
             {/* Alerts */}
-            <BasicAlert
+            < BasicAlert
                 alert={alert}
-                onClose={() => setAlert(prev => ({ ...prev, open: false }))}
+                onClose={() => setAlert(prev => ({ ...prev, open: false }))
+                }
             />
 
             {/* Table */}
-            <Box sx={{ height: 500 }}>
+            <Box sx={{ height: "70vh" }}>
                 <DataGrid
                     columns={columns}
                     rows={pageData.rows}
