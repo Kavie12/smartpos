@@ -3,17 +3,46 @@ import { grey } from "@mui/material/colors";
 
 const AppTheme = createTheme({
     palette: {
-        background: {
-            default: grey[100]
-        },
+        mode: 'light',
         primary: {
-            main: grey[900]
+            main: '#2c3848',
         },
+        secondary: {
+            main: '#f50057',
+        },
+        background: {
+            default: '#F4F6F8',
+            paper: '#E0E3E7'
+        },
+        text: {
+            primary: '#212121',
+            secondary: '#37474F',
+        },
+    },
+    shape: {
+        borderRadius: 8,
     },
     typography: {
         button: {
-            textTransform: 'none'
+            textTransform: 'none',
         }
+    },
+    components: {
+        MuiAppBar: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: grey[900],
+                    color: '#FFFFFF',
+                }
+            }
+        },
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                },
+            },
+        },
     }
 });
 

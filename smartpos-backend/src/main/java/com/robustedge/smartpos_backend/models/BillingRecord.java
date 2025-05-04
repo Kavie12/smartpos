@@ -1,10 +1,13 @@
 package com.robustedge.smartpos_backend.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "BillingRecord")
 @Table(name = "billing_records")
+@Data
+@NoArgsConstructor
 public class BillingRecord {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,74 +24,10 @@ public class BillingRecord {
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
-    @JsonBackReference
-    @ManyToOne
-    private Bill bill;
-
-    public BillingRecord() {
-    }
-
-    public BillingRecord(Integer id, Product product, double price, int quantity) {
-        this.id = id;
-        this.product = product;
-        this.price = price;
-        this.quantity = quantity;
-    }
-
     public BillingRecord(Product product, double price, int quantity) {
         this.product = product;
         this.price = price;
         this.quantity = quantity;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public Bill getBill() {
-        return bill;
-    }
-
-    public void setBill(Bill bill) {
-        this.bill = bill;
-    }
-
-    @Override
-    public String toString() {
-        return "BillingRecord{" +
-                "id=" + id +
-                ", product=" + product +
-                ", price=" + price +
-                ", quantity=" + quantity +
-                ", bill=" + bill +
-                '}';
-    }
 }

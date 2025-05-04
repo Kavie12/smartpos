@@ -23,12 +23,20 @@ public class ProductController {
     }
 
     @GetMapping("/get")
-    public PagedModel<Product> getProducts(@PageableDefault(value = 50, page = 0) Pageable pageable) {
-        return service.getProducts(pageable);
+    public PagedModel<Product> getProducts(
+            @RequestParam(name = "searchKey") String searchKey,
+            @PageableDefault(value = 50, page = 0) Pageable pageable
+    ) {
+        return service.getProducts(searchKey, pageable);
+    }
+
+    @GetMapping("/get_one")
+    public Product getOne(@RequestParam(name = "productId") Integer productId) {
+        return service.getOne(productId);
     }
 
     @GetMapping("/find_by_barcode")
-    public Product findProductByBarcode(@RequestParam("barcode") String barcode) {
+    public Product findProductByBarcode(@RequestParam(name = "barcode") String barcode) {
         return service.findProductByBarcode(barcode);
     }
 
@@ -37,19 +45,24 @@ public class ProductController {
         service.addProduct(product);
     }
 
-    @DeleteMapping("/delete")
-    public void deleteProduct(Integer id) {
-        service.deleteProduct(id);
-    }
-
     @PutMapping("/update")
     public void updateProduct(@RequestBody Product product) {
         service.updateProduct(product);
     }
 
-    @GetMapping("/generate_report")
-    public void generateReport() {
-        service.generateReport();
+    @DeleteMapping("/delete")
+    public void deleteProduct(@RequestParam(name = "productId") Integer productId) {
+        service.deleteProduct(productId);
+    }
+
+    @GetMapping("/generate_chart")
+    public void generateChart() {
+        service.generateChart();
+    }
+
+    @GetMapping("/generate_table_report")
+    public void generateTableReport() {
+        service.generateTableReport();
     }
 
 }

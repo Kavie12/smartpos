@@ -23,8 +23,16 @@ public class SupplierController {
     }
 
     @GetMapping("/get")
-    public PagedModel<Supplier> getSuppliers(@PageableDefault(value = 50, page = 0) Pageable pageable) {
-        return service.getSuppliers(pageable);
+    public PagedModel<Supplier> getSuppliers(
+        @RequestParam(name = "searchKey") String searchKey,
+        @PageableDefault(value = 50, page = 0) Pageable pageable
+    ) {
+        return service.getSuppliers(searchKey, pageable);
+    }
+
+    @GetMapping("/get_one")
+    public Supplier getOne(@RequestParam(name = "supplierId") Integer supplierId) {
+        return service.getOne(supplierId);
     }
 
     @PostMapping("/add")
@@ -32,19 +40,24 @@ public class SupplierController {
         service.addSupplier(supplier);
     }
 
-    @DeleteMapping("/delete")
-    public void deleteSupplier(Integer id) {
-        service.deleteSupplier(id);
-    }
-
     @PutMapping("/update")
     public void updateSupplier(@RequestBody Supplier supplier) {
         service.updateSupplier(supplier);
     }
 
-    @GetMapping("/generate_report")
-    public void generateReport() {
-        service.generateReport();
+    @DeleteMapping("/delete")
+    public void deleteSupplier(@RequestParam(name = "supplierId") Integer supplierId) {
+        service.deleteSupplier(supplierId);
+    }
+
+    @GetMapping("/generate_chart")
+    public void generateChart() {
+        service.generateChart();
+    }
+
+    @GetMapping("/generate_table_report")
+    public void generateTableReport() {
+        service.generateTableReport();
     }
 
 }

@@ -10,7 +10,7 @@ export const AuthApi = axios.create({
 
 AuthApi.interceptors.request.use(
     config => {
-        const token = localStorage.getItem("jwtToken")
+        const token = localStorage.getItem("jwtToken");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -22,13 +22,15 @@ AuthApi.interceptors.request.use(
 );
 
 AuthApi.interceptors.response.use(
-    response => {
-        if (response.status === 403) {
-            alert("Session expired. Please logout and login again.");
-        }
-        return response;
-    },
+    response => response,
     error => {
+        if (
+            error.response?.status === 401 &&
+            error.response?.data?.error === "JWT_EXPIRED"
+        ) {
+            localStorage.removeItem("token");
+            window.location.href = "/login";
+        }
         return Promise.reject(error);
     }
 );
