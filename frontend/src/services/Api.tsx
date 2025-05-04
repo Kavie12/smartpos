@@ -20,3 +20,17 @@ AuthApi.interceptors.request.use(
         return Promise.reject(error);
     }
 );
+
+AuthApi.interceptors.response.use(
+    response => response,
+    error => {
+        if (
+            error.response?.status === 401 &&
+            error.response?.data?.error === "JWT_EXPIRED"
+        ) {
+            localStorage.removeItem("token");
+            window.location.href = "/login";
+        }
+        return Promise.reject(error);
+    }
+);

@@ -2,9 +2,10 @@ package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Product;
-import com.robustedge.smartpos_backend.report_generators.ProductReportGenerator;
+import com.robustedge.smartpos_backend.chart_pdf_generators.ProductChartGenerator;
 import com.robustedge.smartpos_backend.repositories.ProductRepository;
 import com.robustedge.smartpos_backend.repositories.StockRecordRepository;
+import com.robustedge.smartpos_backend.table_pdf_generators.ProductTableGenerator;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -81,14 +82,28 @@ public class ProductService {
         stockRecordRepository.deleteAllByProductId(productId);
     }
 
-    public void generateReport() {
+    public void generateChart() {
+        // Fetch products
         List<Object[]> products = repository.findTop5ProductsByProfit();
 
-        String systemUser = System.getProperty("user.name");
-        String fileName = "report_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\ProductReports\\" + fileName + ".pdf";
+        // Construct the file name
+        String fileName = "chart_" + Utils.getDateTimeFileName() + ".pdf";
 
-        ProductReportGenerator reportGenerator = new ProductReportGenerator(products);
-        reportGenerator.buildChart(filePath);
+        // Generate report
+        ProductChartGenerator reportGenerator = new ProductChartGenerator(products);
+        reportGenerator.buildChart(Utils.getReportFolderDirectory("ProductReports", fileName));
+    }
+
+    public void generateTableReport() {
+        List<Product> products = getAllProducts();
+
+        String fileName = "table_" + Utils.getDateTimeFileName() + ".pdf";
+
+        ProductTableGenerator pdfGenerator = new ProductTableGenerator(products);
+        pdfGenerator.initialize(Utils.getReportFolderDirectory("ProductReports", fileName));
+        pdfGenerator.addMetaData();
+        pdfGenerator.addHeading("Products");
+        pdfGenerator.addTable();
+        pdfGenerator.build();
     }
 }

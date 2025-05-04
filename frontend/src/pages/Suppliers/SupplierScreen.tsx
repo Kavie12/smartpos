@@ -150,9 +150,10 @@ export default function SuppliersScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
-                    <Typography variant="h6" fontWeight="bold">Suppliers</Typography>
+                    <Typography variant="h5" fontWeight="bold">Suppliers</Typography>
                     <TextField
                         size="small"
                         placeholder="Search"
@@ -184,7 +185,7 @@ export default function SuppliersScreen() {
             />
 
             {/* Table */}
-            <Box sx={{ height: 500 }}>
+            <Box sx={{ height: "70vh" }}>
                 <DataGrid
                     columns={columns}
                     rows={pageData.rows}

@@ -1,4 +1,4 @@
-package com.robustedge.smartpos_backend.report_generators;
+package com.robustedge.smartpos_backend.chart_pdf_generators;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -11,19 +11,19 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
-public class SupplierReportGenerator {
+public class StockRecordChartGenerator {
 
-    List<Object[]> suppliers;
+    List<Object[]> products;
 
-    public SupplierReportGenerator(List<Object[]> suppliers) {
-        this.suppliers = suppliers;
+    public StockRecordChartGenerator(List<Object[]> products) {
+        this.products = products;
     }
 
     private PieDataset<String> getDataset() {
         DefaultPieDataset<String> dataset = new DefaultPieDataset<String>();
 
-        for (Object[] supplier : suppliers) {
-            dataset.setValue((String) supplier[0], (Number) supplier[1]);
+        for (Object[] product : products) {
+            dataset.setValue((String) product[0], (Number) product[1]);
         }
 
         return dataset;
@@ -31,7 +31,7 @@ public class SupplierReportGenerator {
 
     public void buildChart(String filePath) {
         JFreeChart chart = ChartFactory.createPieChart(
-                "Supplier with Highest Product Count",
+                "Products with Highest Number of Stock Records",
                 getDataset(),
                 false,
                 true,

@@ -80,7 +80,7 @@ export default function BillingProvider({ children }: { children: ReactNode }) {
             }
 
         });
-    }, [redeemPoints]);
+    }, [redeemPoints, bill.loyaltyMember]);
 
     return <BillingContext.Provider value={{
         bill,

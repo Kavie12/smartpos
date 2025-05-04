@@ -1,4 +1,4 @@
-package com.robustedge.smartpos_backend.report_generators;
+package com.robustedge.smartpos_backend.chart_pdf_generators;
 
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.geom.PageSize;

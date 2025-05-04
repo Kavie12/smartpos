@@ -10,7 +10,7 @@ export default function BasicAlert({ alert, onClose }: { alert: BasicAlertType, 
         if (alert.open) {
             alertTimeout = setTimeout(() => {
                 onClose();
-            }, 3000);
+            }, 5000);
         }
 
         return () => {
@@ -22,8 +22,7 @@ export default function BasicAlert({ alert, onClose }: { alert: BasicAlertType, 
         <>
             {alert.open && (
                 <Box sx={{ my: 2 }}>
-                    {alert.type == "success" && <Alert severity="success" onClose={onClose}>{alert.message}</Alert>}
-                    {alert.type == "error" && <Alert severity="error" onClose={onClose}>{alert.message}</Alert>}
+                    {alert.type && <Alert severity={alert.type} onClose={onClose}>{alert.message}</Alert>}
                 </Box>
             )}
         </>

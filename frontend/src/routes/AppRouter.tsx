@@ -4,8 +4,8 @@ import AuthLayout from "../layouts/AuthLayout";
 import { lazy } from "react";
 import RouteLoader from "./RouteLoader";
 
-const LoginScreen = RouteLoader(lazy(() => import("../pages/LoginScreen")));
-const Reports = RouteLoader(lazy(() => import("../pages/Reports")));
+const LoginScreen = RouteLoader(lazy(() => import("../pages/Auth/LoginScreen")));
+const ReportsScreen = RouteLoader(lazy(() => import("../pages/Reports/ReportsScreen")));
 const BillingScreen = RouteLoader(lazy(() => import("../pages/Billing/BillingScreen")));
 const CreateBillScreen = RouteLoader(lazy(() => import("../pages/Billing/CreateBillScreen")));
 const BillDetailsScreen = RouteLoader(lazy(() => import("../pages/Billing/BillDetailsScreen")));
@@ -37,10 +37,6 @@ export default createHashRouter([
     {
         element: <MainLayout />,
         children: [
-            {
-                path: "reports",
-                element: <Reports />
-            },
             {
                 path: "billing",
                 children: [
@@ -90,6 +86,13 @@ export default createHashRouter([
                     { path: "update_employee/:employeeId", element: <UpdateEmployeeScreen /> }
                 ]
             },
+            {
+                path: "reports",
+                children: [
+                    { index: true, element: <ReportsScreen /> },
+                    { path: "" },
+                ]
+            }
         ]
     }
 ]);

@@ -1,4 +1,4 @@
-package com.robustedge.smartpos_backend.report_generators;
+package com.robustedge.smartpos_backend.chart_pdf_generators;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -11,11 +11,11 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
-public class ProductReportGenerator {
+public class ProductChartGenerator {
 
     List<Object[]> products;
 
-    public ProductReportGenerator(List<Object[]> products) {
+    public ProductChartGenerator(List<Object[]> products) {
         this.products = products;
     }
 

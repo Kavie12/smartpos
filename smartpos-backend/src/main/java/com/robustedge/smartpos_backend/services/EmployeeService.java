@@ -2,8 +2,9 @@ package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Employee;
-import com.robustedge.smartpos_backend.report_generators.EmployeeReportGenerator;
+import com.robustedge.smartpos_backend.chart_pdf_generators.EmployeeChartGenerator;
 import com.robustedge.smartpos_backend.repositories.EmployeeRepository;
+import com.robustedge.smartpos_backend.table_pdf_generators.EmployeeTableGenerator;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -74,14 +75,28 @@ public class EmployeeService {
         repository.save(employee);
     }
 
-    public void generateReport() {
+    public void generateChart() {
+        // Fetch employees
         List<Employee> employees = repository.findTop5BySalary();
 
-        String systemUser = System.getProperty("user.name");
-        String fileName = "report_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\EmployeeReports\\" + fileName + ".pdf";
+        // Construct the filename
+        String fileName = "chart_" + Utils.getDateTimeFileName() + ".pdf";
 
-        EmployeeReportGenerator reportGenerator = new EmployeeReportGenerator(employees);
-        reportGenerator.buildChart(filePath);
+        // Generate report
+        EmployeeChartGenerator reportGenerator = new EmployeeChartGenerator(employees);
+        reportGenerator.buildChart(Utils.getReportFolderDirectory("EmployeeReports", fileName));
+    }
+
+    public void generateTableReport() {
+        List<Employee> employees = getAllEmployees();
+
+        String fileName = "table_" + Utils.getDateTimeFileName() + ".pdf";
+
+        EmployeeTableGenerator pdfGenerator = new EmployeeTableGenerator(employees);
+        pdfGenerator.initialize(Utils.getReportFolderDirectory("EmployeeReports", fileName));
+        pdfGenerator.addMetaData();
+        pdfGenerator.addHeading("Employees");
+        pdfGenerator.addTable();
+        pdfGenerator.build();
     }
 }

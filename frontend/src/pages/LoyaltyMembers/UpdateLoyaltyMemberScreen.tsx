@@ -70,14 +70,14 @@ export default function UpdateLoyaltyMemberScreen() {
 
     return (
         <>
-
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/loyalty_members">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Update Loyalty Member</Typography>
+                <Typography variant="h5" fontWeight="bold">Update Loyalty Member</Typography>
             </Box>
 
             <Box sx={{ px: 5 }}>

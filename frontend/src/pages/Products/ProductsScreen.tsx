@@ -70,13 +70,19 @@ export default function ProductsScreen() {
             field: "wholesalePrice",
             headerName: "Wholesale Price",
             sortable: false,
-            flex: 1
+            flex: 1,
+            valueGetter: (value) => {
+                return "Rs." + value;
+            }
         },
         {
             field: "retailPrice",
             headerName: "Retail Price",
             sortable: false,
-            flex: 1
+            flex: 1,
+            valueGetter: (value) => {
+                return "Rs." + value;
+            }
         },
         {
             field: "profitPerUnit",
@@ -84,7 +90,7 @@ export default function ProductsScreen() {
             sortable: false,
             flex: 1,
             valueGetter: (_, row) => {
-                return row.retailPrice - row.wholesalePrice;
+                return "Rs. " + (row.retailPrice - row.wholesalePrice);
             }
         },
         {
@@ -183,10 +189,10 @@ export default function ProductsScreen() {
 
     return (
         <>
-
+            {/* Title Bar */}
             <Box sx={{ display: "flex", justifyContent: "space-between", marginY: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center", columnGap: 4 }}>
-                    <Typography variant="h6" fontWeight="bold">Products</Typography>
+                    <Typography variant="h5" fontWeight="bold">Products</Typography>
                     <TextField
                         size="small"
                         placeholder="Search"
@@ -218,7 +224,7 @@ export default function ProductsScreen() {
             />
 
             {/* Table */}
-            <Box sx={{ height: 500 }}>
+            <Box sx={{ height: "70vh" }}>
                 <DataGrid
                     columns={columns}
                     rows={pageData.rows}

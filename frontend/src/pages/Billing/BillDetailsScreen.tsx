@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { BasicAlertType, BillingDataType, BillingRecordDataType } from "../../types/types";
 import { AuthApi } from "../../services/Api";
-import { Box, Button, Card, CardActions, CardContent, CircularProgress, Divider, Grid2, IconButton, Typography } from "@mui/material";
+import { Box, Button, Card, CardActions, CardContent, CircularProgress, Divider, Grid2, IconButton, Paper, Typography } from "@mui/material";
 import { ArrowBack, Delete, Edit, Print } from "@mui/icons-material";
 import DeleteDialog from "../../components/DeleteDialog";
 import BasicAlert from "../../components/BasicAlert";
@@ -117,13 +117,14 @@ export default function BillDetailsScreen() {
 
     return (
         <>
+            {/* Title Bar */}
             <Box sx={{ display: "flex", alignItems: "center", columnGap: 1, marginTop: 2 }}>
                 <Link to="/billing">
                     <IconButton>
                         <ArrowBack />
                     </IconButton>
                 </Link>
-                <Typography variant="h6" fontWeight="bold">Bill Details</Typography>
+                <Typography variant="h5" fontWeight="bold">Bill Details</Typography>
             </Box>
 
             <Box sx={{ mx: 5, mt: 4 }}>
@@ -133,7 +134,7 @@ export default function BillDetailsScreen() {
                     onClose={() => setAlert(prev => ({ ...prev, open: false }))}
                 />
 
-                <Card sx={{ p: 2 }}>
+                <Card sx={{ p: 2, width: bill.loyaltyMember ? "100%" : "50%" }}>
                     <CardContent>
                         {loading.bill ? (
                             <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -142,13 +143,15 @@ export default function BillDetailsScreen() {
                         ) :
                             (
                                 <Grid2 container spacing={8}>
-                                    <Grid2 size={6}>
+                                    <Grid2 size={bill.loyaltyMember ? 6 : 12}>
                                         <BillDetails bill={bill} />
                                     </Grid2>
-                                    <Grid2 size={6}>
-                                        {/* Loyalty member details */}
-                                        <LoyaltyMemberDetails bill={bill} />
-                                    </Grid2>
+                                    {/* Loyalty member details */
+                                        bill.loyaltyMember &&
+                                        <Grid2 size={6}>
+                                            <LoyaltyMemberDetails bill={bill} />
+                                        </Grid2>
+                                    }
                                 </Grid2>
                             )
                         }
@@ -162,7 +165,7 @@ export default function BillDetailsScreen() {
                             disabled={buttonDisable}
                             id="printBtn"
                         >
-                            Print
+                            Generate Receipt
                         </Button>
                         <Button
                             startIcon={<Edit />}
@@ -281,7 +284,7 @@ const LoyaltyMemberDetails = ({ bill }: { bill: BillingDataType }) => {
     return (
         bill.loyaltyMember &&
         (
-            <Box sx={{ backgroundColor: grey[200], borderRadius: 2, paddingX: 4, paddingY: 3 }}>
+            <Paper sx={{ backgroundColor: grey[200], paddingX: 4, paddingY: 3 }}>
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <Typography variant="h6">Loyalty Member Details</Typography>
                 </Box>
@@ -291,7 +294,7 @@ const LoyaltyMemberDetails = ({ bill }: { bill: BillingDataType }) => {
                     <Typography>Points Granted: {bill.pointsGranted}</Typography>
                     <Typography>Total Points: {bill.loyaltyMember.points}</Typography>
                 </Box>
-            </Box>
+            </Paper>
         )
     );
 };

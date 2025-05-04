@@ -1,15 +1,14 @@
 package com.robustedge.smartpos_backend.services;
 
+import com.robustedge.smartpos_backend.chart_pdf_generators.BillingChartGenerator;
 import com.robustedge.smartpos_backend.config.ApiRequestException;
-import com.robustedge.smartpos_backend.models.Bill;
-import com.robustedge.smartpos_backend.models.BillingRecord;
-import com.robustedge.smartpos_backend.models.LoyaltyMember;
-import com.robustedge.smartpos_backend.models.Product;
-import com.robustedge.smartpos_backend.report_generators.ReceiptGenerator;
+import com.robustedge.smartpos_backend.models.*;
+import com.robustedge.smartpos_backend.other_pdf_generators.ReceiptGenerator;
 import com.robustedge.smartpos_backend.repositories.BillRepository;
 import com.robustedge.smartpos_backend.repositories.BillingRecordRepository;
 import com.robustedge.smartpos_backend.repositories.LoyaltyMemberRepository;
 import com.robustedge.smartpos_backend.repositories.ProductRepository;
+import com.robustedge.smartpos_backend.table_pdf_generators.BillingTableGenerator;
 import com.robustedge.smartpos_backend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -37,14 +38,11 @@ public class BillService {
     private LoyaltyMemberRepository loyaltyMemberRepository;
 
     public void createBill(Bill bill, boolean redeemPoints) {
+        // Check if stock is available for each product in the bill
         checkForSufficientStockLevel(bill.getBillingRecords());
 
         // Validate paid amount
-        if (bill.getPaidAmount() == 0.0) {
-            throw new ApiRequestException("Please enter paid amount to proceed.");
-        } else if (bill.getPaidAmount() < bill.getTotal()) {
-            throw new ApiRequestException("Cannot proceed. Paid amount is less than the total price.");
-        }
+        validatePaidAmount(bill.getPaidAmount(), bill.getTotal());
 
         double total = 0;
         for (BillingRecord billingRecord: bill.getBillingRecords()) {
@@ -65,7 +63,8 @@ public class BillService {
 
         LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
         if (loyaltyMember != null) {
-            double pointsGranted = calculatePointsGranted(total, bill.getBillingRecords());
+            // Calculate points granted
+            double pointsGranted = calculatePointsGranted(total);
 
             // Set points granted
             bill.setPointsGranted(pointsGranted);
@@ -78,6 +77,7 @@ public class BillService {
             loyaltyMemberRepository.save(loyaltyMember);
         }
 
+        // Save bill and generate receipt
         Bill savedBill = repository.save(bill);
         generateReceipt(savedBill);
     }
@@ -119,7 +119,14 @@ public class BillService {
             return;
         }
 
+        // Check if stock is available for each product in the bill
         checkForSufficientStockLevel(bill.getBillingRecords());
+
+        // Validate paid amount
+        validatePaidAmount(bill.getPaidAmount(), bill.getTotal());
+
+        // Get old bill
+        Bill oldBill = repository.findById(bill.getId()).orElseThrow();
 
         double total = 0;
         for (BillingRecord billingRecord : bill.getBillingRecords()) {
@@ -129,7 +136,7 @@ public class BillService {
             // Update product quantity
             BillingRecord oldBillingRecord = billingRecordRepository.findById(billingRecord.getId()).orElseThrow();
             Product product = billingRecord.getProduct();
-            product.setStockLevel(product.getStockLevel() - billingRecord.getQuantity() + oldBillingRecord.getQuantity());
+            product.setStockLevel(product.getStockLevel() + oldBillingRecord.getQuantity() - billingRecord.getQuantity());
             productRepository.save(product);
         }
 
@@ -137,16 +144,27 @@ public class BillService {
         bill.setTotal(total);
 
         // Set points granted
-        double pointsGranted = calculatePointsGranted(total, bill.getBillingRecords());
+        double pointsGranted = calculatePointsGranted(total);
         bill.setPointsGranted(pointsGranted);
 
         // Update loyalty member points
         LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
-        loyaltyMember.setPoints(bill.getPointsRedeemed() > 0 ? pointsGranted : loyaltyMember.getPoints() + pointsGranted);
-        loyaltyMemberRepository.save(loyaltyMember);
+        if (loyaltyMember != null) {
+            loyaltyMember.setPoints(bill.getPointsRedeemed() > 0 ? pointsGranted : loyaltyMember.getPoints() - oldBill.getPointsGranted() + pointsGranted);
+            loyaltyMemberRepository.save(loyaltyMember);
+        }
 
+        // Save bill and generate receipt
         repository.save(bill);
         generateReceipt(bill);
+    }
+
+    private void validatePaidAmount(double paidAmount, double total) {
+        if (paidAmount == 0.0) {
+            throw new ApiRequestException("Please enter paid amount to proceed.");
+        } else if (paidAmount < total) {
+            throw new ApiRequestException("Cannot proceed. Paid amount is less than the total price.");
+        }
     }
 
     public void printBill(Integer billId) {
@@ -155,16 +173,19 @@ public class BillService {
     }
 
     private void generateReceipt(Bill bill) {
-        String systemUser = System.getProperty("user.name");
-        String fileName = "receipt_" + Utils.getDateTimeFileName();
-        String filePath = "C:\\Users\\" + systemUser + "\\Documents\\SmartPOS\\Receipts\\" + fileName + ".pdf";
+        // Construct the file path
+        String fileName = "receipt_" + Utils.getDateTimeFileName() + ".pdf";
 
-        ReceiptGenerator receiptGenerator = new ReceiptGenerator(bill, filePath);
+        // Generate the receipt
+        ReceiptGenerator receiptGenerator = new ReceiptGenerator(bill, Utils.getReportFolderDirectory("Receipts", fileName));
         receiptGenerator.generate();
     }
 
-    private double calculatePointsGranted(double total, List<BillingRecord> billingRecords) {
-        return (double) Math.round(total / 1000 * 100) / 100;
+    private double calculatePointsGranted(double total) {
+        BigDecimal totalBD = BigDecimal.valueOf(total);
+        return totalBD
+                .divide(BigDecimal.valueOf(1000), 2, RoundingMode.HALF_UP)
+                .doubleValue();
     }
 
     private void checkForSufficientStockLevel(List<BillingRecord> billingRecords) {
@@ -175,5 +196,30 @@ public class BillService {
                 throw new ApiRequestException(product.getName() + " has no sufficient stock level.");
             }
         }
+    }
+
+    public void generateChart() {
+        // Get bills
+        List<Object[]> bills = repository.findTop5BillsByTotalPrice();
+
+        // Construct the file name
+        String fileName = "chart_" + Utils.getDateTimeFileName() + ".pdf";
+
+        // Generate report
+        BillingChartGenerator reportGenerator = new BillingChartGenerator(bills);
+        reportGenerator.buildChart(Utils.getReportFolderDirectory("BillingReports", fileName));
+    }
+
+    public void generateTableReport() {
+        List<Bill> bills = getAllBills();
+
+        String fileName = "table_" + Utils.getDateTimeFileName() + ".pdf";
+
+        BillingTableGenerator pdfGenerator = new BillingTableGenerator(bills);
+        pdfGenerator.initialize(Utils.getReportFolderDirectory("BillingReports", fileName));
+        pdfGenerator.addMetaData();
+        pdfGenerator.addHeading("Bills");
+        pdfGenerator.addTable();
+        pdfGenerator.build();
     }
 }
