@@ -2,6 +2,7 @@ package com.robustedge.smartpos_backend.controllers;
 
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.services.ProductService;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -65,4 +66,15 @@ public class ProductController {
         service.generateTableReport();
     }
 
+    /*CUSTOM BARCODE REQUEST*/
+    @GetMapping("/generate_custom_barcode")
+    public void generateCustomBarcode(@RequestParam(name = "productID") Integer productId) {
+        try {
+            service.generateCustomBarcode(productId);
+            System.out.println("Generate custom barcode request recieved!");
+        }catch (Exception ex) {
+            System.out.println("Cause: " + ex.getCause());
+            System.out.println("Error: " + ex.getMessage());
+        }
+    }
 }

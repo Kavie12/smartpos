@@ -27,6 +27,9 @@ const AddEmployeeScreen = RouteLoader(lazy(() => import("../pages/Employees/AddE
 const UpdateEmployeeScreen = RouteLoader(lazy(() => import("../pages/Employees/UpdateEmployeeScreen")));
 const CreateCredentialsScreen = RouteLoader(lazy(() => import("../pages/Employees/CreateCredentialsScreen")));
 
+//profile route
+const EmpolyeeProfile = RouteLoader(lazy(() => import("../pages/Employees/EmployeeProfile")));
+
 
 export default createHashRouter([
     {
@@ -93,6 +96,13 @@ export default createHashRouter([
                 children: [
                     { index: true, element: <ReportsScreen /> },
                     { path: "" },
+                ]
+            },
+            {
+                path: "profile",
+                children: [
+                    {index: true, element: <EmpolyeeProfile/>},
+                    {path: ""}
                 ]
             }
         ]
