@@ -1,5 +1,6 @@
 package com.robustedge.smartpos_backend.controllers;
 
+import com.robustedge.smartpos_backend.dto.ProductRequest;
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.services.ProductService;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -42,8 +43,8 @@ public class ProductController {
     }
 
     @PostMapping("/add")
-    public void addProduct(@RequestBody Product product) {
-        service.addProduct(product);
+    public void addProduct(@RequestBody ProductRequest productRequest) {
+        service.addProduct(productRequest);
     }
 
     @PutMapping("/update")
@@ -66,15 +67,13 @@ public class ProductController {
         service.generateTableReport();
     }
 
-    /*CUSTOM BARCODE REQUEST*/
-    @GetMapping("/generate_custom_barcode")
-    public void generateCustomBarcode(@RequestParam(name = "productID") Integer productId) {
-        try {
-            service.generateCustomBarcode(productId);
-            System.out.println("Generate custom barcode request recieved!");
-        }catch (Exception ex) {
-            System.out.println("Cause: " + ex.getCause());
-            System.out.println("Error: " + ex.getMessage());
-        }
+    @GetMapping("/fetch_custom_barcode")
+    public String fetchCustomBarcode() {
+        return service.fetchCustomBarcode();
+    }
+
+    @GetMapping("/generate_custom_barcode_pdf")
+    public void generateCustomBarcodePDF(@RequestParam(name = "productId") Integer productId) {
+        service.generateCustomBarcodePDF(productId);
     }
 }

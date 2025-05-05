@@ -16,7 +16,7 @@ public class BillingTableGenerator extends SimplePDFTableGenerator {
 
     @Override
     String[] getTableHeaders() {
-        return new String[]{"ID", "Date", "Loyalty Member", "Points Granted", "Points Redeemed", "Sub Total (Rs.)", "Total (Rs.)"};
+        return new String[]{"ID", "Date", "Loyalty Member", "Points Granted", "Points Redeemed", "Sub Total", "Total"};
     }
 
     @Override
@@ -37,8 +37,8 @@ public class BillingTableGenerator extends SimplePDFTableGenerator {
 
             row.add(String.valueOf(b.getPointsGranted()));
             row.add(String.valueOf(b.getPointsRedeemed()));
-            row.add(String.valueOf(b.getTotal()));
-            row.add(String.valueOf(b.getTotal() - b.getPointsRedeemed()));
+            row.add("Rs. " + String.valueOf(b.getTotal()));
+            row.add("Rs. " + String.valueOf(b.getTotal() - b.getPointsRedeemed()));
 
             tableData.add(row);
         }

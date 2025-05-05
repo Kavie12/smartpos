@@ -1,6 +1,6 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Box, Button, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
 import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { ProductDataType } from '../../types/types';
@@ -8,7 +8,6 @@ import { Link, useNavigate } from 'react-router';
 import DeleteDialog from '../../components/DeleteDialog';
 import BasicAlert from '../../components/BasicAlert';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
-// import ConfirmDialog from '../../components/ConfirmDialog';
 
 export default function ProductsScreen() {
 
@@ -36,21 +35,6 @@ export default function ProductsScreen() {
         open: false,
         id: null
     });
-
-    // /*Custom barcode generation confirmation dialog*/
-    // const [confirmDialog, setConfirmDialog] = useState<{ open: boolean, id: GridRowId | null }>({
-    //     open: false,
-    //     id: null
-    // });
-
-    function showAlert(message: string) {
-        setAlert({
-            open: true, 
-            type: "success", 
-            message
-        });
-    }
-
     const [searchKey, setSearchKey] = useState<string>("");
 
     const columns: GridColDef[] = [
@@ -61,13 +45,26 @@ export default function ProductsScreen() {
             headerAlign: "left",
             align: "left",
             sortable: false,
-            flex: 1
+            flex: 0.5
         },
         {
             field: "barcode",
             headerName: "Barcode",
             sortable: false,
-            flex: 2
+            flex: 1.5,
+            renderCell: (params) => {
+                return (
+                    <Stack direction="row" spacing={1}>
+                        <Typography variant="inherit">{params.value}</Typography>
+                        {
+                            params.row.customBarcode &&
+                            <IconButton size="small" onClick={() => generateCustomBarcodePDF(params.row.id)}>
+                                <QrCode2Icon fontSize="small" />
+                            </IconButton>
+                        }
+                    </Stack>
+                );
+            }
         },
         {
             field: "name",
@@ -79,7 +76,7 @@ export default function ProductsScreen() {
             field: "supplierName",
             headerName: "Supplier Name",
             sortable: false,
-            flex: 2,
+            flex: 1.5,
             valueGetter: (_, row) => {
                 return row.supplier.name;
             }
@@ -140,40 +137,31 @@ export default function ProductsScreen() {
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
                         id={`delete_${id}`}
-                    />,
-                    /*Barcode gen icon*/
-                    <GridActionsCellItem
-                    icon={<QrCode2Icon/>}
-                    label="Delete"
-                    color="inherit"
-                    onClick={() => generateCustomBarcode(id)}
-                    id={`confirm_${id}`}
                     />
                 ];
             }
         }
     ];
 
-    /*Generate Barcode Function*/
-    const generateCustomBarcode = (id: GridRowId): void => {
-        AuthApi.get("/products/generate_custom_barcode", {  
+    const generateCustomBarcodePDF = (id: GridRowId): void => {
+        AuthApi.get("/products/generate_custom_barcode_pdf", {
             params: {
-                productID: id
+                productId: id
             }
         })
             .then(() => {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Custom barcode generated successfully."
+                    message: "Custom barcode PDF generated successfully."
                 });
             })
             .catch(err => {
-                console.error("Error generating Custom Barcode!.", err);
+                console.error("Error generating custom barcode PDF.", err);
                 setAlert({
                     open: true,
                     type: "error",
-                    message: "Error generating custom Barcode!."
+                    message: "Error generating custom barcode PDF."
                 });
             });
     };

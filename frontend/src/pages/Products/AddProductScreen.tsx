@@ -1,5 +1,5 @@
 import { ArrowBack } from "@mui/icons-material";
-import { Autocomplete, Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, Checkbox, FormControlLabel, IconButton, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { AuthApi } from "../../services/Api";
@@ -22,6 +22,7 @@ export default function AddProductScreen() {
         retailPrice: 0,
         stockLevel: 0
     });
+    const [customBarcode, setCustomBarcode] = useState<boolean>();
 
     const resetFormData = (): void => {
         setFormData({
@@ -53,7 +54,10 @@ export default function AddProductScreen() {
     const addProduct = (): void => {
         setLoading(prev => ({ ...prev, add: true }));
 
-        AuthApi.post("/products/add", formData)
+        AuthApi.post("/products/add", {
+            product: formData,
+            customBarcode: customBarcode
+        })
             .then(() => {
                 setAlert({
                     open: true,
@@ -75,9 +79,30 @@ export default function AddProductScreen() {
             });
     };
 
+    const fetchCustomBarcode = (): void => {
+        AuthApi.get("/products/fetch_custom_barcode")
+            .then(res => {
+                setFormData(prev => ({ ...prev, barcode: res.data }));
+            })
+            .catch(err => {
+                console.error("Error fetching custom barcode:", err);
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Failed fetching custom barcode."
+                });
+            });
+    };
+
     useEffect(() => {
         fetchSuppliers();
     }, []);
+
+    useEffect(() => {
+        if (customBarcode) {
+            fetchCustomBarcode();
+        }
+    }, [customBarcode]);
 
     return (
         <>
@@ -108,6 +133,18 @@ export default function AddProductScreen() {
                         sx={{ width: 400 }}
                         onChange={(e) => setFormData(prev => ({ ...prev, barcode: e.target.value }))}
                         autoFocus
+                        disabled={customBarcode}
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                size="small"
+                                value={customBarcode}
+                                onChange={e => setCustomBarcode(e.target.checked)}
+                            />
+                        }
+                        label={<Typography>Custome Barcode</Typography>}
+                        sx={{ mt: 2 }}
                     />
                     <Autocomplete
                         options={suppliers}

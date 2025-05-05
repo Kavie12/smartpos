@@ -1,9 +1,9 @@
 import { ArrowBack } from "@mui/icons-material";
-import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, FormControlLabel, IconButton, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router";
 import { AuthApi } from "../../services/Api";
-import { EmployeeDataType } from "../../types/types";
+import { CredentialsType, EmployeeDataType } from "../../types/types";
 import BasicAlert from "../../components/BasicAlert";
 
 export default function AddEmployeeScreen() {
@@ -22,6 +22,13 @@ export default function AddEmployeeScreen() {
         salary: 0
     });
 
+    const [makeSystemUser, setMakeSystemUser] = useState<boolean>(false);
+
+    const [credentials, setCredentials] = useState<CredentialsType>({
+        username: "",
+        password: ""
+    });
+
     const resetFormData = (): void => {
         setFormData({
             firstName: "",
@@ -30,11 +37,20 @@ export default function AddEmployeeScreen() {
             email: "",
             salary: 0
         });
+        setMakeSystemUser(false);
+        setCredentials({
+            username: "",
+            password: ""
+        });
     };
 
     const addEmployee = (): void => {
         setLoading(true);
-        AuthApi.post("/employees/add", formData)
+        AuthApi.post("/employees/add", {
+            employee: formData,
+            makeSystemUser: makeSystemUser,
+            credentials: credentials
+        })
             .then(() => {
                 setAlert({
                     open: true,
@@ -122,6 +138,41 @@ export default function AddEmployeeScreen() {
                         sx={{ width: 400, mt: 2 }}
                         onChange={(e) => setFormData(prev => ({ ...prev, salary: parseFloat(e.target.value) }))}
                     />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                size="small"
+                                value={makeSystemUser}
+                                onChange={e => setMakeSystemUser(e.target.checked)}
+                            />
+                        }
+                        label={<Typography>System User</Typography>}
+                        sx={{ mt: 2 }}
+                    />
+                    {
+                        makeSystemUser &&
+                        <>
+                            <TextField
+                                margin="dense"
+                                id="username"
+                                name="username"
+                                label="Username"
+                                value={credentials.username}
+                                sx={{ width: 400, mt: 2 }}
+                                onChange={(e) => setCredentials(prev => ({ ...prev, username: e.target.value }))}
+                            />
+                            <TextField
+                                margin="dense"
+                                id="password"
+                                name="password"
+                                label="Password"
+                                type="password"
+                                value={credentials.password}
+                                sx={{ width: 400, mt: 2 }}
+                                onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+                            />
+                        </>
+                    }
                     <Button
                         variant="contained"
                         type="submit"
