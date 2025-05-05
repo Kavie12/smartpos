@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 import { NoAuthApi } from "../services/Api";
+import { AuthObjectType } from "../types/types";
 
 type AuthContextType = {
     login: (username: string, password: string) => void;
@@ -31,8 +32,11 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         setIsProcessing(true);
         NoAuthApi.post("/auth/authenticate", { username, password })
             .then(res => {
-                const token = res.data;
-                localStorage.setItem("jwtToken", token);
+                const auth: AuthObjectType = {
+                    username: username,
+                    token: res.data
+                };
+                localStorage.setItem("auth", JSON.stringify(auth));
                 setIsAuthenticated(true);
             })
             .catch(err => {

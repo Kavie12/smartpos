@@ -26,10 +26,8 @@ const EmployeesScreen = RouteLoader(lazy(() => import("../pages/Employees/Employ
 const AddEmployeeScreen = RouteLoader(lazy(() => import("../pages/Employees/AddEmployeeScreen")));
 const UpdateEmployeeScreen = RouteLoader(lazy(() => import("../pages/Employees/UpdateEmployeeScreen")));
 const CreateCredentialsScreen = RouteLoader(lazy(() => import("../pages/Employees/CreateCredentialsScreen")));
-
-//profile route
-const EmpolyeeProfile = RouteLoader(lazy(() => import("../pages/Employees/EmployeeProfile")));
-
+const EmployeeProfileScreen = RouteLoader(lazy(() => import("../pages/Settings/EmployeeProfileScreen")));
+const ChangePasswordScreen = RouteLoader(lazy(() => import("../pages/Settings/ChangePasswordScreen")));
 
 export default createHashRouter([
     {
@@ -99,10 +97,10 @@ export default createHashRouter([
                 ]
             },
             {
-                path: "profile",
+                path: "settings",
                 children: [
-                    {index: true, element: <EmpolyeeProfile/>},
-                    {path: ""}
+                    { path: "profile", element: <EmployeeProfileScreen /> },
+                    { path: "change_password", element: <ChangePasswordScreen /> }
                 ]
             }
         ]

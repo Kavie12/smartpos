@@ -3,6 +3,11 @@ export type CredentialsType = {
     password: string;
 };
 
+export type AuthObjectType = {
+    username: string;
+    token: string;
+}
+
 export type BasicAlertType = {
     open: boolean,
     type: "error" | "success" | null,
@@ -31,6 +36,7 @@ export type ProductDataType = {
     wholesalePrice: number;
     retailPrice: number;
     stockLevel: number;
+    customBarcode?: boolean | null;
 };
 
 export type LoyaltyMemberDataType = {

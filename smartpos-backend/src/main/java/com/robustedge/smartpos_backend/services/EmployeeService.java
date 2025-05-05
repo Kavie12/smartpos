@@ -1,7 +1,7 @@
 package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
-import com.robustedge.smartpos_backend.config.UserRoles;
+import com.robustedge.smartpos_backend.config.UserRole;
 import com.robustedge.smartpos_backend.dto.EmployeeRequest;
 import com.robustedge.smartpos_backend.models.Employee;
 import com.robustedge.smartpos_backend.chart_pdf_generators.EmployeeChartGenerator;
@@ -47,7 +47,7 @@ public class EmployeeService {
             hashPassword(credentials);
 
             // Set role as employee
-            credentials.setRole(UserRoles.EMPLOYEE);
+            credentials.setRole(UserRole.EMPLOYEE);
 
             // Set the credentials
             employee.setUser(credentials);
@@ -157,7 +157,7 @@ public class EmployeeService {
         hashPassword(credentials);
 
         // Set role as employee
-        credentials.setRole(UserRoles.EMPLOYEE);
+        credentials.setRole(UserRole.EMPLOYEE);
 
         // Save credentials
         employee.setUser(credentials);
