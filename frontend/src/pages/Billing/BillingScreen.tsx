@@ -74,6 +74,20 @@ export default function BillingScreen() {
             }
         },
         {
+            field: "outstandingAmount",
+            headerName: "Outstanding",
+            type: "number",
+            align: "left",
+            headerAlign: "left",
+            sortable: false,
+            flex: 1,
+            valueGetter: (_, row) => {
+                const total = row.total ?? 0;
+                const paid = row.paidAmount ?? 0;
+                return paid < total ? "Rs. " + (total - paid) : "-";
+            }
+        },
+        {
             field: "actions",
             headerName: "View",
             type: "actions",

@@ -200,7 +200,7 @@ export default function CreateBillScreen() {
 
                                 {/* Sub Total */}
                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                    <Typography fontWeight={"bold"}>Sub Total:</Typography>
+                                    <Typography fontWeight={"bold"}>Sub Total</Typography>
                                     <Typography fontWeight={"bold"}>Rs. {bill.total}</Typography>
                                 </Box>
 
@@ -208,7 +208,7 @@ export default function CreateBillScreen() {
                                     /* Points Redeemed */
                                     bill.pointsRedeemed > 0 && (
                                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                            <Typography fontWeight={"bold"}>Points Redeemed:</Typography>
+                                            <Typography fontWeight={"bold"}>Points Redeemed</Typography>
                                             <Typography fontWeight={"bold"}>{bill.pointsRedeemed}</Typography>
                                         </Box>
                                     )
@@ -216,7 +216,7 @@ export default function CreateBillScreen() {
 
                                 {/* Total */}
                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
-                                    <Typography fontWeight={"bold"}>Total:</Typography>
+                                    <Typography fontWeight={"bold"}>Total</Typography>
                                     <Typography fontWeight={"bold"}>Rs. {bill.total - bill.pointsRedeemed}</Typography>
                                 </Box>
 
@@ -224,7 +224,7 @@ export default function CreateBillScreen() {
                                     /* Paid Amount */
                                     bill.billingRecords.length > 0 &&
                                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                        <Typography fontWeight={"bold"}>Paid Amount:</Typography>
+                                        <Typography fontWeight={"bold"}>Paid Amount</Typography>
                                         <Box>
                                             <TextField
                                                 id="paidAmount"
@@ -250,8 +250,8 @@ export default function CreateBillScreen() {
                                     /* Balance */
                                     bill.billingRecords.length > 0 && bill.paidAmount != undefined && bill.paidAmount > 0 &&
                                     < Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                        <Typography fontWeight={"bold"}>Balance:</Typography>
-                                        <Typography fontWeight={"bold"}>Rs. {bill.paidAmount - bill.total}</Typography>
+                                        <Typography fontWeight={"bold"}>{bill.paidAmount < bill.total ? "Outstanding" : "Balance"}</Typography>
+                                        <Typography fontWeight={"bold"}>Rs. {Math.abs(bill.paidAmount - bill.total)}</Typography>
                                     </Box>
                                 }
 

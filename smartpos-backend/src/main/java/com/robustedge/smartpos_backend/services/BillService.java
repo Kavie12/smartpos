@@ -2,6 +2,7 @@ package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.chart_pdf_generators.BillingChartGenerator;
 import com.robustedge.smartpos_backend.config.ApiRequestException;
+import com.robustedge.smartpos_backend.dto.UpdateBillRequest;
 import com.robustedge.smartpos_backend.models.*;
 import com.robustedge.smartpos_backend.other_pdf_generators.ReceiptGenerator;
 import com.robustedge.smartpos_backend.repositories.BillRepository;
@@ -42,7 +43,7 @@ public class BillService {
         checkForSufficientStockLevel(bill.getBillingRecords());
 
         // Validate paid amount
-        validatePaidAmount(bill.getPaidAmount(), bill.getTotal());
+        validatePaidAmount(bill);
 
         double total = 0;
         for (BillingRecord billingRecord: bill.getBillingRecords()) {
@@ -114,16 +115,20 @@ public class BillService {
         repository.deleteById(billId);
     }
 
-    public void updateBill(Bill bill) {
+    public void updateBill(UpdateBillRequest updateBillRequest) {
+        Bill bill = updateBillRequest.getBill();
         if (bill.getId() == null) {
             return;
         }
+
+        // Update paid amount
+        bill.setPaidAmount(bill.getPaidAmount() + updateBillRequest.getNewPaymentAmount());
 
         // Check if stock is available for each product in the bill
         checkForSufficientStockLevel(bill.getBillingRecords());
 
         // Validate paid amount
-        validatePaidAmount(bill.getPaidAmount(), bill.getTotal());
+        validatePaidAmount(bill);
 
         // Get old bill
         Bill oldBill = repository.findById(bill.getId()).orElseThrow();
@@ -159,11 +164,19 @@ public class BillService {
         generateReceipt(bill);
     }
 
-    private void validatePaidAmount(double paidAmount, double total) {
+    private void validatePaidAmount(Bill bill) {
+        double paidAmount = bill.getPaidAmount();
+        double total = bill.getTotal();
+
         if (paidAmount == 0.0) {
             throw new ApiRequestException("Please enter paid amount to proceed.");
-        } else if (paidAmount < total) {
-            throw new ApiRequestException("Cannot proceed. Paid amount is less than the total price.");
+        }
+
+        // Allow partial payment only for loyalty members
+        if (paidAmount < total) {
+            if (bill.getLoyaltyMember() == null) {
+                throw new ApiRequestException("Only loyalty members can pay partially. Please enter the full amount.");
+            }
         }
     }
 

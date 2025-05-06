@@ -1,6 +1,7 @@
 package com.robustedge.smartpos_backend.controllers;
 
 import com.robustedge.smartpos_backend.dto.BillRequest;
+import com.robustedge.smartpos_backend.dto.UpdateBillRequest;
 import com.robustedge.smartpos_backend.models.Bill;
 import com.robustedge.smartpos_backend.services.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +44,8 @@ public class BillController {
     }
 
     @PutMapping("update")
-    public void updateBill(@RequestBody Bill bill) {
-        service.updateBill(bill);
+    public void updateBill(@RequestBody UpdateBillRequest updateBillRequest) {
+        service.updateBill(updateBillRequest);
     }
 
     @GetMapping("print")

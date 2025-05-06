@@ -239,7 +239,7 @@ const BillDetails = ({ bill }: { bill: BillingDataType }) => {
 
             {/* Sub Total */}
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                <Typography fontWeight={"bold"}>Sub Total:</Typography>
+                <Typography fontWeight={"bold"}>Sub Total</Typography>
                 <Typography fontWeight={"bold"}>Rs. {bill.total}</Typography>
             </Box>
 
@@ -247,7 +247,7 @@ const BillDetails = ({ bill }: { bill: BillingDataType }) => {
                 /* Points Redeemed */
                 bill.pointsRedeemed > 0 && (
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 1 }}>
-                        <Typography fontWeight={"bold"}>Points Redeemed:</Typography>
+                        <Typography fontWeight={"bold"}>Points Redeemed</Typography>
                         <Typography fontWeight={"bold"}>{bill.pointsRedeemed}</Typography>
                     </Box>
                 )
@@ -255,26 +255,28 @@ const BillDetails = ({ bill }: { bill: BillingDataType }) => {
 
             {/* Total */}
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 1 }}>
-                <Typography fontWeight={"bold"}>Total:</Typography>
+                <Typography fontWeight={"bold"}>Total</Typography>
                 <Typography fontWeight={"bold"}>Rs. {bill.total - bill.pointsRedeemed}</Typography>
             </Box>
 
             {
-                /* Paid Amount */
-                bill.paidAmount != undefined &&
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
-                    <Typography fontWeight={"bold"}>Paid Amount:</Typography>
-                    <Typography fontWeight={"bold"}>Rs. {bill.paidAmount}</Typography>
-                </Box>
-            }
+                bill.paidAmount !== undefined && (
+                    <>
+                        {/* Paid Amount */}
+                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+                            <Typography fontWeight={"bold"}>Paid Amount</Typography>
+                            <Typography fontWeight={"bold"}>Rs. {bill.paidAmount}</Typography>
+                        </Box>
 
-            {
-                /* Balance */
-                bill.paidAmount != undefined &&
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 1 }}>
-                    <Typography fontWeight={"bold"}>Balance:</Typography>
-                    <Typography fontWeight={"bold"}>Rs. {bill.paidAmount - bill.total}</Typography>
-                </Box>
+                        {
+                            // Outstanding / Balance
+                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 1 }}>
+                                <Typography fontWeight={"bold"}>{bill.paidAmount < bill.total ? "Outstanding" : "Balance"}</Typography>
+                                <Typography fontWeight={"bold"}>Rs. {Math.abs(bill.total - bill.paidAmount)}</Typography>
+                            </Box>
+                        }
+                    </>
+                )
             }
         </>
     );
