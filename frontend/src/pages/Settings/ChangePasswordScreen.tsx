@@ -61,7 +61,7 @@ export default function ChangePasswordScreen() {
     };
 
     useEffect(() => {
-        setAuthObject(JSON.parse(localStorage.getItem("auth") ?? '{}'));
+        setAuthObject(JSON.parse(localStorage.getItem("authObject") ?? '{}'));
     }, []);
 
     return (
@@ -109,10 +109,8 @@ export default function ChangePasswordScreen() {
                     />
                     <Button
                         variant="contained"
-                        sx={{ mt: 2 }}
+                        sx={{ mt: 1 }}
                         type="submit"
-                        disableElevation
-                        size="large"
                         id="saveBtn"
                         loading={loading}
                     >

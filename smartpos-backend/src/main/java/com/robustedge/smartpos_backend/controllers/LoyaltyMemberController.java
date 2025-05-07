@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -56,11 +57,13 @@ public class LoyaltyMemberController {
         service.deleteLoyaltyMember(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/generate_chart")
     public void generateChart() {
         service.generateChart();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/generate_table_report")
     public void generateTableReport() {
         service.generateTableReport();

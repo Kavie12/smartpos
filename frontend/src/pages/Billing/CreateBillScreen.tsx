@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { AuthApi } from "../../services/Api";
-import { Box, Button, Checkbox, Divider, FormControlLabel, Grid2, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Divider, FormControlLabel, Grid2, IconButton, InputAdornment, TextField, Tooltip, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import QuantityCounter from "../../components/QuantityCounter";
 import { Link } from "react-router";
 import { BillingRecordDataType, LoyaltyMemberDataType } from "../../types/types";
-import { ArrowBack, Cancel, Delete } from "@mui/icons-material";
+import { ArrowBack, Cancel, Delete, Help } from "@mui/icons-material";
 import { useBilling } from "../../context/BillingContext";
 import BasicAlert from "../../components/BasicAlert";
 
@@ -364,13 +364,19 @@ const LoyaltyMemberDetails = ({ data }: { data: LoyaltyMemberDataType | null }) 
                 }
             </Box>
             <Box sx={{ mt: 2, display: "flex", alignItems: "center", justifyContent: "end" }}>
+                {
+                    data.points < 25 &&
+                    <Tooltip title={`Loyalty points must be at least 25 to redeem.`}>
+                        <Help color="action" fontSize="small" />
+                    </Tooltip>
+                }
                 <FormControlLabel
                     control={
                         <Checkbox
                             size="small"
                             value={redeemPoints}
                             onChange={e => setRedeemPoints(e.target.checked)}
-                            disabled={data.points == 0}
+                            disabled={data.points < 25}
                         />
                     }
                     label={<Typography variant="body2">Redeem Points</Typography>}

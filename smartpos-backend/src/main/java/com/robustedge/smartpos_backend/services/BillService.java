@@ -70,8 +70,15 @@ public class BillService {
             // Set points granted
             bill.setPointsGranted(pointsGranted);
 
-            // set points redeemed
-            bill.setPointsRedeemed(redeemPoints ? loyaltyMember.getPoints() : 0);
+            // Set points redeemed
+            if (redeemPoints) {
+                if (loyaltyMember.getPoints() < 25) {
+                    throw new ApiRequestException("Loyalty points must be at least 25 to redeem.");
+                }
+                bill.setPointsRedeemed(loyaltyMember.getPoints());
+            } else {
+                bill.setPointsRedeemed(0);
+            }
 
             // Update loyalty member points
             loyaltyMember.setPoints(redeemPoints ? pointsGranted : loyaltyMember.getPoints() + pointsGranted);

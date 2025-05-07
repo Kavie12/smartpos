@@ -10,7 +10,7 @@ export const AuthApi = axios.create({
 
 AuthApi.interceptors.request.use(
     config => {
-        const authObject = JSON.parse(localStorage.getItem("auth") ?? '{}');
+        const authObject = JSON.parse(localStorage.getItem("authObject") ?? '{}');
         if (authObject) {
             config.headers.Authorization = `Bearer ${authObject.token}`;
         }

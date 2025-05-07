@@ -1,12 +1,14 @@
 package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "BillingRecord")
 @Table(name = "billing_records")
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class BillingRecord {
 

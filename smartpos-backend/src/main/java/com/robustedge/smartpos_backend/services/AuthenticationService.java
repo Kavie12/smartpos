@@ -1,8 +1,8 @@
 package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
+import com.robustedge.smartpos_backend.dto.AuthObjectResponse;
 import com.robustedge.smartpos_backend.dto.PasswordChangeRequest;
-import com.robustedge.smartpos_backend.dto.UserDetailsResponse;
 import com.robustedge.smartpos_backend.models.User;
 import com.robustedge.smartpos_backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class AuthenticationService {
         repository.save(user);
     }
 
-    public String authenticate(User user) {
+    public AuthObjectResponse authenticate(User user) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         user.getUsername(),
@@ -38,7 +38,16 @@ public class AuthenticationService {
                 )
         );
 
-        return jwtService.generateToken(user);
+        User completeUser = repository.findByUsername(user.getUsername()).orElseThrow();
+
+        String token = jwtService.generateToken(user);
+
+        return new AuthObjectResponse(
+                completeUser.getEmployee(),
+                completeUser.getUsername(),
+                completeUser.getRole().name(),
+                token
+        );
     }
 
     public void changePassword(PasswordChangeRequest passwordChangeRequest) {
@@ -63,13 +72,4 @@ public class AuthenticationService {
         repository.save(user);
     }
 
-    public UserDetailsResponse getUserDetails(String username) {
-        User user = repository.findByUsername(username).orElseThrow();
-
-        return new UserDetailsResponse(
-                user.getEmployee(),
-                user.getUsername(),
-                user.getRole().name()
-        );
-    }
 }

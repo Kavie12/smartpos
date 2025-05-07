@@ -25,7 +25,7 @@ export default function Reports() {
                 setAlert({
                     open: true,
                     type: "success",
-                    message: "Report generated successfully at Document/SmartPOS."
+                    message: "Report generated successfully."
                 });
             })
             .catch(() => {
@@ -94,7 +94,7 @@ export default function Reports() {
                     />
                     <ReportButton
                         title="Top Products by Stock Level"
-                        description="Generate a bar chart on top 5 products which has highest stock levels."
+                        description="Generate a bar chart on top 5 products which has highest profit."
                         generator={generateReport}
                         apiEndpoint="/products/generate_chart"
                     />

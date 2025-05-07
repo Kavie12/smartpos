@@ -1,7 +1,7 @@
 package com.robustedge.smartpos_backend.controllers;
 
+import com.robustedge.smartpos_backend.dto.AuthObjectResponse;
 import com.robustedge.smartpos_backend.dto.PasswordChangeRequest;
-import com.robustedge.smartpos_backend.dto.UserDetailsResponse;
 import com.robustedge.smartpos_backend.models.User;
 import com.robustedge.smartpos_backend.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,18 +15,13 @@ public class AuthenticationController {
     private AuthenticationService service;
 
     @PostMapping("/authenticate")
-    public String authenticate(@RequestBody User user) {
+    public AuthObjectResponse authenticate(@RequestBody User user) {
         return service.authenticate(user);
     }
 
     @PostMapping("/change_password")
     public void changePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
         service.changePassword(passwordChangeRequest);
-    }
-
-    @GetMapping("/get_user_details")
-    public UserDetailsResponse getUserDetails(String username) {
-        return service.getUserDetails(username);
     }
 
 }
