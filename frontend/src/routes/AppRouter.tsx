@@ -14,6 +14,7 @@ const UpdateBillScreen = RouteLoader(lazy(() => import("../pages/Billing/UpdateB
 const StockRecordsScreen = RouteLoader(lazy(() => import("../pages/StockRecords/StockRecordsScreen")));
 const AddStockRecordScreen = RouteLoader(lazy(() => import("../pages/StockRecords/AddStockRecordScreen")));
 const UpdateStockRecordScreen = RouteLoader(lazy(() => import("../pages/StockRecords/UpdateStockRecordScreen")));
+const LowStockProductsScreen = RouteLoader(lazy(() => import("../pages/StockRecords/LowStockProductsScreen")));
 const ProductsScreen = RouteLoader(lazy(() => import("../pages/Products/ProductsScreen")));
 const AddProductScreen = RouteLoader(lazy(() => import("../pages/Products/AddProductScreen")));
 const UpdateProductScreen = RouteLoader(lazy(() => import("../pages/Products/UpdateProductScreen")));
@@ -55,7 +56,8 @@ export default createHashRouter([
                 children: [
                     { index: true, element: <StockRecordsScreen /> },
                     { path: "add_stock_record", element: <AddStockRecordScreen /> },
-                    { path: "update_stock_record/:recordId", element: <UpdateStockRecordScreen /> }
+                    { path: "update_stock_record/:recordId", element: <UpdateStockRecordScreen /> },
+                    { path: "low_stock_products", element: <LowStockProductsScreen /> },
                 ]
             },
             {

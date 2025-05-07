@@ -89,13 +89,13 @@ const DashboardCard = ({ title, subtitle, icon, path }: DashboardCardType) => {
             <Card sx={{ height: 180 }}>
                 <CardActionArea sx={{ height: "100%" }} onClick={() => navigate(path)}>
                     <CardContent>
-                        <Stack alignItems="center" spacing={2}>
+                        <Stack alignItems="center" spacing={1}>
                             {icon}
                             <Stack textAlign="center" spacing={0.5}>
-                                <Typography variant="h5" fontWeight="bold" color="primary">
+                                <Typography variant="h6" fontWeight="bold" color="primary">
                                     {title}
                                 </Typography>
-                                <Typography variant="body1" color="primary">
+                                <Typography variant="body2" color="primary">
                                     {subtitle}
                                 </Typography>
                             </Stack>
