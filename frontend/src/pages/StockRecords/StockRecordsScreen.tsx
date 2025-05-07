@@ -197,6 +197,9 @@ export default function StockRecordsScreen() {
                         value={searchDate}
                         onChange={value => setSearchDate(value)}
                     />
+                    <Link to="./low_stock_products">
+                        <Button>Low Stock Products</Button>
+                    </Link>
                 </Box>
                 <Link to="./add_stock_record">
                     <Button startIcon={<Add />} id="addStockRecordBtn">

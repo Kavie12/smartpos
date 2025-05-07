@@ -16,11 +16,13 @@ export default function AddStockRecordScreen() {
     });
     const [products, setProducts] = useState<ProductDataType[]>([]);
     const [formData, setFormData] = useState<StockRecordType>({
+        product: null,
         stockAmount: 0
     });
 
     const resetFormData = (): void => {
         setFormData({
+            product: null,
             stockAmount: 0
         });
     };
