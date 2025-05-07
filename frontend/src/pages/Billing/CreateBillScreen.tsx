@@ -366,7 +366,7 @@ const LoyaltyMemberDetails = ({ data }: { data: LoyaltyMemberDataType | null }) 
             <Box sx={{ mt: 2, display: "flex", alignItems: "center", justifyContent: "end" }}>
                 {
                     data.points < 25 &&
-                    <Tooltip title={`Loyalty points must be at least 25 to redeem.`}>
+                    <Tooltip title={`There must be at least 25 points to redeem.`}>
                         <Help color="action" fontSize="small" />
                     </Tooltip>
                 }

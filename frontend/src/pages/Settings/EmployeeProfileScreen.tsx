@@ -1,6 +1,6 @@
 import { Person2 } from "@mui/icons-material";
-import { Avatar, Box, Button, Card, CardContent, CardHeader, Divider, Stack, Typography } from "@mui/material";
-import { ReactNode, useEffect, useState } from "react";
+import { Avatar, Box, Button, Card, CardActions, CardContent, CardHeader, Stack, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { AuthObjectType } from "../../types/types";
 import BasicAlert from "../../components/BasicAlert";
@@ -33,86 +33,49 @@ export default function EmployeeProfile() {
                 onClose={() => setAlert(prev => ({ ...prev, open: false }))}
             />
 
-            {/* Sections */}
-            <Stack direction="column" spacing={8} mt={4}>
+            <Card sx={{ width: "50%", padding: 1, mt: 4 }}>
+                <CardHeader
+                    title="Profile"
+                    sx={{
+                        typography: {
+                            fontWeight: "bold"
+                        }
+                    }}
+                    slotProps={{
+                        title: {
+                            fontWeight: "bold"
+                        }
+                    }}
+                />
+                <CardContent>
+                    <Stack direction="row" alignItems="center" spacing={2}>
+                        <Avatar sx={{ width: 48, height: 48 }}>
+                            <Person2 />
+                        </Avatar>
+                        <Stack direction="column">
+                            <Typography variant="h6">
+                                {
+                                    authObject?.employee ?
+                                        authObject.employee.firstName + " " + authObject.employee.lastName
+                                        :
+                                        (authObject?.role === "ADMIN" ? "Admin" : "Employee")
+                                }
+                            </Typography>
+                            <Typography variant="body2">{authObject?.username}</Typography>
+                        </Stack>
+                    </Stack>
 
-                {/* Section 1 */}
-                <Section sectionName="General">
-                    <Card sx={{ width: "50%", padding: 1 }}>
-                        <CardHeader
-                            title="Basic Details"
-                            sx={{
-                                typography: {
-                                    fontWeight: "bold"
-                                }
-                            }}
-                            slotProps={{
-                                title: {
-                                    fontWeight: "bold"
-                                }
-                            }}
-                        />
-                        <CardContent>
-                            <Stack direction="row" alignItems="center" spacing={2}>
-                                <Avatar sx={{ width: 48, height: 48 }}>
-                                    <Person2 />
-                                </Avatar>
-                                <Stack direction="column">
-                                    <Typography variant="h6">
-                                        {
-                                            authObject?.employee ?
-                                                authObject.employee.firstName + " " + authObject.employee.lastName
-                                                :
-                                                (authObject?.role === "ADMIN" ? "Admin" : "Employee")
-                                        }
-                                    </Typography>
-                                    <Typography variant="body2">{authObject?.username}</Typography>
-                                </Stack>
-                            </Stack>
-                        </CardContent>
-                    </Card>
-                </Section>
-
-                {/* Section 2 */}
-                <Section sectionName="Settings">
-                    <Card sx={{ width: "50%", padding: 1 }}>
-                        <CardHeader
-                            title="Security"
-                            sx={{
-                                typography: {
-                                    fontWeight: "bold"
-                                }
-                            }}
-                            slotProps={{
-                                title: {
-                                    fontWeight: "bold"
-                                }
-                            }}
-                        />
-                        <CardContent>
-                            <Link to="/settings/change_password">
-                                <Button variant="contained">
-                                    Change Password
-                                </Button>
-                            </Link>
-                        </CardContent>
-                    </Card>
-                </Section>
-
-            </Stack >
+                </CardContent>
+                <CardActions>
+                    <Box sx={{ mt: 2, mb: 1 }}>
+                        <Link to="/settings/change_password">
+                            <Button variant="contained">
+                                Change Password
+                            </Button>
+                        </Link>
+                    </Box>
+                </CardActions>
+            </Card>
         </>
-    );
-}
-
-const Section = ({ sectionName, children }: { sectionName: string, children: ReactNode }) => {
-    return (
-        <Box>
-            <Typography sx={{ fontSize: "10", color: "grey", textDecoration: "none" }}>{sectionName}</Typography>
-            <Divider sx={{ mt: 0.5 }} />
-
-            <Box sx={{ mt: 2 }}>
-                {children}
-            </Box>
-        </Box>
     );
 }

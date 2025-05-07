@@ -70,6 +70,8 @@ public class StockRecordService {
     }
 
     public void updateRecord(StockRecord newRecord) {
+        validateData(newRecord);
+
         // Get the existing record
         StockRecord oldRecord = repository.findById(newRecord.getId()).orElseThrow();
 

@@ -60,26 +60,6 @@ export default function UpdateStockRecordScreen() {
     const updateStockRecord = (): void => {
         setLoading(prev => ({ ...prev, update: true }));
 
-        if (!stockRecord.product) {
-            setAlert({
-                open: true,
-                type: "error",
-                message: "A product must be selected to add a stock record."
-            });
-            setLoading(prev => ({ ...prev, update: false }));
-            return;
-        }
-
-        if (stockRecord.stockAmount <= 0) {
-            setAlert({
-                open: true,
-                type: "error",
-                message: "Enter a valid stock amount."
-            });
-            setLoading(prev => ({ ...prev, update: false }));
-            return;
-        }
-
         AuthApi.put("/stock_records/update", stockRecord)
             .then(() => {
                 setAlert({
@@ -87,8 +67,6 @@ export default function UpdateStockRecordScreen() {
                     type: "success",
                     message: "Stock record updated successfully."
                 });
-                fetchStockRecord();
-                fetchProducts();
             })
             .catch(err => {
                 setAlert({

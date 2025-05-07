@@ -45,16 +45,6 @@ export default function AddStockRecordScreen() {
     const addStockRecord = (): void => {
         setLoading(prev => ({ ...prev, add: true }));
 
-        if (formData.stockAmount <= 0) {
-            setAlert({
-                open: true,
-                type: "error",
-                message: "Enter a valid stock amount."
-            });
-            setLoading(prev => ({ ...prev, add: false }));
-            return;
-        }
-
         AuthApi.post("/stock_records/add", formData)
             .then(() => {
                 setAlert({

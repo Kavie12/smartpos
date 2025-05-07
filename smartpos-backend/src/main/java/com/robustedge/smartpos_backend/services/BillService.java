@@ -45,6 +45,15 @@ public class BillService {
         // Validate paid amount
         validatePaidAmount(bill);
 
+        LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
+
+        // Validate loyalty points redeem limit
+        if (loyaltyMember != null && redeemPoints) {
+            if (loyaltyMember.getPoints() < 25) {
+                throw new ApiRequestException("There must be at least 25 points to redeem.");
+            }
+        }
+
         double total = 0;
         for (BillingRecord billingRecord: bill.getBillingRecords()) {
             // Set current selling price
@@ -62,7 +71,6 @@ public class BillService {
         // Set total
         bill.setTotal(total);
 
-        LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
         if (loyaltyMember != null) {
             // Calculate points granted
             double pointsGranted = calculatePointsGranted(total);
@@ -71,14 +79,7 @@ public class BillService {
             bill.setPointsGranted(pointsGranted);
 
             // Set points redeemed
-            if (redeemPoints) {
-                if (loyaltyMember.getPoints() < 25) {
-                    throw new ApiRequestException("Loyalty points must be at least 25 to redeem.");
-                }
-                bill.setPointsRedeemed(loyaltyMember.getPoints());
-            } else {
-                bill.setPointsRedeemed(0);
-            }
+            bill.setPointsRedeemed(redeemPoints ? loyaltyMember.getPoints() : 0);
 
             // Update loyalty member points
             loyaltyMember.setPoints(redeemPoints ? pointsGranted : loyaltyMember.getPoints() + pointsGranted);

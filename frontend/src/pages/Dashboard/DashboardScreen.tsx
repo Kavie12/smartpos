@@ -2,7 +2,7 @@ import { Box, Card, CardActionArea, CardContent, Grid2, Stack, Typography } from
 import { useState } from "react";
 import BasicAlert from "../../components/BasicAlert";
 import getDateTime from "../../services/DateTime";
-import { Category, Inventory, LocalShipping, People, ShoppingCart, Work } from "@mui/icons-material";
+import { AddBox, Inventory, LocalShipping, People, ShoppingCart, Work } from "@mui/icons-material";
 import { useNavigate } from "react-router";
 
 export default function DashboardScreen() {
@@ -25,57 +25,42 @@ export default function DashboardScreen() {
             {/* Content */}
             <Box mt={4}>
                 <Grid2 container spacing={4}>
-                    <Grid2 size={4}>
-                        <DashboardCard
-                            title="Billing"
-                            subtitle="View & create bills"
-                            icon={<ShoppingCart fontSize="large" />}
-                            path="/billing"
-                        />
-                    </Grid2>
-                    <Grid2 size={4}>
-                        <DashboardCard
-                            title="Stock"
-                            subtitle="Manage stock records"
-                            icon={<Inventory fontSize="large" />}
-                            path="/stock_records"
-                        />
-                    </Grid2>
-                    <Grid2 size={4}>
-                        <DashboardCard
-                            title="Products"
-                            subtitle="Add & edit products"
-                            icon={<Category fontSize="large" />}
-                            path="/products"
-                        />
-                    </Grid2>
-
-                    <Grid2 size={4}>
-                        <DashboardCard
-                            title="Suppliers"
-                            subtitle="Manage suppliers"
-                            icon={<LocalShipping fontSize="large" />}
-                            path="/suppliers"
-                        />
-                    </Grid2>
-
-                    <Grid2 size={4}>
-                        <DashboardCard
-                            title="Loyalty Members"
-                            subtitle="View loyalty members"
-                            icon={<People fontSize="large" />}
-                            path="/loyalty_members"
-                        />
-                    </Grid2>
-
-                    <Grid2 size={4}>
-                        <DashboardCard
-                            title="Employees"
-                            subtitle="Manage employees"
-                            icon={<Work fontSize="large" />}
-                            path="/employees"
-                        />
-                    </Grid2>
+                    <DashboardCard
+                        title="Billing"
+                        subtitle="View & create bills"
+                        icon={<ShoppingCart color="primary" fontSize="large" />}
+                        path="/billing"
+                    />
+                    <DashboardCard
+                        title="Stock"
+                        subtitle="Manage stock records"
+                        icon={<AddBox color="primary" fontSize="large" />}
+                        path="/stock_records"
+                    />
+                    <DashboardCard
+                        title="Products"
+                        subtitle="Add & edit products"
+                        icon={<Inventory color="primary" fontSize="large" />}
+                        path="/products"
+                    />
+                    <DashboardCard
+                        title="Suppliers"
+                        subtitle="Manage suppliers"
+                        icon={<LocalShipping color="primary" fontSize="large" />}
+                        path="/suppliers"
+                    />
+                    <DashboardCard
+                        title="Loyalty Members"
+                        subtitle="View loyalty members"
+                        icon={<People color="primary" fontSize="large" />}
+                        path="/loyalty_members"
+                    />
+                    <DashboardCard
+                        title="Employees"
+                        subtitle="Manage employees"
+                        icon={<Work color="primary" fontSize="large" />}
+                        path="/employees"
+                    />
                 </Grid2>
             </Box>
 
@@ -100,22 +85,24 @@ const DashboardCard = ({ title, subtitle, icon, path }: DashboardCardType) => {
     const navigate = useNavigate();
 
     return (
-        <Card sx={{ height: 200 }}>
-            <CardActionArea sx={{ height: "100%" }} onClick={() => navigate(path)}>
-                <CardContent>
-                    <Stack alignItems="center" spacing={2}>
-                        {icon}
-                        <Stack textAlign="center" spacing={1}>
-                            <Typography variant="h5" fontWeight="bold">
-                                {title}
-                            </Typography>
-                            <Typography variant="body1" color="text.secondary">
-                                {subtitle}
-                            </Typography>
+        <Grid2 size={3}>
+            <Card sx={{ height: 180 }}>
+                <CardActionArea sx={{ height: "100%" }} onClick={() => navigate(path)}>
+                    <CardContent>
+                        <Stack alignItems="center" spacing={2}>
+                            {icon}
+                            <Stack textAlign="center" spacing={0.5}>
+                                <Typography variant="h5" fontWeight="bold" color="primary">
+                                    {title}
+                                </Typography>
+                                <Typography variant="body1" color="primary">
+                                    {subtitle}
+                                </Typography>
+                            </Stack>
                         </Stack>
-                    </Stack>
-                </CardContent>
-            </CardActionArea>
-        </Card>
+                    </CardContent>
+                </CardActionArea>
+            </Card>
+        </Grid2>
     );
 };
