@@ -1,6 +1,7 @@
 package com.robustedge.smartpos_backend.models;
 
-import com.robustedge.smartpos_backend.config.UserRoles;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.robustedge.smartpos_backend.config.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,8 +19,7 @@ import java.util.List;
 @EqualsAndHashCode
 public class User implements UserDetails {
 
-    @Getter
-    @Setter
+    @Getter @Setter
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
     private Integer id;
@@ -32,13 +32,17 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Getter
-    @Setter
+    @Getter @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 10)
-    private UserRoles role;
+    private UserRole role;
 
-    public User(String username, String password, UserRoles role) {
+    @OneToOne(mappedBy = "user")
+    @Getter @Setter
+    @JsonBackReference
+    private Employee employee;
+
+    public User(String username, String password, UserRole role) {
         this.username = username;
         this.password = password;
         this.role = role;
@@ -76,7 +80,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override

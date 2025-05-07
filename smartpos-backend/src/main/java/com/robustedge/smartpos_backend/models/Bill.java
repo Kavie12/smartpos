@@ -1,6 +1,7 @@
 package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,6 +13,7 @@ import java.util.List;
 @Entity(name = "Bill")
 @Table(name = "bills")
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class Bill {
 

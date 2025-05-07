@@ -10,9 +10,9 @@ export const AuthApi = axios.create({
 
 AuthApi.interceptors.request.use(
     config => {
-        const token = localStorage.getItem("jwtToken");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        const authObject = JSON.parse(localStorage.getItem("authObject") ?? '{}');
+        if (authObject) {
+            config.headers.Authorization = `Bearer ${authObject.token}`;
         }
         return config;
     },
@@ -28,7 +28,7 @@ AuthApi.interceptors.response.use(
             error.response?.status === 401 &&
             error.response?.data?.error === "JWT_EXPIRED"
         ) {
-            localStorage.removeItem("token");
+            localStorage.removeItem("auth");
             window.location.href = "/login";
         }
         return Promise.reject(error);

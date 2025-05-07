@@ -31,8 +31,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         setIsProcessing(true);
         NoAuthApi.post("/auth/authenticate", { username, password })
             .then(res => {
-                const token = res.data;
-                localStorage.setItem("jwtToken", token);
+                localStorage.setItem("authObject", JSON.stringify(res.data));
                 setIsAuthenticated(true);
             })
             .catch(err => {
@@ -50,7 +49,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const logout = () => {
-        localStorage.removeItem("jwtToken");
+        localStorage.removeItem("authObject");
         setIsAuthenticated(false);
     };
 

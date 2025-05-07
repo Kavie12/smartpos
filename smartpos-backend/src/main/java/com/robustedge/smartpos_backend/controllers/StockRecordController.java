@@ -5,6 +5,7 @@ import com.robustedge.smartpos_backend.services.StockRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedModel;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -52,11 +53,13 @@ public class StockRecordController {
         service.deleteRecord(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/generate_chart")
     public void generateChart() {
         service.generateChart();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/generate_table_report")
     public void generateTableReport() {
         service.generateTableReport();

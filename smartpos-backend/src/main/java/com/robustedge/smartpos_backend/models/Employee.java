@@ -1,11 +1,13 @@
 package com.robustedge.smartpos_backend.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity(name = "Employee")
 @Table(name = "employees")
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class Employee {
 
@@ -27,6 +29,11 @@ public class Employee {
 
     @Column(name = "salary", nullable = false)
     private double salary;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    @JsonManagedReference
+    private User user;
 
     public Employee(String firstName, String lastName, String phoneNumber, String email, int salary) {
         this.firstName = firstName;

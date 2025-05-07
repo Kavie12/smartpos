@@ -2,6 +2,7 @@ package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.chart_pdf_generators.BillingChartGenerator;
 import com.robustedge.smartpos_backend.config.ApiRequestException;
+import com.robustedge.smartpos_backend.dto.UpdateBillRequest;
 import com.robustedge.smartpos_backend.models.*;
 import com.robustedge.smartpos_backend.other_pdf_generators.ReceiptGenerator;
 import com.robustedge.smartpos_backend.repositories.BillRepository;
@@ -42,7 +43,16 @@ public class BillService {
         checkForSufficientStockLevel(bill.getBillingRecords());
 
         // Validate paid amount
-        validatePaidAmount(bill.getPaidAmount(), bill.getTotal());
+        validatePaidAmount(bill);
+
+        LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
+
+        // Validate loyalty points redeem limit
+        if (loyaltyMember != null && redeemPoints) {
+            if (loyaltyMember.getPoints() < 25) {
+                throw new ApiRequestException("There must be at least 25 points to redeem.");
+            }
+        }
 
         double total = 0;
         for (BillingRecord billingRecord: bill.getBillingRecords()) {
@@ -61,7 +71,6 @@ public class BillService {
         // Set total
         bill.setTotal(total);
 
-        LoyaltyMember loyaltyMember = bill.getLoyaltyMember();
         if (loyaltyMember != null) {
             // Calculate points granted
             double pointsGranted = calculatePointsGranted(total);
@@ -69,7 +78,7 @@ public class BillService {
             // Set points granted
             bill.setPointsGranted(pointsGranted);
 
-            // set points redeemed
+            // Set points redeemed
             bill.setPointsRedeemed(redeemPoints ? loyaltyMember.getPoints() : 0);
 
             // Update loyalty member points
@@ -114,16 +123,20 @@ public class BillService {
         repository.deleteById(billId);
     }
 
-    public void updateBill(Bill bill) {
+    public void updateBill(UpdateBillRequest updateBillRequest) {
+        Bill bill = updateBillRequest.getBill();
         if (bill.getId() == null) {
             return;
         }
+
+        // Update paid amount
+        bill.setPaidAmount(bill.getPaidAmount() + updateBillRequest.getNewPaymentAmount());
 
         // Check if stock is available for each product in the bill
         checkForSufficientStockLevel(bill.getBillingRecords());
 
         // Validate paid amount
-        validatePaidAmount(bill.getPaidAmount(), bill.getTotal());
+        validatePaidAmount(bill);
 
         // Get old bill
         Bill oldBill = repository.findById(bill.getId()).orElseThrow();
@@ -159,11 +172,19 @@ public class BillService {
         generateReceipt(bill);
     }
 
-    private void validatePaidAmount(double paidAmount, double total) {
+    private void validatePaidAmount(Bill bill) {
+        double paidAmount = bill.getPaidAmount();
+        double total = bill.getTotal();
+
         if (paidAmount == 0.0) {
             throw new ApiRequestException("Please enter paid amount to proceed.");
-        } else if (paidAmount < total) {
-            throw new ApiRequestException("Cannot proceed. Paid amount is less than the total price.");
+        }
+
+        // Allow partial payment only for loyalty members
+        if (paidAmount < total) {
+            if (bill.getLoyaltyMember() == null) {
+                throw new ApiRequestException("Only loyalty members can pay partially. Please enter the full amount.");
+            }
         }
     }
 

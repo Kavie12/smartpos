@@ -130,11 +130,9 @@ public class ReceiptGenerator {
         // Paid amount
         addBoldField("Paid Amount", "Rs. " + String.valueOf(bill.getPaidAmount()));
 
-        // Balance
+        // Outstanding / Balance
         double balance = bill.getPaidAmount() - bill.getTotal();
-        if (balance > 0) {
-            addBoldField("Balance", "Rs. " + String.valueOf(balance));
-        }
+        addBoldField(balance >= 0 ? "Balance" : "Outstanding", "Rs. " + String.valueOf(Math.abs(balance)));
 
         addSpacing(24);
 

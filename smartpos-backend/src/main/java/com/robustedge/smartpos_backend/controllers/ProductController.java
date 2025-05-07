@@ -1,11 +1,14 @@
 package com.robustedge.smartpos_backend.controllers;
 
+import com.robustedge.smartpos_backend.dto.ProductRequest;
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.services.ProductService;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,8 +44,8 @@ public class ProductController {
     }
 
     @PostMapping("/add")
-    public void addProduct(@RequestBody Product product) {
-        service.addProduct(product);
+    public void addProduct(@RequestBody ProductRequest productRequest) {
+        service.addProduct(productRequest);
     }
 
     @PutMapping("/update")
@@ -55,14 +58,25 @@ public class ProductController {
         service.deleteProduct(productId);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/generate_chart")
     public void generateChart() {
         service.generateChart();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/generate_table_report")
     public void generateTableReport() {
         service.generateTableReport();
     }
 
+    @GetMapping("/fetch_custom_barcode")
+    public String fetchCustomBarcode() {
+        return service.fetchCustomBarcode();
+    }
+
+    @GetMapping("/generate_custom_barcode_pdf")
+    public void generateCustomBarcodePDF(@RequestParam(name = "productId") Integer productId) {
+        service.generateCustomBarcodePDF(productId);
+    }
 }

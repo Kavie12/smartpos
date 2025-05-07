@@ -1,12 +1,13 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Box, Button, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
 import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { ProductDataType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
 import DeleteDialog from '../../components/DeleteDialog';
 import BasicAlert from '../../components/BasicAlert';
+import QrCode2Icon from '@mui/icons-material/QrCode2';
 
 export default function ProductsScreen() {
 
@@ -29,6 +30,7 @@ export default function ProductsScreen() {
         type: null,
         message: null
     });
+
     const [deleteDialog, setDeleteDialog] = useState<{ open: boolean, id: GridRowId | null }>({
         open: false,
         id: null
@@ -43,13 +45,26 @@ export default function ProductsScreen() {
             headerAlign: "left",
             align: "left",
             sortable: false,
-            flex: 1
+            flex: 0.5
         },
         {
             field: "barcode",
             headerName: "Barcode",
             sortable: false,
-            flex: 2
+            flex: 1.5,
+            renderCell: (params) => {
+                return (
+                    <Stack direction="row" spacing={1}>
+                        <Typography variant="inherit">{params.value}</Typography>
+                        {
+                            params.row.customBarcode &&
+                            <IconButton size="small" onClick={() => generateCustomBarcodePDF(params.row.id)}>
+                                <QrCode2Icon fontSize="small" />
+                            </IconButton>
+                        }
+                    </Stack>
+                );
+            }
         },
         {
             field: "name",
@@ -61,7 +76,7 @@ export default function ProductsScreen() {
             field: "supplierName",
             headerName: "Supplier Name",
             sortable: false,
-            flex: 2,
+            flex: 1.5,
             valueGetter: (_, row) => {
                 return row.supplier.name;
             }
@@ -127,6 +142,29 @@ export default function ProductsScreen() {
             }
         }
     ];
+
+    const generateCustomBarcodePDF = (id: GridRowId): void => {
+        AuthApi.get("/products/generate_custom_barcode_pdf", {
+            params: {
+                productId: id
+            }
+        })
+            .then(() => {
+                setAlert({
+                    open: true,
+                    type: "success",
+                    message: "Custom barcode PDF generated successfully."
+                });
+            })
+            .catch(err => {
+                console.error("Error generating custom barcode PDF.", err);
+                setAlert({
+                    open: true,
+                    type: "error",
+                    message: "Error generating custom barcode PDF."
+                });
+            });
+    };
 
     const fetchProducts = (): void => {
         setLoading(prev => ({ ...prev, table: true }));
@@ -249,6 +287,13 @@ export default function ProductsScreen() {
                 message="Are you sure you want to delete this product?"
             />
 
+            {/* Confirm Dialog
+            <ConfirmDialog
+                open = {confirmDialog.open}
+                onClose={() => setConfirmDialog(prev => ({...prev, open: false}))}
+                onConfirm={()=> generateCustomBarcode}
+                message='Are you sure you want to generate custom barcode?'
+            /> */}
         </>
     );
 }

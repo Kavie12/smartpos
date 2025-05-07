@@ -74,7 +74,7 @@ export default function Navbar({ openSidebar, setOpenSidebar }: { openSidebar: b
                         </Typography>
                     </Stack>
                     <Stack direction="row" alignItems="center" spacing={2}>
-                        <NavLink to="/billing" icon={<Home />} title="Dashboard" />
+                        <NavLink to="/dashboard" icon={<Home />} title="Dashboard" />
                         <NavLink to="/billing/create_bill" icon={<PointOfSale />} title="Create Bill" />
                         <NavLink to="/stock_records/add_stock_record" icon={<AddBox />} title="Add Stock Record" />
                     </Stack>

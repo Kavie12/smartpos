@@ -11,9 +11,10 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { Link, useLocation } from 'react-router';
-import { AddBox, Analytics, Inventory, LocalShipping, Logout, Money, People, Work } from '@mui/icons-material';
+import { AccountCircle, AddBox, Analytics, Dashboard, Inventory, LocalShipping, Logout, Money, People, Work } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { DRAWER_WIDTH } from '../data/Constants';
+import { AuthObjectType } from '../types/types';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: DRAWER_WIDTH,
@@ -208,10 +209,15 @@ export default function Sidebar({ openSidebar, setOpenSidebar }: { openSidebar: 
   const theme = useTheme();
 
   const { logout } = useAuth();
+  const [authObject, setAuthObject] = React.useState<AuthObjectType>();;
 
   const handleDrawerClose = () => {
     setOpenSidebar(false);
   };
+
+  React.useEffect(() => {
+    setAuthObject(JSON.parse(localStorage.getItem("authObject") ?? "{}"));
+  }, []);
 
   return (
     <Drawer variant="permanent" open={openSidebar}>
@@ -222,6 +228,12 @@ export default function Sidebar({ openSidebar, setOpenSidebar }: { openSidebar: 
       </DrawerHeader>
       <Divider />
       <List>
+        <DrawerLink
+          text="Dashboard"
+          to="/dashboard"
+          icon={<Dashboard />}
+          openSidebar={openSidebar}
+        />
         <DrawerLink
           text="Billing"
           to="/billing"
@@ -252,21 +264,33 @@ export default function Sidebar({ openSidebar, setOpenSidebar }: { openSidebar: 
           icon={<People />}
           openSidebar={openSidebar}
         />
-        <DrawerLink
-          text="Employees"
-          to="/employees"
-          icon={<Work />}
-          openSidebar={openSidebar}
-        />
-        <DrawerLink
-          text="Reports"
-          to="/reports"
-          icon={<Analytics />}
-          openSidebar={openSidebar}
-        />
+        {
+          authObject?.role === "ADMIN" && (
+            <>
+              <DrawerLink
+                text="Employees"
+                to="/employees"
+                icon={<Work />}
+                openSidebar={openSidebar}
+              />
+              <DrawerLink
+                text="Reports"
+                to="/reports"
+                icon={<Analytics />}
+                openSidebar={openSidebar}
+              />
+            </>
+          )
+        }
       </List>
       <Divider />
       <List>
+        <DrawerLink
+          text="Profile"
+          to="/settings/profile"
+          icon={<AccountCircle />}
+          openSidebar={openSidebar}
+        />
         <DrawerButton
           text="Logout"
           fn={logout}
