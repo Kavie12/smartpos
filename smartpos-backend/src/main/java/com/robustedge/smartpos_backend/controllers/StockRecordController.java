@@ -1,5 +1,6 @@
 package com.robustedge.smartpos_backend.controllers;
 
+import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.models.StockRecord;
 import com.robustedge.smartpos_backend.services.StockRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,14 @@ public class StockRecordController {
             @RequestParam(name = "pageSize", defaultValue = "50") int pageSize
     ) {
         return service.getRecords(searchKey, searchDate, page, pageSize);
+    }
+
+    @GetMapping("/get_low_stock_products")
+    public PagedModel<Product> getLowStockProducts(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "pageSize", defaultValue = "50") int pageSize
+    ) {
+        return service.getLowStockProducts(page, pageSize);
     }
 
     @GetMapping("/get_one")
