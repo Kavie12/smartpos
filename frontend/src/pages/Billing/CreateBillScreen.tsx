@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { AuthApi } from "../../services/Api";
-import { Box, Button, Checkbox, Divider, FormControlLabel, Grid2, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Divider, FormControlLabel, Grid2, IconButton, InputAdornment, TextField, Tooltip, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import QuantityCounter from "../../components/QuantityCounter";
 import { Link } from "react-router";
 import { BillingRecordDataType, LoyaltyMemberDataType } from "../../types/types";
-import { ArrowBack, Cancel, Delete } from "@mui/icons-material";
+import { ArrowBack, Cancel, Delete, Help } from "@mui/icons-material";
 import { useBilling } from "../../context/BillingContext";
 import BasicAlert from "../../components/BasicAlert";
 
@@ -200,7 +200,7 @@ export default function CreateBillScreen() {
 
                                 {/* Sub Total */}
                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                    <Typography fontWeight={"bold"}>Sub Total:</Typography>
+                                    <Typography fontWeight={"bold"}>Sub Total</Typography>
                                     <Typography fontWeight={"bold"}>Rs. {bill.total}</Typography>
                                 </Box>
 
@@ -208,7 +208,7 @@ export default function CreateBillScreen() {
                                     /* Points Redeemed */
                                     bill.pointsRedeemed > 0 && (
                                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                            <Typography fontWeight={"bold"}>Points Redeemed:</Typography>
+                                            <Typography fontWeight={"bold"}>Points Redeemed</Typography>
                                             <Typography fontWeight={"bold"}>{bill.pointsRedeemed}</Typography>
                                         </Box>
                                     )
@@ -216,7 +216,7 @@ export default function CreateBillScreen() {
 
                                 {/* Total */}
                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
-                                    <Typography fontWeight={"bold"}>Total:</Typography>
+                                    <Typography fontWeight={"bold"}>Total</Typography>
                                     <Typography fontWeight={"bold"}>Rs. {bill.total - bill.pointsRedeemed}</Typography>
                                 </Box>
 
@@ -224,7 +224,7 @@ export default function CreateBillScreen() {
                                     /* Paid Amount */
                                     bill.billingRecords.length > 0 &&
                                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                        <Typography fontWeight={"bold"}>Paid Amount:</Typography>
+                                        <Typography fontWeight={"bold"}>Paid Amount</Typography>
                                         <Box>
                                             <TextField
                                                 id="paidAmount"
@@ -250,8 +250,8 @@ export default function CreateBillScreen() {
                                     /* Balance */
                                     bill.billingRecords.length > 0 && bill.paidAmount != undefined && bill.paidAmount > 0 &&
                                     < Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 2 }}>
-                                        <Typography fontWeight={"bold"}>Balance:</Typography>
-                                        <Typography fontWeight={"bold"}>Rs. {bill.paidAmount - bill.total}</Typography>
+                                        <Typography fontWeight={"bold"}>{bill.paidAmount < bill.total ? "Outstanding" : "Balance"}</Typography>
+                                        <Typography fontWeight={"bold"}>Rs. {Math.abs(bill.paidAmount - bill.total)}</Typography>
                                     </Box>
                                 }
 
@@ -364,13 +364,19 @@ const LoyaltyMemberDetails = ({ data }: { data: LoyaltyMemberDataType | null }) 
                 }
             </Box>
             <Box sx={{ mt: 2, display: "flex", alignItems: "center", justifyContent: "end" }}>
+                {
+                    data.points < 25 &&
+                    <Tooltip title={`There must be at least 25 points to redeem.`}>
+                        <Help color="action" fontSize="small" />
+                    </Tooltip>
+                }
                 <FormControlLabel
                     control={
                         <Checkbox
                             size="small"
                             value={redeemPoints}
                             onChange={e => setRedeemPoints(e.target.checked)}
-                            disabled={data.points == 0}
+                            disabled={data.points < 25}
                         />
                     }
                     label={<Typography variant="body2">Redeem Points</Typography>}

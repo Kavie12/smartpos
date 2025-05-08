@@ -298,14 +298,6 @@ export default function ProductsScreen() {
                 loading={loading.delete}
                 message="Are you sure you want to delete this product?"
             />
-
-            {/* Confirm Dialog
-            <ConfirmDialog
-                open = {confirmDialog.open}
-                onClose={() => setConfirmDialog(prev => ({...prev, open: false}))}
-                onConfirm={()=> generateCustomBarcode}
-                message='Are you sure you want to generate custom barcode?'
-            /> */}
         </>
     );
 }

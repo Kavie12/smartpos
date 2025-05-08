@@ -80,10 +80,10 @@ public class ProductService {
     }
 
     public void updateProduct(Product product) {
-        validateData(product);
         if (product.getId() == null) {
             return;
         }
+        validateData(product);
         repository.save(product);
     }
 

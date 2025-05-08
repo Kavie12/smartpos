@@ -1,10 +1,12 @@
 package com.robustedge.smartpos_backend.controllers;
 
+import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.models.StockRecord;
 import com.robustedge.smartpos_backend.services.StockRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedModel;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -32,6 +34,14 @@ public class StockRecordController {
         return service.getRecords(searchKey, searchDate, page, pageSize);
     }
 
+    @GetMapping("/get_low_stock_products")
+    public PagedModel<Product> getLowStockProducts(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "pageSize", defaultValue = "50") int pageSize
+    ) {
+        return service.getLowStockProducts(page, pageSize);
+    }
+
     @GetMapping("/get_one")
     public StockRecord getOneRecord(@RequestParam(name = "recordId") Integer recordId) {
         return service.getOneRecord(recordId);
@@ -52,11 +62,13 @@ public class StockRecordController {
         service.deleteRecord(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/generate_chart")
     public void generateChart() {
         service.generateChart();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/generate_table_report")
     public void generateTableReport() {
         service.generateTableReport();

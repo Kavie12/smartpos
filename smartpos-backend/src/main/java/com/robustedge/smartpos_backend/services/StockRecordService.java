@@ -4,6 +4,7 @@ import com.robustedge.smartpos_backend.config.ApiRequestException;
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.models.StockRecord;
 import com.robustedge.smartpos_backend.chart_pdf_generators.StockRecordChartGenerator;
+import com.robustedge.smartpos_backend.repositories.ProductRepository;
 import com.robustedge.smartpos_backend.repositories.StockRecordRepository;
 import com.robustedge.smartpos_backend.table_pdf_generators.StockRecordTableGenerator;
 import com.robustedge.smartpos_backend.utils.Utils;
@@ -25,7 +26,7 @@ public class StockRecordService {
     private StockRecordRepository repository;
 
     @Autowired
-    private ProductService productService;
+    private ProductRepository productRepository;
 
     public void addRecord(StockRecord record) {
         validateData(record);
@@ -33,7 +34,7 @@ public class StockRecordService {
         // Change stock level of the product
         Product product = record.getProduct();
         product.setStockLevel(product.getStockLevel() + record.getStockAmount());
-        productService.updateProduct(product);
+        productRepository.save(product);
 
         repository.save(record);
     }
@@ -64,12 +65,14 @@ public class StockRecordService {
         // Deduct stock amount of the relevant product
         Product product = record.getProduct();
         product.setStockLevel(product.getStockLevel() - record.getStockAmount());
-        productService.updateProduct(product);
+        productRepository.save(product);
 
         repository.deleteById(id);
     }
 
     public void updateRecord(StockRecord newRecord) {
+        validateData(newRecord);
+
         // Get the existing record
         StockRecord oldRecord = repository.findById(newRecord.getId()).orElseThrow();
 
@@ -80,13 +83,13 @@ public class StockRecordService {
         if (Objects.equals(oldProduct.getId(), newProduct.getId())) {
             // If product is not changed
             oldProduct.setStockLevel(oldProduct.getStockLevel() - oldRecord.getStockAmount() + newRecord.getStockAmount());
-            productService.updateProduct(oldProduct);
+            productRepository.save(oldProduct);
         } else {
             // If product is changed
             oldProduct.setStockLevel(oldProduct.getStockLevel() - oldRecord.getStockAmount());
             newProduct.setStockLevel(newProduct.getStockLevel() + newRecord.getStockAmount());
-            productService.updateProduct(oldProduct);
-            productService.updateProduct(newProduct);
+            productRepository.save(oldProduct);
+            productRepository.save(newProduct);
         }
 
         repository.save(newRecord);
@@ -119,5 +122,10 @@ public class StockRecordService {
         pdfGenerator.addHeading("Stock Records");
         pdfGenerator.addTable();
         pdfGenerator.build();
+    }
+
+    public PagedModel<Product> getLowStockProducts(int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return new PagedModel<>(productRepository.findLowStockProducts(pageable));
     }
 }

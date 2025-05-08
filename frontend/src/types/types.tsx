@@ -4,7 +4,9 @@ export type CredentialsType = {
 };
 
 export type AuthObjectType = {
+    employee: EmployeeDataType;
     username: string;
+    role: string;
     token: string;
 }
 

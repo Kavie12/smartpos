@@ -64,16 +64,6 @@ export default function UpdateProductScreen() {
     const updateProduct = (): void => {
         setLoading(prev => ({ ...prev, update: true }));
 
-        if (!product.supplier) {
-            setAlert({
-                open: true,
-                type: "error",
-                message: "A supplier must be selected to add a product."
-            });
-            setLoading(prev => ({ ...prev, update: false }));
-            return;
-        }
-
         AuthApi.put("/products/update", product)
             .then(() => {
                 setAlert({

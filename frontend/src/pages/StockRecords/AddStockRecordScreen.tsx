@@ -16,11 +16,13 @@ export default function AddStockRecordScreen() {
     });
     const [products, setProducts] = useState<ProductDataType[]>([]);
     const [formData, setFormData] = useState<StockRecordType>({
+        product: null,
         stockAmount: 0
     });
 
     const resetFormData = (): void => {
         setFormData({
+            product: null,
             stockAmount: 0
         });
     };
@@ -44,16 +46,6 @@ export default function AddStockRecordScreen() {
 
     const addStockRecord = (): void => {
         setLoading(prev => ({ ...prev, add: true }));
-
-        if (formData.stockAmount <= 0) {
-            setAlert({
-                open: true,
-                type: "error",
-                message: "Enter a valid stock amount."
-            });
-            setLoading(prev => ({ ...prev, add: false }));
-            return;
-        }
 
         AuthApi.post("/stock_records/add", formData)
             .then(() => {
