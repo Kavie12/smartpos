@@ -1,12 +1,14 @@
 import { ArrowBack } from "@mui/icons-material";
 import { Autocomplete, Box, Button, Checkbox, FormControlLabel, IconButton, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { AuthApi } from "../../services/Api";
 import { ProductDataType, SupplierDataType } from "../../types/types";
 import BasicAlert from "../../components/BasicAlert";
 
 export default function AddProductScreen() {
+
+    const navigate = useNavigate();
 
     const [loading, setLoading] = useState<{ suppliers: boolean, add: boolean }>({ suppliers: false, add: false });
     const [alert, setAlert] = useState<{ open: boolean, type: "error" | "success" | null, message: string | null }>({
@@ -65,6 +67,7 @@ export default function AddProductScreen() {
                     message: "Product added successfully."
                 });
                 resetFormData();
+                navigate('/stock_records/add_stock_record');
             })
             .catch(err => {
                 setAlert({
