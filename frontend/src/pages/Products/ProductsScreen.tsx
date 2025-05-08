@@ -43,14 +43,6 @@ export default function ProductsScreen() {
     //     id: null
     // });
 
-    function showAlert(message: string) {
-        setAlert({
-            open: true, 
-            type: "success", 
-            message
-        });
-    }
-
     const [searchKey, setSearchKey] = useState<string>("");
 
     const columns: GridColDef[] = [
