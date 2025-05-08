@@ -1,11 +1,13 @@
 package com.robustedge.smartpos_backend.controllers;
 
 import com.robustedge.smartpos_backend.dto.BillRequest;
+import com.robustedge.smartpos_backend.dto.UpdateBillRequest;
 import com.robustedge.smartpos_backend.models.Bill;
 import com.robustedge.smartpos_backend.services.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedModel;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -43,8 +45,8 @@ public class BillController {
     }
 
     @PutMapping("update")
-    public void updateBill(@RequestBody Bill bill) {
-        service.updateBill(bill);
+    public void updateBill(@RequestBody UpdateBillRequest updateBillRequest) {
+        service.updateBill(updateBillRequest);
     }
 
     @GetMapping("print")
@@ -57,11 +59,13 @@ public class BillController {
         service.deleteBill(billId);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/generate_chart")
     public void generateChart() {
         service.generateChart();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/generate_table_report")
     public void generateTableReport() {
         service.generateTableReport();

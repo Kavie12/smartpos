@@ -1,5 +1,5 @@
-import { ArrowBack } from "@mui/icons-material";
-import { Box, Button, Checkbox, FormControlLabel, IconButton, TextField, Typography } from "@mui/material";
+import { ArrowBack, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Box, Button, Checkbox, FormControlLabel, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router";
 import { AuthApi } from "../../services/Api";
@@ -28,6 +28,7 @@ export default function AddEmployeeScreen() {
         username: "",
         password: ""
     });
+    const [showPassword, setShowPassword] = useState(false);
 
     const resetFormData = (): void => {
         setFormData({
@@ -166,10 +167,25 @@ export default function AddEmployeeScreen() {
                                 id="password"
                                 name="password"
                                 label="Password"
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 value={credentials.password}
                                 sx={{ width: 400, mt: 2 }}
                                 onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+                                slotProps={{
+                                    input: {
+                                        endAdornment:
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label={
+                                                        showPassword ? 'hide the password' : 'display the password'
+                                                    }
+                                                    onClick={() => setShowPassword(show => !show)}
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                    },
+                                }}
                             />
                         </>
                     }

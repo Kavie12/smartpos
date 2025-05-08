@@ -1,6 +1,7 @@
 package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.SQLDelete;
 @Table(name = "products")
 @SQLDelete(sql = "UPDATE products SET deleted = true WHERE id=?")
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class Product {
 

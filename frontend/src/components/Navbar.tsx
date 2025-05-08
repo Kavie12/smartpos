@@ -1,5 +1,5 @@
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import { AddBox, Home, Menu, PointOfSale } from "@mui/icons-material";
+import { AddBox, Home, Menu, PointOfSale, TrendingDown } from "@mui/icons-material";
 import { IconButton, Stack, styled, Toolbar, Tooltip, Typography } from "@mui/material";
 import { DRAWER_WIDTH } from '../data/Constants';
 import { Link } from 'react-router';
@@ -74,9 +74,10 @@ export default function Navbar({ openSidebar, setOpenSidebar }: { openSidebar: b
                         </Typography>
                     </Stack>
                     <Stack direction="row" alignItems="center" spacing={2}>
-                        <NavLink to="/billing" icon={<Home />} title="Dashboard" />
+                        <NavLink to="/dashboard" icon={<Home />} title="Dashboard" />
                         <NavLink to="/billing/create_bill" icon={<PointOfSale />} title="Create Bill" />
                         <NavLink to="/stock_records/add_stock_record" icon={<AddBox />} title="Add Stock Record" />
+                        <NavLink to="/stock_records/low_stock_products" icon={<TrendingDown />} title="Low Stock Products" />
                     </Stack>
                 </Stack>
             </Toolbar>

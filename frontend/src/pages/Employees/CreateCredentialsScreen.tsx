@@ -1,5 +1,5 @@
-import { ArrowBack } from "@mui/icons-material";
-import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { ArrowBack, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Box, Button, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { AuthApi } from "../../services/Api";
@@ -28,6 +28,7 @@ export default function CreateCredentialsScreen() {
         username: "",
         password: ""
     });
+    const [showPassword, setShowPassword] = useState(false);
 
     const fetchEmployee = (): void => {
         AuthApi.get("/employees/get_one", {
@@ -121,10 +122,25 @@ export default function CreateCredentialsScreen() {
                         id="password"
                         name="password"
                         label="Password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         value={credentials.password}
                         sx={{ width: 400, mt: 2 }}
                         onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+                        slotProps={{
+                            input: {
+                                endAdornment:
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label={
+                                                showPassword ? 'hide the password' : 'display the password'
+                                            }
+                                            onClick={() => setShowPassword(show => !show)}
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                            },
+                        }}
                     />
                     <Button
                         variant="contained"

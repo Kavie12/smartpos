@@ -3,9 +3,10 @@ import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import { lazy } from "react";
 import RouteLoader from "./RouteLoader";
+import getAdminRoutes from "./AdminRoutes";
 
+const DashboardScreen = RouteLoader(lazy(() => import("../pages/Dashboard/DashboardScreen")));
 const LoginScreen = RouteLoader(lazy(() => import("../pages/Auth/LoginScreen")));
-const ReportsScreen = RouteLoader(lazy(() => import("../pages/Reports/ReportsScreen")));
 const BillingScreen = RouteLoader(lazy(() => import("../pages/Billing/BillingScreen")));
 const CreateBillScreen = RouteLoader(lazy(() => import("../pages/Billing/CreateBillScreen")));
 const BillDetailsScreen = RouteLoader(lazy(() => import("../pages/Billing/BillDetailsScreen")));
@@ -13,6 +14,7 @@ const UpdateBillScreen = RouteLoader(lazy(() => import("../pages/Billing/UpdateB
 const StockRecordsScreen = RouteLoader(lazy(() => import("../pages/StockRecords/StockRecordsScreen")));
 const AddStockRecordScreen = RouteLoader(lazy(() => import("../pages/StockRecords/AddStockRecordScreen")));
 const UpdateStockRecordScreen = RouteLoader(lazy(() => import("../pages/StockRecords/UpdateStockRecordScreen")));
+const LowStockProductsScreen = RouteLoader(lazy(() => import("../pages/StockRecords/LowStockProductsScreen")));
 const ProductsScreen = RouteLoader(lazy(() => import("../pages/Products/ProductsScreen")));
 const AddProductScreen = RouteLoader(lazy(() => import("../pages/Products/AddProductScreen")));
 const UpdateProductScreen = RouteLoader(lazy(() => import("../pages/Products/UpdateProductScreen")));
@@ -22,10 +24,6 @@ const UpdateSupplierScreen = RouteLoader(lazy(() => import("../pages/Suppliers/U
 const LoyaltyMembersScreen = RouteLoader(lazy(() => import("../pages/LoyaltyMembers/LoyaltyMembersScreen")));
 const AddLoyaltyMemberScreen = RouteLoader(lazy(() => import("../pages/LoyaltyMembers/AddLoyaltyMemberScreen")));
 const UpdateLoyaltyMemberScreen = RouteLoader(lazy(() => import("../pages/LoyaltyMembers/UpdateLoyaltyMemberScreen")));
-const EmployeesScreen = RouteLoader(lazy(() => import("../pages/Employees/EmployeesScreen")));
-const AddEmployeeScreen = RouteLoader(lazy(() => import("../pages/Employees/AddEmployeeScreen")));
-const UpdateEmployeeScreen = RouteLoader(lazy(() => import("../pages/Employees/UpdateEmployeeScreen")));
-const CreateCredentialsScreen = RouteLoader(lazy(() => import("../pages/Employees/CreateCredentialsScreen")));
 const EmployeeProfileScreen = RouteLoader(lazy(() => import("../pages/Settings/EmployeeProfileScreen")));
 const ChangePasswordScreen = RouteLoader(lazy(() => import("../pages/Settings/ChangePasswordScreen")));
 
@@ -39,6 +37,11 @@ export default createHashRouter([
     {
         element: <MainLayout />,
         children: [
+            ...getAdminRoutes(),
+            {
+                path: "dashboard",
+                element: <DashboardScreen />
+            },
             {
                 path: "billing",
                 children: [
@@ -53,7 +56,8 @@ export default createHashRouter([
                 children: [
                     { index: true, element: <StockRecordsScreen /> },
                     { path: "add_stock_record", element: <AddStockRecordScreen /> },
-                    { path: "update_stock_record/:recordId", element: <UpdateStockRecordScreen /> }
+                    { path: "update_stock_record/:recordId", element: <UpdateStockRecordScreen /> },
+                    { path: "low_stock_products", element: <LowStockProductsScreen /> },
                 ]
             },
             {
@@ -78,22 +82,6 @@ export default createHashRouter([
                     { index: true, element: <LoyaltyMembersScreen /> },
                     { path: "add_loyalty_member", element: <AddLoyaltyMemberScreen /> },
                     { path: "update_loyalty_member/:id", element: <UpdateLoyaltyMemberScreen /> }
-                ]
-            },
-            {
-                path: "employees",
-                children: [
-                    { index: true, element: <EmployeesScreen /> },
-                    { path: "add_employee", element: <AddEmployeeScreen /> },
-                    { path: "update_employee/:employeeId", element: <UpdateEmployeeScreen /> },
-                    { path: "create_credentials/:employeeId", element: <CreateCredentialsScreen /> }
-                ]
-            },
-            {
-                path: "reports",
-                children: [
-                    { index: true, element: <ReportsScreen /> },
-                    { path: "" },
                 ]
             },
             {

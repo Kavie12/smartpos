@@ -143,7 +143,7 @@ export default function AddProductScreen() {
                                 onChange={e => setCustomBarcode(e.target.checked)}
                             />
                         }
-                        label={<Typography>Custome Barcode</Typography>}
+                        label={<Typography>Custom Barcode</Typography>}
                         sx={{ mt: 2 }}
                     />
                     <Autocomplete

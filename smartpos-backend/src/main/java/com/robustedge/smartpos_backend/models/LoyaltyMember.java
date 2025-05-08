@@ -1,14 +1,14 @@
 package com.robustedge.smartpos_backend.models;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 
 @Entity(name = "LoyaltyMember")
 @Table(name = "loyalty_members")
 @SQLDelete(sql = "UPDATE loyalty_members SET deleted = true WHERE id=?")
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class LoyaltyMember {
 

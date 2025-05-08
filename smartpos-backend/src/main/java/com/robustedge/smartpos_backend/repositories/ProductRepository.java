@@ -28,4 +28,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("SELECT COUNT(*) FROM Product p WHERE p.deleted = false AND p.barcode = :barcode")
     int NoOfExistingRecords(@Param("barcode") String barcode);
+
+    @Query("SELECT p FROM Product p WHERE p.deleted = false AND p.stockLevel < 10")
+    Page<Product> findLowStockProducts(Pageable pageable);
 }

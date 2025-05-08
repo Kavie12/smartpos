@@ -1,7 +1,7 @@
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
-import { Add, DeleteOutlined, Edit, Search } from '@mui/icons-material';
+import { Add, DeleteOutlined, Edit, Email, Search } from '@mui/icons-material';
 import { AuthApi } from '../../services/Api';
 import { SupplierDataType } from '../../types/types';
 import { Link, useNavigate } from 'react-router';
@@ -68,7 +68,7 @@ export default function SuppliersScreen() {
             headerName: "Actions",
             type: "actions",
             flex: 0.5,
-            getActions: ({ id }) => {
+            getActions: ({ id, row }) => {
                 return [
                     <GridActionsCellItem
                         icon={<Edit />}
@@ -83,6 +83,13 @@ export default function SuppliersScreen() {
                         color="inherit"
                         onClick={() => setDeleteDialog({ id: id, open: true })}
                         id={`delete_${id}`}
+                    />,
+                    <GridActionsCellItem
+                        icon={<Email />}
+                        label="Email"
+                        color="inherit"
+                        onClick={() => window.location.href = `mailto:${row.email}`}
+                        id={`email_${id}`}
                     />
                 ];
             }
