@@ -1,11 +1,10 @@
 package com.robustedge.smartpos_backend.services;
 
 import com.robustedge.smartpos_backend.config.ApiRequestException;
-import com.robustedge.smartpos_backend.models.LoyaltyMember;
+import com.robustedge.smartpos_backend.dto.ProductRequest;
 import com.robustedge.smartpos_backend.models.Product;
 import com.robustedge.smartpos_backend.chart_pdf_generators.ProductChartGenerator;
 import com.robustedge.smartpos_backend.other_pdf_generators.CustomBarcodeGenerator;
-import com.robustedge.smartpos_backend.other_pdf_generators.LoyaltyCardGenerator;
 import com.robustedge.smartpos_backend.repositories.ProductRepository;
 import com.robustedge.smartpos_backend.repositories.StockRecordRepository;
 import com.robustedge.smartpos_backend.table_pdf_generators.ProductTableGenerator;
@@ -18,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class ProductService {
@@ -28,9 +28,20 @@ public class ProductService {
     @Autowired
     private StockRecordRepository stockRecordRepository;
 
-    public void addProduct(Product product) {
+    public void addProduct(ProductRequest productRequest) {
+        Product product = productRequest.getProduct();
+
+        // Validate
         checkUnique(product.getBarcode());
         validateData(product);
+
+        // Generate barcode pdf if it's a custom barcode
+        if (productRequest.isCustomBarcode()) {
+            product.setCustomBarcode(true);
+            generateBarcodePDF(product);
+        }
+
+        // Save product
         repository.save(product);
     }
 
@@ -111,19 +122,29 @@ public class ProductService {
         pdfGenerator.build();
     }
 
-    /*CUSTOM BarCODE*/
-    public void generateCustomBarcode(Integer id) {
-        Product product = getOne(id);
-        String fileName = "barcode_" + product.getId() + ".pdf";
-        CustomBarcodeGenerator customBarcodeGenerator = new CustomBarcodeGenerator(product, Utils.getReportFolderDirectory("CustomBarcodes", fileName));
+    public String fetchCustomBarcode() {
+        Random random = new Random();
+        long min = 100000000000L;
+        long max = 999999999999L;
+        long randomNumber = min + (long) (random.nextDouble() * (max - min + 1));
+        return String.valueOf(randomNumber);
+    }
 
+    private void generateBarcodePDF(Product product) {
+        String fileName = "barcode_" + product.getBarcode() + ".pdf";
+        CustomBarcodeGenerator customBarcodeGenerator = new CustomBarcodeGenerator(product, Utils.getReportFolderDirectory("CustomBarcodes", fileName));
         try {
-                    customBarcodeGenerator.initialize()
+            customBarcodeGenerator
+                    .initialize()
                     .designCustomBarcode()
                     .generateBarcode();
-
         } catch (IOException e) {
             throw new ApiRequestException("Error generating loyalty card.");
         }
+    }
+
+    public void generateCustomBarcodePDF(Integer productId) {
+        Product product = repository.findById(productId).orElseThrow();
+        generateBarcodePDF(product);
     }
 }

@@ -11,7 +11,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { Link, useLocation } from 'react-router';
-import { AddBox, Analytics, Inventory, LocalShipping, Logout, Money, People, Work } from '@mui/icons-material';
+import { AccountCircle, AddBox, Analytics, Inventory, LocalShipping, Logout, Money, People, Work } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { DRAWER_WIDTH } from '../data/Constants';
 
@@ -267,6 +267,12 @@ export default function Sidebar({ openSidebar, setOpenSidebar }: { openSidebar: 
       </List>
       <Divider />
       <List>
+        <DrawerLink
+          text="Profile"
+          to="/settings/profile"
+          icon={<AccountCircle />}
+          openSidebar={openSidebar}
+        />
         <DrawerButton
           text="Logout"
           fn={logout}

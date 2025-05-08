@@ -25,10 +25,9 @@ const UpdateLoyaltyMemberScreen = RouteLoader(lazy(() => import("../pages/Loyalt
 const EmployeesScreen = RouteLoader(lazy(() => import("../pages/Employees/EmployeesScreen")));
 const AddEmployeeScreen = RouteLoader(lazy(() => import("../pages/Employees/AddEmployeeScreen")));
 const UpdateEmployeeScreen = RouteLoader(lazy(() => import("../pages/Employees/UpdateEmployeeScreen")));
-
-//profile route
-const EmpolyeeProfile = RouteLoader(lazy(() => import("../pages/Employees/EmployeeProfile")));
-
+const CreateCredentialsScreen = RouteLoader(lazy(() => import("../pages/Employees/CreateCredentialsScreen")));
+const EmployeeProfileScreen = RouteLoader(lazy(() => import("../pages/Settings/EmployeeProfileScreen")));
+const ChangePasswordScreen = RouteLoader(lazy(() => import("../pages/Settings/ChangePasswordScreen")));
 
 export default createHashRouter([
     {
@@ -86,7 +85,8 @@ export default createHashRouter([
                 children: [
                     { index: true, element: <EmployeesScreen /> },
                     { path: "add_employee", element: <AddEmployeeScreen /> },
-                    { path: "update_employee/:employeeId", element: <UpdateEmployeeScreen /> }
+                    { path: "update_employee/:employeeId", element: <UpdateEmployeeScreen /> },
+                    { path: "create_credentials/:employeeId", element: <CreateCredentialsScreen /> }
                 ]
             },
             {
@@ -97,10 +97,10 @@ export default createHashRouter([
                 ]
             },
             {
-                path: "profile",
+                path: "settings",
                 children: [
-                    {index: true, element: <EmpolyeeProfile/>},
-                    {path: ""}
+                    { path: "profile", element: <EmployeeProfileScreen /> },
+                    { path: "change_password", element: <ChangePasswordScreen /> }
                 ]
             }
         ]

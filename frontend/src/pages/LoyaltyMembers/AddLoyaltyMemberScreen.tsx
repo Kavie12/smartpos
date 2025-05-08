@@ -33,7 +33,10 @@ export default function AddLoyaltyMemberScreen() {
 
     const addLoyaltyMember = (): void => {
         setLoading(true);
-        AuthApi.post("/loyalty_members/add", { loyaltyMember: formData, generateCard: generateCard })
+        AuthApi.post("/loyalty_members/add", {
+            loyaltyMember: formData,
+            generateCard: generateCard
+        })
             .then(() => {
                 setAlert({
                     open: true,

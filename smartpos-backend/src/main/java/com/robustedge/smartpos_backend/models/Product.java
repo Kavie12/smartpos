@@ -38,6 +38,9 @@ public class Product {
     @Column(name = "deleted", nullable = false)
     private boolean deleted =  false;
 
+    @Column(name = "custom_barcode", nullable = false)
+    private boolean customBarcode;
+
     public Product(String barcode, String name, double wholesalePrice, double retailPrice, Integer stockLevel, Supplier supplier) {
         this.barcode = barcode;
         this.name = name;

@@ -15,7 +15,7 @@ public class ProductTableGenerator extends SimplePDFTableGenerator {
 
     @Override
     String[] getTableHeaders() {
-        return new String[]{"ID", "Barcode", "Name", "Supplier", "Stock Level", "Wholesale Price (Rs.)", "Retail Price (Rs.)"};
+        return new String[]{"ID", "Barcode", "Name", "Supplier", "Stock Level", "Wholesale Price", "Retail Price", "Profit"};
     }
 
     @Override
@@ -30,8 +30,9 @@ public class ProductTableGenerator extends SimplePDFTableGenerator {
             row.add(p.getName());
             row.add(p.getSupplier().getName());
             row.add(String.valueOf(p.getStockLevel()));
-            row.add(String.valueOf(p.getWholesalePrice()));
-            row.add(String.valueOf(p.getRetailPrice()));
+            row.add("Rs. " + String.valueOf(p.getWholesalePrice()));
+            row.add("Rs. " + String.valueOf(p.getRetailPrice()));
+            row.add("Rs. " + String.valueOf(p.getRetailPrice() - p.getWholesalePrice()));
 
             data.add(row);
         }

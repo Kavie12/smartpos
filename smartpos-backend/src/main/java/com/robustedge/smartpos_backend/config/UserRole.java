@@ -1,6 +1,6 @@
 package com.robustedge.smartpos_backend.config;
 
-public enum UserRoles {
+public enum UserRole {
     ADMIN,
-    USER
+    EMPLOYEE
 }
